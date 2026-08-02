@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "extends": "@tsconfig/bun/tsconfig.json",
+  "compilerOptions": {},
+  "exclude": [
+    "node_modules",
+    "dist",
+    "ts-dist",
+    ".turbo",
+    "coverage",
+    "build",
+    "target",
+    ".sst",
+    "starter-templates",
+    ".trellis",
+    ".workspace",
+    ".vscode",
+    ".git",
+    ".svn",
+    ".hg",
+    ".DS_Store",
+    "Thumbs.db",
+    "*.log"
+  ]
+}

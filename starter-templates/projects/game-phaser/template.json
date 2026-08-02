@@ -1,0 +1,17 @@
+{
+  "id": "game-phaser",
+  "name": "Game (Phaser)",
+  "description": "Phaser and Vite starter for browser games with level, entity, and sprite projections.",
+  "kind": "game",
+  "icon": "gamepad-2",
+  "tags": ["Phaser", "Vite", "TypeScript"],
+  "projections": {
+    "workspaceType": "game",
+    "pinned": ["notes", "levels", "entities", "media"]
+  },
+  "preview": {
+    "service": "game",
+    "command": "bun install && bun run dev",
+    "port": 5175
+  }
+}

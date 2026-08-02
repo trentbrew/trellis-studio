@@ -1,0 +1,17 @@
+{
+  "id": "mobile-expo",
+  "name": "Mobile App (Expo)",
+  "description": "Expo and React Native workspace for mobile apps with Trellis notes, records, content, and links.",
+  "kind": "mobile",
+  "icon": "smartphone",
+  "tags": ["Expo", "React Native", "TypeScript"],
+  "projections": {
+    "workspaceType": "app",
+    "pinned": ["notes", "records", "content", "links"]
+  },
+  "preview": {
+    "service": "expo",
+    "command": "bun install && bunx expo start --port 8081",
+    "port": 8081
+  }
+}

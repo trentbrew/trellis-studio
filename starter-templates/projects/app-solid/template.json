@@ -1,0 +1,17 @@
+{
+  "id": "app-solid",
+  "name": "Web App (Solid)",
+  "description": "Solid and Vite starter for product apps, dashboards, internal tools, and record-driven workflows.",
+  "kind": "app",
+  "icon": "panel-top",
+  "tags": ["Solid", "Vite", "TypeScript"],
+  "projections": {
+    "workspaceType": "app",
+    "pinned": ["notes", "records", "content", "links"]
+  },
+  "preview": {
+    "service": "app",
+    "command": "bun install && bun run dev",
+    "port": 5174
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "id": "video-remotion",
+  "name": "Video (Remotion)",
+  "description": "React and Remotion workspace for scripted videos, scenes, captions, and renderable compositions.",
+  "kind": "video",
+  "icon": "video",
+  "tags": ["Remotion", "React", "TypeScript"],
+  "projections": {
+    "workspaceType": "video",
+    "pinned": ["notes", "scenes", "scripts", "media"]
+  },
+  "preview": {
+    "service": "remotion",
+    "command": "bun install && bun run dev",
+    "port": 3000
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "id": "web-vite",
+  "name": "Website (Vite)",
+  "description": "Vite and Solid starter for websites, landing pages, content pages, and media-backed web projects.",
+  "kind": "web",
+  "icon": "globe",
+  "tags": ["Vite", "Solid", "TypeScript"],
+  "projections": {
+    "workspaceType": "website",
+    "pinned": ["notes", "content", "posts", "media"]
+  },
+  "preview": {
+    "service": "web",
+    "command": "bun install && bun run dev",
+    "port": 5173
+  }
+}

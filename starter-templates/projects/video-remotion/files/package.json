@@ -1,0 +1,22 @@
+{
+  "name": "{{slug}}",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "remotion studio --port 3000",
+    "render": "remotion render src/index.ts MainVideo out/{{slug}}.mp4",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.468",
+    "react": "19.2.6",
+    "react-dom": "19.2.6",
+    "remotion": "4.0.468"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.7",
+    "@types/react-dom": "^19.2.3",
+    "typescript": "^6.0.3"
+  }
+}

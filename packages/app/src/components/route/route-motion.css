@@ -1,0 +1,645 @@
+.route-view {
+  height: 100%;
+  min-height: 0;
+  width: 100%;
+  overflow: hidden;
+  animation: route-view-enter 200ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.route-panel {
+  display: flex;
+  height: 100%;
+  min-height: 0;
+  width: 100%;
+  overflow: hidden;
+  background: var(--bg-panel);
+  color: var(--text-base);
+}
+
+.route-panel--compact {
+  flex-direction: column;
+}
+
+.route-sidebar {
+  width: var(--route-sidebar-width, 208px);
+  flex-shrink: 0;
+  display: flex;
+  min-height: 0;
+  flex-direction: column;
+  border-right: 1px solid var(--border-weaker-base);
+  background: var(--bg-sidebar);
+}
+
+.route-sidebar--compact {
+  width: 100%;
+  max-height: 12rem;
+  border-right: 0;
+  border-bottom: 1px solid var(--border-weaker-base);
+}
+
+.route-sidebar-head,
+.route-header {
+  min-height: 2.5rem;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  border-bottom: 1px solid var(--border-weaker-base);
+  background: var(--bg-sidebar);
+}
+
+.route-detail-head {
+  min-height: 2.5rem;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  border-bottom: 1px solid var(--border-weaker-base);
+  background: var(--bg-elevated);
+}
+
+.route-sidebar-head {
+  padding: 0 0.75rem;
+}
+
+.route-sidebar-head-right {
+  margin-left: auto;
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 0.125rem;
+}
+
+.route-sidebar-actions {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+}
+
+.resizable-sidebar-slot {
+  height: 100%;
+  min-height: 0;
+  align-self: stretch;
+  transition: width 280ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.resizable-sidebar-slot--resizing {
+  transition: none !important;
+}
+
+.resizable-sidebar-inner {
+  will-change: opacity;
+  display: flex;
+  flex-direction: column;
+  transition: opacity 180ms ease-out;
+}
+
+.resizable-sidebar-slot--resizing .resizable-sidebar-inner {
+  transition: none !important;
+}
+
+/* Keep main panel content in sync while dragging — no motion lag on the flex sibling. */
+.route-panel:has(.resizable-sidebar-slot--resizing) > :not(.resizable-sidebar-slot),
+.design-panel:has(.resizable-sidebar-slot--resizing) > :not(.resizable-sidebar-slot) {
+  transition: none !important;
+  animation: none !important;
+}
+
+/* Sidebar panels inside the overlay slot must stretch — otherwise they shrink to content height. */
+.resizable-sidebar-inner > :first-child {
+  height: 100%;
+  min-height: 0;
+  flex: 1;
+  transition: border-right-color 150ms ease;
+}
+
+/* Handle overlays the sidebar edge — zero layout width, full hit target via ui/resize-handle. */
+.resizable-sidebar-inner > .resizable-sidebar-handle::after {
+  opacity: 0 !important;
+}
+
+.resizable-sidebar-inner:has(.resizable-sidebar-handle:hover) > :first-child,
+.resizable-sidebar-inner:has(.resizable-sidebar-handle:active) > :first-child {
+  border-right-color: #fff;
+}
+
+.route-sidebar-title,
+.route-header-title,
+.route-detail-title {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--text-strong);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.route-sidebar-meta,
+.route-header-meta {
+  flex-shrink: 0;
+  color: var(--text-weaker);
+  font-size: 0.625rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.route-sidebar-body {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding: 0.5rem;
+}
+
+.route-sidebar--compact .route-sidebar-body,
+.route-sidebar--compact .route-nav {
+  display: flex;
+  flex-direction: row;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.route-sidebar-foot {
+  flex-shrink: 0;
+  border-top: 1px solid var(--border-weaker-base);
+  padding: 0.5rem;
+}
+
+.route-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.route-nav--tabs {
+  min-height: 2.5rem;
+  flex-direction: row;
+  flex-shrink: 0;
+  gap: 0.25rem;
+  overflow-x: auto;
+  overflow-y: hidden;
+  border-bottom: 1px solid var(--border-weaker-base);
+  padding: 0 0.75rem;
+}
+
+.route-nav-item {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 0.375rem;
+  padding: 0.375rem 0.625rem;
+  color: var(--text-weak);
+  font-size: 0.8125rem;
+  text-align: left;
+  transition:
+    color 150ms ease,
+    background-color 150ms ease,
+    transform 150ms ease;
+}
+
+.route-nav-item--tab {
+  width: auto;
+  flex-shrink: 0;
+  border-radius: 0;
+  border-bottom: 2px solid transparent;
+  padding: 0 0.5rem;
+  font-size: 0.6875rem;
+}
+
+.route-nav-item:hover:not(:disabled) {
+  color: var(--text-base);
+  background: var(--bg-subtle);
+}
+
+.route-nav-item--active {
+  color: var(--text-strong);
+  background: var(--bg-subtle);
+  font-weight: 500;
+}
+
+.route-nav-item--tab.route-nav-item--active {
+  border-bottom-color: var(--text-strong);
+  background: transparent;
+}
+
+.route-nav-item:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.route-nav-icon {
+  display: flex;
+  flex-shrink: 0;
+  opacity: 0.72;
+}
+
+.route-nav-label {
+  min-width: 0;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.route-nav-badge {
+  flex-shrink: 0;
+  color: var(--text-weaker);
+  font-size: 0.625rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.route-header {
+  justify-content: space-between;
+  padding: 0 1rem;
+}
+
+.route-header-main,
+.route-header-search,
+.route-header-actions,
+.route-detail-actions {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.route-header-leading {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+}
+
+.route-header-main {
+  flex: 1;
+}
+
+.route-header-search {
+  flex: 0 1 18rem;
+}
+
+.route-header-actions {
+  flex-shrink: 0;
+}
+
+/* Standardized toolbar row beneath the header: search (left, grows) + filters/
+   views/tabs (right). Keeps the top header row uncramped. */
+.route-toolbar {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 2.5rem;
+  padding: 0.375rem 0.75rem;
+  border-bottom: 1px solid var(--border-weaker-base);
+  background: var(--bg-sidebar);
+}
+
+.route-toolbar-search {
+  display: flex;
+  min-width: 0;
+  flex: 1 1 auto;
+  align-items: center;
+}
+
+.route-toolbar-tools {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Header/toolbars respond to the main column width (container query, defined
+   after the viewport media block below) rather than the viewport, so split
+   panes narrower than the screen still wrap gracefully. */
+.route-main {
+  container: route-main / inline-size;
+}
+
+.route-content {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  overflow: auto;
+  background: var(--bg-well);
+}
+
+.route-content--clip {
+  overflow: hidden;
+}
+
+.route-content--padded {
+  padding: 1.5rem;
+}
+
+.route-content--narrow {
+  width: 100%;
+  max-width: 64rem;
+  margin: 0 auto;
+}
+
+.route-empty {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 3rem 1.5rem;
+  text-align: center;
+  color: var(--text-weaker);
+}
+
+.route-empty-icon {
+  display: flex;
+  width: 4rem;
+  height: 4rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: var(--surface-raised-base);
+  color: var(--text-weaker);
+}
+
+.route-empty-copy {
+  display: flex;
+  max-width: 22rem;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.route-empty-title {
+  color: var(--text-base);
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.route-empty-desc {
+  color: var(--text-weaker);
+  font-size: 0.875rem;
+  line-height: 1.45;
+}
+
+.route-empty-action {
+  margin-top: 0.25rem;
+}
+
+.route-card {
+  position: relative;
+  border: 1px solid var(--border-weaker-base);
+  border-radius: 0.75rem;
+  background: var(--bg-subtle);
+  transition:
+    transform 200ms cubic-bezier(0.34, 1.56, 0.64, 1),
+    border-color 150ms ease,
+    box-shadow 150ms ease,
+    background-color 150ms ease;
+}
+
+.route-card--quiet {
+  background: transparent;
+}
+
+.route-card--raised {
+  box-shadow: 0 10px 24px -18px rgba(0, 0, 0, 0.5);
+}
+
+.route-card--interactive {
+  cursor: pointer;
+}
+
+.route-card--interactive:hover {
+  z-index: 1;
+  transform: translateY(-4px) scale(1.015);
+  border-color: var(--border-base);
+  box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.22);
+}
+
+.route-card--selected {
+  border-color: var(--primary-base);
+  box-shadow: 0 0 0 1px var(--primary-base);
+}
+
+.route-card--fresh {
+  border-color: rgba(16, 185, 129, 0.4);
+  background: rgba(16, 185, 129, 0.05);
+}
+
+.route-card--disabled {
+  pointer-events: none;
+  opacity: 0.55;
+}
+
+.route-detail {
+  width: var(--route-detail-width, 20rem);
+  flex-shrink: 0;
+  display: flex;
+  min-height: 0;
+  flex-direction: column;
+  border-left: 1px solid var(--border-weaker-base);
+  background: var(--bg-elevated);
+  animation: route-detail-right 300ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.route-detail--left {
+  border-right: 1px solid var(--border-weaker-base);
+  border-left: 0;
+  animation-name: route-detail-left;
+}
+
+.route-detail--bottom {
+  width: 100%;
+  max-height: 45%;
+  border-top: 1px solid var(--border-weaker-base);
+  border-left: 0;
+  animation-name: route-detail-bottom;
+}
+
+.route-detail-head {
+  justify-content: space-between;
+  padding: 0 1rem;
+}
+
+.route-detail-body {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding: 1rem;
+}
+
+.route-detail--flush .route-detail-body {
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.route-detail--flush .route-detail-body > * {
+  flex: 1;
+  min-height: 0;
+}
+
+.route-motion-section {
+  animation: route-section-enter 200ms ease-out both;
+}
+
+.route-motion-item {
+  animation: route-item-enter 400ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.route-motion-pop {
+  animation: route-pop-enter 300ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes route-view-enter {
+  from {
+    opacity: 0;
+    transform: translateX(1rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes route-section-enter {
+  from {
+    opacity: 0;
+    transform: translateY(0.625rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes route-item-enter {
+  from {
+    opacity: 0;
+    transform: translateY(0.625rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes route-pop-enter {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes route-detail-right {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes route-detail-left {
+  from {
+    opacity: 0;
+    transform: translateX(-100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes route-detail-bottom {
+  from {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 1023px) {
+  .route-panel {
+    flex-direction: column;
+  }
+
+  .route-header {
+    min-height: 2.5rem;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 0.5rem;
+    padding: 0.5rem;
+  }
+
+  .route-header-search {
+    flex-basis: min(16rem, 100%);
+  }
+
+  .route-content--padded {
+    padding: 0.75rem;
+  }
+
+  .route-detail {
+    width: 100%;
+    max-height: 45%;
+    border-top: 1px solid var(--border-weaker-base);
+    border-left: 0;
+    animation-name: route-detail-bottom;
+  }
+}
+
+/* Container-query header responsiveness. Declared after the viewport media
+   block so it wins on equal specificity when both apply (small screen + narrow
+   pane), and also fires on wide screens with narrow split panes. */
+@container route-main (max-width: 640px) {
+  .route-header {
+    flex-wrap: wrap;
+    row-gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+  }
+
+  .route-header-actions {
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+
+  /* Toolbar: let the filters/views wrap below the search field. */
+  .route-toolbar {
+    flex-wrap: wrap;
+    row-gap: 0.5rem;
+  }
+
+  .route-toolbar-search {
+    flex: 1 1 100%;
+  }
+
+  .route-toolbar-tools {
+    flex-wrap: wrap;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .route-view,
+  .route-motion-section,
+  .route-motion-item,
+  .route-motion-pop,
+  .route-detail,
+  .route-card,
+  .resizable-sidebar-slot,
+  .resizable-sidebar-inner {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
+  }
+}

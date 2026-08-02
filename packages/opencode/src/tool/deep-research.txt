@@ -1,0 +1,14 @@
+Run autonomous multi-step web research using Gemini Deep Research and return a synthesized report with citations.
+
+Use this tool when:
+- A question requires exhaustive investigation across many sources
+- Single websearch queries are insufficient
+- You need a structured research report with corroborated claims
+
+Prefer `websearch` for quick factual lookups. Use `deep_research` for open-ended or high-stakes research (market analysis, technology comparisons, due diligence, literature surveys).
+
+The tool runs asynchronously on Google's servers (typically 2–20 minutes). Do not use for simple questions answerable in one search.
+
+Provide a clear research brief. Optionally specify output structure (sections, tables, audience).
+
+Results include citations — verify critical claims before presenting as facts.

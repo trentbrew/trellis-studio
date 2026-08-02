@@ -1,0 +1,35 @@
+---
+const guides = [
+  { title: "Plan", text: "Capture docs intent in Notes and Articles." },
+  { title: "Structure", text: "Move stable content into pages and guides." },
+  { title: "Publish", text: "Build static docs with Astro." },
+]
+
+import "../styles/global.css"
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>{{name}}</title>
+  </head>
+  <body>
+    <main>
+      <section class="hero">
+        <p>Docs Site</p>
+        <h1>{{name}}</h1>
+        <span>Documentation, articles, and structured publishing in one Trellis workspace.</span>
+      </section>
+      <section class="guides">
+        {guides.map((guide, index) => (
+          <article>
+            <strong>{String(index + 1).padStart(2, "0")}</strong>
+            <h2>{guide.title}</h2>
+            <p>{guide.text}</p>
+          </article>
+        ))}
+      </section>
+    </main>
+  </body>
+</html>

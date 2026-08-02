@@ -1,0 +1,19 @@
+Work with Trellis Studio `.whiteboard` files (Excalidraw JSON on disk) using the versioned whiteboard corpus.
+
+Use stable corpus slugs (`template.*`, `figure.*`, `primitive.*`, `layout.*`) instead of hand-editing raw element JSON.
+
+Actions:
+- `list_catalog` — list corpus entries (optional `kind` filter).
+- `describe` — semantic summary of a board (figures, bindings, untagged primitives).
+- `apply_template` — merge or replace a board from `template.*` (retro, flow, system context, …).
+- `insert_figure` — place `figure.*` or `primitive.*` at x/y with optional label and graph bind (`issue:42`, `entity:decision-7`).
+- `insert_mermaid` — generate a rich diagram from Mermaid syntax (best for flowcharts; sequence/class partially supported). Pass the `mermaid` source and optional `x`/`y`, `label`, `bind`. Omit `x`/`y` to auto-stack below existing content. The source is stored as a pending node; Trellis Studio renders it to real Excalidraw shapes when the board opens and keeps the source so the diagram stays re-generatable. Prefer this for non-trivial diagrams instead of placing many primitives by hand.
+
+**Readable diagrams (important for complex boards):**
+- Prefer **several smaller** `insert_mermaid` calls (one concept per diagram) over one giant flowchart with dozens of nodes and crossing arrows.
+- Use `flowchart TB` or `flowchart LR` explicitly; avoid cramming unrelated subgraphs into one chart.
+- Keep node labels short; push detail into `describe` text or a second diagram.
+- For architecture overviews, split **structure** (boxes/layers) and **flow** (sequence/promotion) into separate boards or stacked diagrams.
+- Only pass `x`/`y` when you need a deliberate collage; otherwise let auto-placement stack with gap.
+
+Bindings are stored on elements as `customData.trellis.bind` and reported as `binds:<ref>` in describe output.

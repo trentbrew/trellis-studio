@@ -1,0 +1,17 @@
+{
+  "id": "game-threlte",
+  "name": "Game (Threlte 3D)",
+  "description": "Svelte and Threlte 3D game starter with keyboard/gamepad input mapping, animated character movement, and a live input panel.",
+  "kind": "game",
+  "icon": "gamepad-2",
+  "tags": ["Threlte", "Svelte", "Three.js", "Gamepad"],
+  "projections": {
+    "workspaceType": "game",
+    "pinned": ["notes", "levels", "entities", "media"]
+  },
+  "preview": {
+    "service": "game",
+    "command": "bun install && bun run dev",
+    "port": 5175
+  }
+}

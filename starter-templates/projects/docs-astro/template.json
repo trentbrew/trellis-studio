@@ -1,0 +1,17 @@
+{
+  "id": "docs-astro",
+  "name": "Docs Site (Astro)",
+  "description": "Astro starter for documentation, articles, guides, and structured publishing workflows.",
+  "kind": "docs",
+  "icon": "book-open",
+  "tags": ["Astro", "Markdown", "TypeScript"],
+  "projections": {
+    "workspaceType": "docs",
+    "pinned": ["notes", "articles", "content", "posts"]
+  },
+  "preview": {
+    "service": "docs",
+    "command": "bun install && bun run dev",
+    "port": 4321
+  }
+}

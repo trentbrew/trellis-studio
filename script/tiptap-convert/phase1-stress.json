@@ -1,0 +1,362 @@
+{
+  "type": "doc",
+  "content": [
+    {
+      "type": "frontmatter",
+      "attrs": {
+        "raw": "---\ntitle: Turtlecode Stress Test\nauthor: Trent\ndate: 2026-04-22\n---\n",
+        "meta": {
+          "title": "Turtlecode Stress Test",
+          "author": "Trent",
+          "date": "2026-04-22"
+        }
+      }
+    },
+    {
+      "type": "heading",
+      "attrs": { "level": 1 },
+      "content": [{ "type": "text", "text": "Turtlecode Convert API stress test" }]
+    },
+    {
+      "type": "paragraph",
+      "content": [
+        { "type": "text", "text": "This document exercises every custom Tiptap node used in Turtlecode, plus a control group of standard nodes. Render fidelity of each is evaluated in the accompanying report." }
+      ]
+    },
+    {
+      "type": "heading",
+      "attrs": { "level": 2 },
+      "content": [{ "type": "text", "text": "1. Standard nodes (control group)" }]
+    },
+    {
+      "type": "heading",
+      "attrs": { "level": 3 },
+      "content": [{ "type": "text", "text": "Inline marks" }]
+    },
+    {
+      "type": "paragraph",
+      "content": [
+        { "type": "text", "text": "Plain text. " },
+        { "type": "text", "marks": [{ "type": "bold" }], "text": "Bold text." },
+        { "type": "text", "text": " " },
+        { "type": "text", "marks": [{ "type": "italic" }], "text": "Italic text." },
+        { "type": "text", "text": " " },
+        { "type": "text", "marks": [{ "type": "code" }], "text": "inline code" },
+        { "type": "text", "text": " " },
+        { "type": "text", "marks": [{ "type": "strike" }], "text": "strikethrough" },
+        { "type": "text", "text": " " },
+        {
+          "type": "text",
+          "marks": [{ "type": "link", "attrs": { "href": "https://example.com", "target": "_blank", "rel": "noopener noreferrer" } }],
+          "text": "external link"
+        },
+        { "type": "text", "text": "." }
+      ]
+    },
+    {
+      "type": "heading",
+      "attrs": { "level": 3 },
+      "content": [{ "type": "text", "text": "Lists" }]
+    },
+    {
+      "type": "bulletList",
+      "content": [
+        {
+          "type": "listItem",
+          "content": [
+            { "type": "paragraph", "content": [{ "type": "text", "text": "First bullet" }] }
+          ]
+        },
+        {
+          "type": "listItem",
+          "content": [
+            { "type": "paragraph", "content": [{ "type": "text", "text": "Second bullet with nested" }] },
+            {
+              "type": "bulletList",
+              "content": [
+                {
+                  "type": "listItem",
+                  "content": [
+                    { "type": "paragraph", "content": [{ "type": "text", "text": "Nested child" }] }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "orderedList",
+      "attrs": { "start": 1 },
+      "content": [
+        {
+          "type": "listItem",
+          "content": [
+            { "type": "paragraph", "content": [{ "type": "text", "text": "Ordered one" }] }
+          ]
+        },
+        {
+          "type": "listItem",
+          "content": [
+            { "type": "paragraph", "content": [{ "type": "text", "text": "Ordered two" }] }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "taskList",
+      "content": [
+        {
+          "type": "taskItem",
+          "attrs": { "checked": true },
+          "content": [
+            { "type": "paragraph", "content": [{ "type": "text", "text": "Completed task" }] }
+          ]
+        },
+        {
+          "type": "taskItem",
+          "attrs": { "checked": false },
+          "content": [
+            { "type": "paragraph", "content": [{ "type": "text", "text": "Pending task" }] }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "heading",
+      "attrs": { "level": 3 },
+      "content": [{ "type": "text", "text": "Blockquote and horizontal rule" }]
+    },
+    {
+      "type": "blockquote",
+      "content": [
+        { "type": "paragraph", "content": [{ "type": "text", "text": "A blockquote with some weight to it." }] }
+      ]
+    },
+    { "type": "horizontalRule" },
+    {
+      "type": "heading",
+      "attrs": { "level": 3 },
+      "content": [{ "type": "text", "text": "Tables with borders" }]
+    },
+    {
+      "type": "table",
+      "content": [
+        {
+          "type": "tableRow",
+          "content": [
+            {
+              "type": "tableHeader",
+              "content": [{ "type": "paragraph", "content": [{ "type": "text", "text": "Feature" }] }]
+            },
+            {
+              "type": "tableHeader",
+              "content": [{ "type": "paragraph", "content": [{ "type": "text", "text": "Status" }] }]
+            },
+            {
+              "type": "tableHeader",
+              "content": [{ "type": "paragraph", "content": [{ "type": "text", "text": "Notes" }] }]
+            }
+          ]
+        },
+        {
+          "type": "tableRow",
+          "content": [
+            {
+              "type": "tableCell",
+              "content": [{ "type": "paragraph", "content": [{ "type": "text", "text": "Callout" }] }]
+            },
+            {
+              "type": "tableCell",
+              "content": [{ "type": "paragraph", "content": [{ "type": "text", "text": "TBD" }] }]
+            },
+            {
+              "type": "tableCell",
+              "content": [{ "type": "paragraph", "content": [{ "type": "text", "text": "Custom Turtlecode extension" }] }]
+            }
+          ]
+        },
+        {
+          "type": "tableRow",
+          "content": [
+            {
+              "type": "tableCell",
+              "content": [{ "type": "paragraph", "content": [{ "type": "text", "text": "Mermaid" }] }]
+            },
+            {
+              "type": "tableCell",
+              "content": [{ "type": "paragraph", "content": [{ "type": "text", "text": "TBD" }] }]
+            },
+            {
+              "type": "tableCell",
+              "content": [{ "type": "paragraph", "content": [{ "type": "text", "text": "Needs browser runtime to become SVG" }] }]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "heading",
+      "attrs": { "level": 3 },
+      "content": [{ "type": "text", "text": "Code blocks" }]
+    },
+    {
+      "type": "codeBlock",
+      "attrs": { "language": "typescript" },
+      "content": [
+        {
+          "type": "text",
+          "text": "function greet(name: string): string {\n  return `Hello, ${name}!`\n}\n\nconst result = greet(\"Turtlecode\")\nconsole.log(result)"
+        }
+      ]
+    },
+    {
+      "type": "heading",
+      "attrs": { "level": 2 },
+      "content": [{ "type": "text", "text": "2. Turtlecode custom nodes" }]
+    },
+    {
+      "type": "heading",
+      "attrs": { "level": 3 },
+      "content": [{ "type": "text", "text": "Callouts (all five variants)" }]
+    },
+    {
+      "type": "callout",
+      "attrs": { "type": "NOTE" },
+      "content": [
+        { "type": "paragraph", "content": [{ "type": "text", "text": "This is a NOTE callout. Used for general informational content." }] }
+      ]
+    },
+    {
+      "type": "callout",
+      "attrs": { "type": "TIP" },
+      "content": [
+        { "type": "paragraph", "content": [{ "type": "text", "text": "This is a TIP callout. Used for helpful suggestions." }] }
+      ]
+    },
+    {
+      "type": "callout",
+      "attrs": { "type": "IMPORTANT" },
+      "content": [
+        { "type": "paragraph", "content": [{ "type": "text", "text": "This is an IMPORTANT callout. Used for crucial details." }] }
+      ]
+    },
+    {
+      "type": "callout",
+      "attrs": { "type": "WARNING" },
+      "content": [
+        { "type": "paragraph", "content": [{ "type": "text", "text": "This is a WARNING callout. Used for risky operations." }] }
+      ]
+    },
+    {
+      "type": "callout",
+      "attrs": { "type": "CAUTION" },
+      "content": [
+        { "type": "paragraph", "content": [{ "type": "text", "text": "This is a CAUTION callout. Used for dangerous operations." }] }
+      ]
+    },
+    {
+      "type": "heading",
+      "attrs": { "level": 3 },
+      "content": [{ "type": "text", "text": "Mermaid code block (should render as image, not raw text)" }]
+    },
+    {
+      "type": "codeBlock",
+      "attrs": { "language": "mermaid" },
+      "content": [
+        {
+          "type": "text",
+          "text": "flowchart TD\n  A[User clicks Publish] --> B{Static site?}\n  B -->|yes| C[Upload to R2]\n  B -->|no| D[Build first]\n  D --> C\n  C --> E[Flip KV pointer]\n  E --> F[Return live URL]"
+        }
+      ]
+    },
+    {
+      "type": "heading",
+      "attrs": { "level": 3 },
+      "content": [{ "type": "text", "text": "Images (absolute and relative URLs)" }]
+    },
+    {
+      "type": "paragraph",
+      "content": [{ "type": "text", "text": "Absolute URL (should render):" }]
+    },
+    {
+      "type": "image",
+      "attrs": {
+        "src": "https://tiptap.dev/static/logo.svg",
+        "alt": "Tiptap logo",
+        "title": "Tiptap logo"
+      }
+    },
+    {
+      "type": "paragraph",
+      "content": [{ "type": "text", "text": "Relative URL (expected to 404 — Tiptap servers cannot reach a tenant sprite):" }]
+    },
+    {
+      "type": "image",
+      "attrs": {
+        "src": "/file/media/screenshot.png",
+        "alt": "Sprite-relative image",
+        "title": "Sprite-relative image"
+      }
+    },
+    {
+      "type": "heading",
+      "attrs": { "level": 3 },
+      "content": [{ "type": "text", "text": "Mentions (custom inline atom)" }]
+    },
+    {
+      "type": "paragraph",
+      "content": [
+        { "type": "text", "text": "File mention: " },
+        {
+          "type": "mention",
+          "attrs": { "type": "file", "id": "packages/app/src/pages/session/file-editor.tsx", "label": "file-editor.tsx" }
+        },
+        { "type": "text", "text": ". Entity mention: " },
+        {
+          "type": "mention",
+          "attrs": { "type": "entity", "id": "issue:TRL-26", "label": "TRL-26" }
+        },
+        { "type": "text", "text": "." }
+      ]
+    },
+    {
+      "type": "heading",
+      "attrs": { "level": 3 },
+      "content": [{ "type": "text", "text": "Embed (custom block atom)" }]
+    },
+    {
+      "type": "embed",
+      "attrs": { "src": "https://www.youtube.com/watch?v=dQw4w9WgXcQ" }
+    },
+    {
+      "type": "heading",
+      "attrs": { "level": 3 },
+      "content": [{ "type": "text", "text": "File link inside prose (via standard link mark)" }]
+    },
+    {
+      "type": "paragraph",
+      "content": [
+        { "type": "text", "text": "See " },
+        {
+          "type": "text",
+          "marks": [{ "type": "link", "attrs": { "href": "packages/opencode/src/util/document.ts" } }],
+          "text": "document.ts"
+        },
+        { "type": "text", "text": " for the backend docx extraction logic." }
+      ]
+    },
+    {
+      "type": "heading",
+      "attrs": { "level": 2 },
+      "content": [{ "type": "text", "text": "3. End" }]
+    },
+    {
+      "type": "paragraph",
+      "content": [
+        { "type": "text", "text": "If this document made it through the API intact with all custom nodes visually rendered, Tiptap Convert is a viable path. If any custom node is dropped, rendered as raw text, or produces an error, the client-side html2pdf approach wins." }
+      ]
+    }
+  ]
+}

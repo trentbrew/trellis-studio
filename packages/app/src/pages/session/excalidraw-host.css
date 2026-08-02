@@ -1,0 +1,734 @@
+.excalidraw-host {
+  position: absolute;
+  inset: 0;
+  isolation: isolate;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
+  /* Same surface as graph view (DatabasePanel / GraphView). */
+  background: var(--background-base);
+
+  /* Shared HUD spacing (toolbar, inspector, minimap, transient zoom HUD). */
+  --studio-whiteboard-hud-inset: 0.75rem;
+  --studio-whiteboard-hud-gap: 0.5rem;
+  --studio-whiteboard-island-padding: 0.375rem;
+  --studio-whiteboard-inspector-width: 12.5rem;
+  --studio-whiteboard-toolbar-rail-width: 3.25rem;
+  --studio-whiteboard-toolbar-height: 2.75rem;
+  --studio-whiteboard-minimap-height: 7.5rem;
+  /* Reserve space below the canvas for the minimap (toolbar is top-docked). */
+  --studio-whiteboard-bottom-chrome: calc(
+    var(--studio-whiteboard-hud-inset) + var(--studio-whiteboard-minimap-height) +
+      var(--studio-whiteboard-hud-gap)
+  );
+  --studio-whiteboard-top-chrome: calc(
+    var(--studio-whiteboard-hud-inset) + var(--studio-whiteboard-toolbar-height) +
+      var(--studio-whiteboard-hud-gap)
+  );
+
+  /* Opaque HUD surfaces — must not show the dot grid through toolbar/inspector. */
+  --studio-whiteboard-hud-bg: var(--surface-raised-stronger-non-alpha, var(--background-base));
+  /* Light default — Excalidraw 0.18 only toggles `.theme--dark`, never `.theme--light`. */
+  --studio-whiteboard-hud-bg-opaque: #ffffff;
+  --studio-whiteboard-hud-border: var(--border-weaker-base);
+  --studio-whiteboard-hud-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.excalidraw-host[data-color-scheme="dark"],
+.excalidraw-host:has(.excalidraw.theme--dark) {
+  --studio-whiteboard-hud-bg-opaque: #1c1c1c;
+  --studio-whiteboard-hud-shadow: 0 4px 24px rgba(0, 0, 0, 0.28);
+}
+
+.excalidraw-host__dot-grid {
+  position: absolute;
+  inset: 0;
+  /* Below excalidraw-host__canvas — otherwise dots paint over the toolbar/inspector. */
+  z-index: 0;
+  pointer-events: none;
+  display: block;
+}
+
+.excalidraw-host__dot-grid--hidden {
+  display: none;
+}
+
+.excalidraw-host__canvas {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  min-width: 0;
+  isolation: isolate;
+}
+
+.excalidraw-host .excalidraw,
+.excalidraw-host .excalidraw.excalidraw-container {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  max-width: none !important;
+  max-height: none !important;
+  min-width: 0;
+  min-height: 0;
+}
+
+.excalidraw-host .excalidraw {
+  /* HUD panels position against the host edge; avoid doubling inset via FixedSideContainer. */
+  --editor-container-padding: 0;
+  /* Cancel safe-area padding on the canvas shell (Studio host is already inset). */
+  --sat: 0px;
+  --sar: 0px;
+  --sab: 0px;
+  --sal: 0px;
+}
+
+/* Drawing surface: pin to the host box (Excalidraw inline px sizes can lag layout). */
+.excalidraw-host .excalidraw .excalidraw__canvas-wrapper {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.excalidraw-host .excalidraw canvas.excalidraw__canvas {
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  margin: 0 !important;
+}
+
+/* Tailwind preflight resets buttons; Excalidraw CSS must win inside the host. */
+.excalidraw-host .excalidraw button {
+  font: inherit;
+}
+
+/* --- Studio theme bridge (match surrounding Trellis UI tokens) --- */
+
+/* Excalidraw defaults to #fff / #121212; match graph view canvas instead. */
+.excalidraw-host .excalidraw,
+.excalidraw-host .excalidraw.excalidraw-container {
+  --default-bg-color: var(--background-base) !important;
+  background-color: var(--background-base) !important;
+}
+
+.excalidraw-host .excalidraw.theme--dark {
+  --default-bg-color: var(--background-base) !important;
+}
+
+.excalidraw-host .excalidraw,
+.excalidraw-host .excalidraw.theme--dark {
+  --island-bg-color: var(--studio-whiteboard-hud-bg-opaque) !important;
+  --island-bg-color-alt: var(--studio-whiteboard-hud-bg-opaque) !important;
+  --default-border-color: var(--border-weaker-base);
+  --text-primary-color: var(--text-strong);
+  --icon-fill-color: var(--text-base);
+  --popup-bg-color: var(--surface-raised-strong, var(--surface-raised-base));
+  --popup-text-color: var(--text-strong);
+  --popup-secondary-bg-color: var(--surface-base);
+  --popup-border-color: var(--border-weaker-base);
+  --button-bg: var(--studio-whiteboard-hud-bg-opaque);
+  --button-border: var(--border-weaker-base);
+  --button-hover-bg: var(--studio-whiteboard-hud-bg-opaque);
+  --button-hover-border: var(--border-weak-base);
+  --button-active-bg: var(--studio-whiteboard-hud-bg-opaque);
+  --button-active-border: var(--border-base);
+  --button-selected-bg: color-mix(
+    in srgb,
+    var(--text-interactive-base, #6b8afd) 14%,
+    var(--studio-whiteboard-hud-bg-opaque)
+  );
+  --button-selected-border: var(--border-weak-base);
+  --color-surface-low: var(--studio-whiteboard-hud-bg-opaque);
+  --color-surface-mid: var(--studio-whiteboard-hud-bg-opaque);
+  --color-surface-high: var(--studio-whiteboard-hud-bg-opaque);
+  --color-surface-lowest: var(--surface-inset, var(--surface-base));
+  --color-on-surface: var(--text-strong);
+  --color-primary: var(--text-interactive-base, var(--icon-info));
+  --color-primary-darkest: var(--text-interactive-base, var(--icon-info));
+  --color-primary-light: color-mix(in srgb, var(--text-interactive-base, #6b8afd) 24%, transparent);
+  --color-primary-hover: color-mix(in srgb, var(--text-interactive-base, #6b8afd) 32%, transparent);
+  --shadow-island: var(--studio-whiteboard-hud-shadow);
+  font-family: inherit;
+}
+
+/* Toolbar icons: Excalidraw dark-theme vars can linger; pin contrast in light mode. */
+.excalidraw-host[data-color-scheme="light"] .excalidraw .App-toolbar .ToolIcon__icon,
+.excalidraw-host[data-color-scheme="light"] .excalidraw .App-toolbar .dropdown-menu-button,
+.excalidraw-host[data-color-scheme="light"] .excalidraw .App-toolbar__extra-tools-trigger {
+  --icon-fill-color: var(--text-strong);
+  color: var(--text-strong);
+}
+
+.excalidraw-host[data-color-scheme="light"] .excalidraw .App-toolbar .ToolIcon__icon svg,
+.excalidraw-host[data-color-scheme="light"] .excalidraw .App-toolbar__extra-tools-trigger svg {
+  color: var(--text-strong);
+  fill: currentColor;
+  stroke: currentColor;
+}
+
+.excalidraw-host .excalidraw .Island {
+  border: 1px solid var(--border-weaker-base);
+  border-radius: var(--border-radius-lg, 0.5rem);
+  box-shadow: var(--shadow-island);
+}
+
+/* Shared HUD surface: solid fill (no alpha Trellis tokens — grid must not bleed through). */
+.excalidraw-host .excalidraw .App-toolbar.Island,
+.excalidraw-host .excalidraw .App-toolbar--mobile.Island,
+.excalidraw-host .excalidraw .selected-shape-actions .Island,
+.excalidraw-host .excalidraw .App-bottom-bar > .Island {
+  background-color: var(--studio-whiteboard-hud-bg-opaque) !important;
+  background-image: none !important;
+  opacity: 1 !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border: 1px solid var(--studio-whiteboard-hud-border) !important;
+  box-shadow: var(--studio-whiteboard-hud-shadow) !important;
+}
+
+.excalidraw-host .excalidraw .App-toolbar.Island,
+.excalidraw-host .excalidraw .App-toolbar--mobile.Island,
+.excalidraw-host .excalidraw .selected-shape-actions .Island,
+.excalidraw-host .excalidraw .selected-shape-actions .Island.App-menu__left {
+  padding: var(--studio-whiteboard-island-padding) !important;
+}
+
+.excalidraw-host .excalidraw .App-toolbar .Stack.Stack_horizontal,
+.excalidraw-host .excalidraw .App-toolbar.Island .Stack_horizontal {
+  background-color: var(--studio-whiteboard-hud-bg-opaque) !important;
+}
+
+.excalidraw-host .excalidraw .App-toolbar .ToolIcon__icon,
+.excalidraw-host .excalidraw .App-toolbar .dropdown-menu-button,
+.excalidraw-host .excalidraw .App-toolbar__extra-tools-trigger {
+  background-color: var(--studio-whiteboard-hud-bg-opaque) !important;
+  opacity: 1 !important;
+}
+
+.excalidraw-host .excalidraw .App-toolbar .ToolIcon .ToolIcon__icon:hover,
+.excalidraw-host .excalidraw .App-toolbar .ToolIcon .ToolIcon__icon:active {
+  background-color: color-mix(
+    in srgb,
+    var(--text-interactive-base, #6b8afd) 12%,
+    var(--studio-whiteboard-hud-bg-opaque)
+  ) !important;
+}
+
+.excalidraw-host .excalidraw .App-toolbar .ToolIcon.fillable .ToolIcon_type_radio:checked + .ToolIcon__icon,
+.excalidraw-host .excalidraw .App-toolbar .ToolIcon .ToolIcon_type_radio:checked + .ToolIcon__icon,
+.excalidraw-host .excalidraw .App-toolbar .ToolIcon .ToolIcon_type_checkbox:checked + .ToolIcon__icon {
+  background-color: color-mix(
+    in srgb,
+    var(--text-interactive-base, #6b8afd) 18%,
+    var(--studio-whiteboard-hud-bg-opaque)
+  ) !important;
+}
+
+.excalidraw-host .excalidraw .popover .Island,
+.excalidraw-host .excalidraw [data-side] .Island {
+  border-color: var(--border-weak-base);
+}
+
+/* Inspector popovers: prefer opening to the left of triggers */
+.excalidraw-host .excalidraw [data-side="right"]:has(.color-picker-content),
+.excalidraw-host .excalidraw [data-side="right"].properties-content {
+  translate: calc(-100% - var(--studio-whiteboard-hud-gap)) 0;
+}
+
+.excalidraw-host .excalidraw [data-trellis-popover-flipped] {
+  translate: none;
+}
+
+/* --- Trellis whiteboard HUD (Excalidraw 0.18 has no dock-right API; host CSS only) --- */
+
+.excalidraw-host .whiteboard-minimap {
+  position: absolute;
+  left: var(--studio-whiteboard-hud-inset);
+  bottom: var(--studio-whiteboard-hud-inset);
+  z-index: 18;
+  pointer-events: none;
+  cursor: pointer;
+  background: var(--studio-whiteboard-hud-bg);
+  border: 1px solid var(--studio-whiteboard-hud-border);
+  border-radius: var(--border-radius-lg, 0.5rem);
+  box-shadow: var(--studio-whiteboard-hud-shadow);
+  /* Transient: shown only while panning/zooming (see whiteboard-minimap.ts reveal()). */
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(0.375rem);
+  transition:
+    opacity 180ms ease-out,
+    transform 180ms ease-out,
+    visibility 180ms ease-out;
+}
+
+.excalidraw-host .whiteboard-minimap--visible {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+/* Transient zoom HUD — bottom center (toolbar is top-docked). */
+.excalidraw-host__zoom-hud {
+  position: absolute;
+  left: 50%;
+  bottom: var(--studio-whiteboard-hud-inset);
+  top: auto;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 0.125rem;
+  padding: var(--studio-whiteboard-island-padding);
+  border-radius: var(--border-radius-lg, 0.5rem);
+  background: var(--studio-whiteboard-hud-bg);
+  border: 1px solid var(--studio-whiteboard-hud-border);
+  box-shadow: var(--studio-whiteboard-hud-shadow);
+  transform: translateX(-50%) translateY(0.375rem);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition:
+    opacity 160ms ease-out,
+    transform 160ms ease-out,
+    visibility 160ms ease-out;
+}
+
+.excalidraw-host__zoom-hud--visible {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translateX(-50%) translateY(0);
+}
+
+.excalidraw-host__zoom-hud-btn,
+.excalidraw-host__zoom-hud-label {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: var(--lg-button-size, 2rem);
+  height: var(--lg-button-size, 2rem);
+  padding: 0 0.375rem;
+  border: none;
+  border-radius: var(--border-radius-md, 0.375rem);
+  background: transparent;
+  color: var(--text-strong);
+  font: inherit;
+  font-size: 0.875rem;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+}
+
+.excalidraw-host__zoom-hud-btn:hover,
+.excalidraw-host__zoom-hud-label:hover {
+  background: var(--button-hover-bg, var(--surface-raised-base-hover));
+}
+
+.excalidraw-host__zoom-hud-btn:active,
+.excalidraw-host__zoom-hud-label:active {
+  background: var(--button-active-bg, var(--surface-inset));
+}
+
+.excalidraw-host__zoom-hud-label {
+  min-width: 3.25rem;
+  font-weight: 500;
+}
+
+/* Hide hamburger, library, and help — Studio owns file/theme flows. */
+.excalidraw-host .excalidraw .main-menu-trigger,
+.excalidraw-host .excalidraw .sidebar-trigger,
+.excalidraw-host .excalidraw .default-sidebar-trigger,
+.excalidraw-host .excalidraw .help-icon {
+  display: none !important;
+}
+
+.excalidraw-host .excalidraw .layer-ui__wrapper__footer-right {
+  display: none !important;
+}
+
+/* Studio provides pan/zoom elsewhere — drop lock, hand, and the divider before shapes. */
+.excalidraw-host .excalidraw [data-testid="toolbar-lock"],
+.excalidraw-host .excalidraw [data-testid="toolbar-hand"] {
+  display: none !important;
+}
+
+.excalidraw-host .excalidraw .App-toolbar__divider {
+  display: none !important;
+}
+
+/* No Excalidraw footer chrome (zoom/undo dock) — Studio zoom HUD + host layout. */
+.excalidraw-host .excalidraw .layer-ui__wrapper__footer,
+.excalidraw-host .excalidraw .footer-center {
+  display: none !important;
+}
+
+/* Collapse the empty top-left grid column (shape actions are repositioned). */
+.excalidraw-host .excalidraw .App-menu_top__left {
+  width: 0;
+  min-width: 0;
+  overflow: visible;
+  gap: 0;
+  padding: 0;
+  margin: 0;
+}
+
+/* Top menu: full-host overlay (toolbar top-center, inspector right). */
+.excalidraw-host .excalidraw .App-menu_top {
+  display: block;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  grid-template-columns: unset;
+  grid-gap: 0;
+  pointer-events: none !important;
+}
+
+.excalidraw-host .excalidraw .App-menu_top > * {
+  pointer-events: var(--ui-pointerEvents);
+}
+
+/* Tool rail: top center, horizontal (Figma-style floating toolbar). */
+.excalidraw-host .excalidraw .shapes-section {
+  position: absolute;
+  left: 50%;
+  top: var(--studio-whiteboard-hud-inset);
+  bottom: auto;
+  transform: translateX(-50%);
+  max-height: none;
+  /* Above excalidraw canvases (host__canvas z-index 1; dots at 0). */
+  z-index: 5;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  width: auto;
+  max-width: min(calc(100% - 2 * var(--studio-whiteboard-hud-inset)), 42rem);
+  overflow: visible;
+  pointer-events: none !important;
+}
+
+.excalidraw-host .excalidraw .shapes-section > * {
+  pointer-events: var(--ui-pointerEvents);
+}
+
+.excalidraw-host .excalidraw .App-toolbar-container {
+  flex-direction: row;
+  align-items: stretch;
+}
+
+.excalidraw-host .excalidraw .App-toolbar-container > .Stack {
+  flex-direction: row;
+  align-items: center;
+}
+
+.excalidraw-host .excalidraw .App-menu_top .Island,
+.excalidraw-host .excalidraw .layer-ui__wrapper .Island {
+  background-color: var(--studio-whiteboard-hud-bg-opaque) !important;
+}
+
+.excalidraw-host .excalidraw .App-toolbar .Stack_horizontal,
+.excalidraw-host .excalidraw .App-toolbar-container .Stack_horizontal,
+.excalidraw-host .excalidraw .App-toolbar .Stack.Stack_horizontal {
+  grid-auto-flow: column;
+  grid-template-rows: min-content;
+  grid-auto-columns: min-content;
+  grid-auto-rows: auto;
+  justify-items: center;
+  align-items: center;
+  gap: calc(var(--space-factor, 4px) * 1);
+}
+
+/* Extra-tools menu: open downward from the top toolbar. */
+.excalidraw-host .excalidraw .App-toolbar__extra-tools-dropdown {
+  top: calc(100% + var(--studio-whiteboard-hud-gap));
+  bottom: auto;
+  left: auto;
+  right: 0;
+  margin-top: 0;
+  margin-left: 0;
+  z-index: 12;
+}
+
+.excalidraw-host .excalidraw .App-toolbar__divider {
+  width: 1px;
+  height: 1.5rem;
+  margin: 0 0.25rem;
+  align-self: center;
+}
+
+.excalidraw-host .excalidraw .HintViewer {
+  display: none;
+}
+
+/*
+ * Inspector (desktop): right rail, height follows content, scrolls when taller than viewport.
+ */
+.excalidraw-host .excalidraw .App-menu_top__left .selected-shape-actions,
+.excalidraw-host .excalidraw .selected-shape-actions {
+  position: absolute !important;
+  top: var(--studio-whiteboard-top-chrome) !important;
+  right: var(--studio-whiteboard-hud-inset) !important;
+  bottom: auto !important;
+  left: auto !important;
+  width: var(--studio-whiteboard-inspector-width) !important;
+  max-width: calc(100% - 2 * var(--studio-whiteboard-hud-inset)) !important;
+  max-height: calc(
+    100% - var(--studio-whiteboard-top-chrome) - var(--studio-whiteboard-hud-inset)
+  ) !important;
+  height: auto !important;
+  margin: 0 !important;
+  transform: none !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: stretch !important;
+  justify-content: flex-start !important;
+  pointer-events: var(--ui-pointerEvents);
+  z-index: 5;
+  box-sizing: border-box;
+  overflow: visible;
+}
+
+.excalidraw-host .excalidraw .selected-shape-actions > .visually-hidden {
+  flex: 0 0 auto;
+  margin: 0;
+}
+
+.excalidraw-host .excalidraw .selected-shape-actions .Island,
+.excalidraw-host .excalidraw .selected-shape-actions .Island.App-menu__left {
+  position: relative !important;
+  flex: 0 1 auto;
+  align-self: stretch;
+  min-height: 0;
+  width: 100% !important;
+  height: auto !important;
+  max-height: 100% !important;
+  box-sizing: border-box;
+  padding: var(--studio-whiteboard-island-padding) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.excalidraw-host .excalidraw .selected-shape-actions .panelColumn,
+.excalidraw-host .excalidraw .App-mobile-menu .panelColumn {
+  flex: 0 1 auto;
+  width: 100%;
+  min-width: 0;
+  height: auto;
+  max-height: none;
+  box-sizing: border-box;
+  overflow-x: hidden;
+  overflow-y: visible;
+  row-gap: var(--studio-whiteboard-hud-gap);
+  padding: 0;
+  background-color: var(--studio-whiteboard-hud-bg-opaque) !important;
+}
+
+.excalidraw-host .excalidraw .selected-shape-actions .color-picker-container,
+.excalidraw-host .excalidraw .App-mobile-menu .color-picker-container,
+.excalidraw-host .excalidraw .selected-shape-actions .buttonList label,
+.excalidraw-host .excalidraw .App-mobile-menu .buttonList label {
+  background-color: var(--studio-whiteboard-hud-bg-opaque) !important;
+}
+
+.excalidraw-host .excalidraw .selected-shape-actions .range-wrapper {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.excalidraw-host .excalidraw .selected-shape-actions .range-input {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.excalidraw-host .excalidraw .selected-shape-actions .panelColumn h3,
+.excalidraw-host .excalidraw .selected-shape-actions .panelColumn legend,
+.excalidraw-host .excalidraw .selected-shape-actions .panelColumn .control-label {
+  color: var(--text-weak);
+}
+
+.excalidraw-host .excalidraw .sidebar {
+  display: none !important;
+}
+
+.excalidraw-host .excalidraw .layer-ui__wrapper {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  max-width: none !important;
+  height: 100% !important;
+}
+
+/* Library sidebar is hidden; never shrink the UI layer for docked sidebar width. */
+.excalidraw-host .excalidraw .layer-ui__wrapper[style*="right-sidebar-width"] {
+  width: 100% !important;
+  max-width: none !important;
+}
+
+.excalidraw-host .excalidraw .layer-ui__wrapper__top-right:empty {
+  display: none !important;
+}
+
+/* Excalidraw pins the top menu to editor padding; Studio HUD uses the full host box. */
+.excalidraw-host .excalidraw .FixedSideContainer,
+.excalidraw-host .excalidraw .FixedSideContainer_side_top {
+  padding: 0 !important;
+  inset: 0 !important;
+}
+
+.excalidraw-host .excalidraw .FixedSideContainer_side_top .App-menu_top {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* Hide Excalidraw footer zoom/undo — Studio uses the transient bottom-center HUD. */
+.excalidraw-host .excalidraw .layer-ui__wrapper__footer-left {
+  display: none !important;
+}
+
+/* Narrow viewports: collapse toolbar from the right (keep fullscreen HUD inset/spacing). */
+@media (max-width: 960px) {
+  .excalidraw-host {
+    --studio-whiteboard-minimap-height: 6rem;
+  }
+
+  .excalidraw-host .excalidraw .App-toolbar__extra-tools-trigger,
+  .excalidraw-host .excalidraw [data-testid="toolbar-eraser"],
+  .excalidraw-host .excalidraw [data-testid="toolbar-image"] {
+    display: none !important;
+  }
+}
+
+@media (max-width: 820px) {
+  .excalidraw-host .excalidraw [data-testid="toolbar-text"],
+  .excalidraw-host .excalidraw [data-testid="toolbar-freedraw"] {
+    display: none !important;
+  }
+}
+
+@media (max-width: 720px) {
+  .excalidraw-host .excalidraw [data-testid="toolbar-line"],
+  .excalidraw-host .excalidraw [data-testid="toolbar-arrow"] {
+    display: none !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .excalidraw-host {
+    --studio-whiteboard-minimap-height: 5rem;
+  }
+
+  .excalidraw-host .excalidraw [data-testid="toolbar-ellipse"],
+  .excalidraw-host .excalidraw [data-testid="toolbar-diamond"] {
+    display: none !important;
+  }
+
+  .excalidraw-host .whiteboard-minimap {
+    width: min(9rem, 38vw);
+    height: var(--studio-whiteboard-minimap-height);
+  }
+}
+
+/*
+ * Excalidraw mobile layout (< 730px host width): use desktop-like top toolbar + right
+ * properties panel; hide the default bottom undo/delete dock.
+ */
+.excalidraw-host .excalidraw.excalidraw--mobile .mobile-misc-tools-container {
+  display: none !important;
+}
+
+.excalidraw-host .excalidraw.excalidraw--mobile .App-top-bar {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.excalidraw-host .excalidraw.excalidraw--mobile .App-top-bar .App-toolbar-container {
+  position: absolute;
+  left: 50%;
+  top: var(--studio-whiteboard-hud-inset);
+  bottom: auto;
+  transform: translateX(-50%);
+  width: auto;
+  max-width: min(calc(100% - 2 * var(--studio-whiteboard-hud-inset)), 42rem);
+  pointer-events: var(--ui-pointerEvents);
+}
+
+.excalidraw-host .excalidraw.excalidraw--mobile .App-top-bar .App-toolbar--mobile {
+  background: var(--studio-whiteboard-hud-bg-opaque) !important;
+}
+
+.excalidraw-host .excalidraw.excalidraw--mobile .App-bottom-bar > .Island > footer.App-toolbar {
+  display: none !important;
+}
+
+.excalidraw-host .excalidraw.excalidraw--mobile .App-bottom-bar:not(:has(.App-mobile-menu)) {
+  display: none !important;
+}
+
+.excalidraw-host .excalidraw.excalidraw--mobile .App-bottom-bar {
+  position: absolute;
+  top: var(--studio-whiteboard-top-chrome);
+  right: var(--studio-whiteboard-hud-inset);
+  bottom: auto;
+  left: auto;
+  width: var(--studio-whiteboard-inspector-width);
+  max-width: calc(100% - 2 * var(--studio-whiteboard-hud-inset));
+  height: auto;
+  max-height: calc(
+    100% - var(--studio-whiteboard-top-chrome) - var(--studio-whiteboard-hud-inset)
+  );
+  margin: 0 !important;
+  padding: 0 !important;
+  align-items: stretch;
+  justify-content: flex-start;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.excalidraw-host .excalidraw.excalidraw--mobile .App-bottom-bar > .Island {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  min-height: 0;
+  height: auto;
+  max-height: 100%;
+  margin: 0;
+  pointer-events: var(--ui-pointerEvents);
+  background: var(--studio-whiteboard-hud-bg-opaque) !important;
+}
+
+.excalidraw-host .excalidraw.excalidraw--mobile .App-bottom-bar > .Island .panelColumn {
+  padding: var(--studio-whiteboard-island-padding);
+  box-sizing: border-box;
+}
+
+/* Short viewports: slightly tighten top chrome only. */
+@media (max-height: 560px) {
+  .excalidraw-host .excalidraw .App-menu_top__left .selected-shape-actions,
+  .excalidraw-host .excalidraw .selected-shape-actions,
+  .excalidraw-host .excalidraw.excalidraw--mobile .App-bottom-bar {
+    top: calc(var(--studio-whiteboard-top-chrome) + 0.25rem);
+    max-height: calc(
+      100% - var(--studio-whiteboard-top-chrome) - var(--studio-whiteboard-hud-inset) - 0.25rem
+    );
+  }
+}

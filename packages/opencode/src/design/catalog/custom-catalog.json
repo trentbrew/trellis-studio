@@ -1,0 +1,6332 @@
+{
+  "icons": [
+    {
+      "key": "a11y",
+      "library": "custom",
+      "tags": [
+        "a11y",
+        "accessibility",
+        "wheelchair",
+        "disabled",
+        "handicap",
+        "access"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "a11y_alt",
+      "library": "custom",
+      "tags": [
+        "a11y_alt",
+        "accessibility",
+        "wheelchair",
+        "disability",
+        "handicap",
+        "disabled",
+        "inclusion"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "accessibility",
+      "library": "custom",
+      "tags": [
+        "accessibility",
+        "wheelchair",
+        "disabled",
+        "handicap",
+        "access"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "add_image",
+      "library": "custom",
+      "tags": [
+        "add image",
+        "add photo",
+        "add picture",
+        "upload image",
+        "upload photo",
+        "upload picture"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "add_photo",
+      "library": "custom",
+      "tags": [
+        "add photo",
+        "add image",
+        "add picture",
+        "upload photo",
+        "upload image",
+        "upload picture"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "add_video",
+      "library": "custom",
+      "tags": [
+        "video",
+        "add",
+        "plus",
+        "create",
+        "new"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "airplay",
+      "library": "custom",
+      "tags": [
+        "television",
+        "screen",
+        "monitor",
+        "display",
+        "broadcast",
+        "channels"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "analytics",
+      "library": "custom",
+      "tags": [
+        "analytics",
+        "chart",
+        "graph",
+        "data",
+        "report",
+        "statistics"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "apple",
+      "library": "custom",
+      "tags": [
+        "fruit",
+        "food",
+        "healthy"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "arrow_alt_down",
+      "library": "custom",
+      "tags": [],
+      "category": "Custom"
+    },
+    {
+      "key": "arrow_alt_left",
+      "library": "custom",
+      "tags": [],
+      "category": "Custom"
+    },
+    {
+      "key": "arrow_alt_right",
+      "library": "custom",
+      "tags": [],
+      "category": "Custom"
+    },
+    {
+      "key": "arrow_alt_up",
+      "library": "custom",
+      "tags": [],
+      "category": "Custom"
+    },
+    {
+      "key": "arrow_bottom_left",
+      "library": "custom",
+      "tags": [],
+      "category": "Custom"
+    },
+    {
+      "key": "arrow_bottom_right",
+      "library": "custom",
+      "tags": [],
+      "category": "Custom"
+    },
+    {
+      "key": "arrow_down",
+      "library": "custom",
+      "tags": [],
+      "category": "Custom"
+    },
+    {
+      "key": "arrow_left",
+      "library": "custom",
+      "tags": [],
+      "category": "Custom"
+    },
+    {
+      "key": "arrow_right",
+      "library": "custom",
+      "tags": [],
+      "category": "Custom"
+    },
+    {
+      "key": "arrow_top_left",
+      "library": "custom",
+      "tags": [],
+      "category": "Custom"
+    },
+    {
+      "key": "arrow_top_right",
+      "library": "custom",
+      "tags": [],
+      "category": "Custom"
+    },
+    {
+      "key": "arrow_up",
+      "library": "custom",
+      "tags": [],
+      "category": "Custom"
+    },
+    {
+      "key": "art",
+      "library": "custom",
+      "tags": [
+        "art",
+        "paint",
+        "brush",
+        "painting",
+        "draw",
+        "design",
+        "creative"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "attach",
+      "library": "custom",
+      "tags": [
+        "paperclip",
+        "clip",
+        "attachment"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "backspace",
+      "library": "custom",
+      "tags": [
+        "backspace",
+        "delete",
+        "remove",
+        "clear",
+        "erase"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "bag",
+      "library": "custom",
+      "tags": [
+        "bag",
+        "shopping",
+        "cart",
+        "ecommerce",
+        "buy",
+        "purchase",
+        "store"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "bank",
+      "library": "custom",
+      "tags": [
+        "finance",
+        "money",
+        "usd",
+        "loan",
+        "mortgage",
+        "account",
+        "capital"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "basketball",
+      "library": "custom",
+      "tags": [
+        "basketball",
+        "ball",
+        "game",
+        "sports",
+        "play"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "basketball_hoop",
+      "library": "custom",
+      "tags": [
+        "basketball_hoop",
+        "basketball",
+        "hoop",
+        "sports",
+        "game",
+        "play",
+        "ball"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "bell",
+      "library": "custom",
+      "tags": [
+        "notification",
+        "alert",
+        "reminder"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "bell_alt",
+      "library": "custom",
+      "tags": [
+        "notification",
+        "alert",
+        "reminder"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "bluetooth",
+      "library": "custom",
+      "tags": [
+        "wireless",
+        "connection",
+        "device",
+        "audio",
+        "music",
+        "sound"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "bookmark",
+      "library": "custom",
+      "tags": [
+        "bookmark",
+        "save",
+        "star"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "box",
+      "library": "custom",
+      "tags": [
+        "package",
+        "shipping",
+        "delivery",
+        "container"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "brain",
+      "library": "custom",
+      "tags": [
+        "brain",
+        "mind",
+        "intelligent",
+        "cognitive",
+        "smart",
+        "intelligence"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "broadcast",
+      "library": "custom",
+      "tags": [
+        "broadcast",
+        "signal",
+        "wifi",
+        "internet",
+        "connection",
+        "network",
+        "wireless"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "broadcast_alt",
+      "library": "custom",
+      "tags": [
+        "broadcast_alt",
+        "signal",
+        "wifi",
+        "internet",
+        "connection",
+        "network",
+        "wireless"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "bug",
+      "library": "custom",
+      "tags": [
+        "bug",
+        "error",
+        "problem",
+        "issue",
+        "warning",
+        "alert"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "building",
+      "library": "custom",
+      "tags": [
+        "building",
+        "architecture",
+        "structure",
+        "house",
+        "home",
+        "residence",
+        "office"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "calculator",
+      "library": "custom",
+      "tags": [
+        "math",
+        "calc",
+        "calculate",
+        "calculator"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "calendar",
+      "library": "custom",
+      "tags": [
+        "calendar",
+        "date",
+        "event",
+        "time",
+        "day",
+        "month",
+        "year"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "calendar_alt",
+      "library": "custom",
+      "tags": [
+        "calendar_alt",
+        "calendar",
+        "date",
+        "time",
+        "schedule",
+        "event",
+        "appointment"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "camera",
+      "library": "custom",
+      "tags": [
+        "camera",
+        "photo",
+        "picture",
+        "video",
+        "record",
+        "capture"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "captions",
+      "library": "custom",
+      "tags": [
+        "captions",
+        "subtitles",
+        "text",
+        "language"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "capture",
+      "library": "custom",
+      "tags": [
+        "capture",
+        "photo",
+        "camera"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "card",
+      "library": "custom",
+      "tags": [
+        "card",
+        "credit",
+        "debit",
+        "payment",
+        "money",
+        "bank",
+        "finance"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "cart",
+      "library": "custom",
+      "tags": [
+        "cart",
+        "shopping",
+        "buy",
+        "checkout",
+        "purchase"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "cast",
+      "library": "custom",
+      "tags": [
+        "cast",
+        "chromecast",
+        "stream",
+        "tv",
+        "video"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "cast",
+      "library": "custom",
+      "tags": [
+        "cast",
+        "screen",
+        "monitor",
+        "display",
+        "broadcast"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "cast_alt",
+      "library": "custom",
+      "tags": [
+        "cast",
+        "screen",
+        "monitor",
+        "display",
+        "broadcast"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "caution",
+      "library": "custom",
+      "tags": [
+        "warning",
+        "alert"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "center",
+      "library": "custom",
+      "tags": [
+        "center",
+        "align",
+        "middle",
+        "position",
+        "focus"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "channels_alt",
+      "library": "custom",
+      "tags": [
+        "television",
+        "screen",
+        "monitor",
+        "display",
+        "broadcast"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "chat",
+      "library": "custom",
+      "tags": [
+        "chat",
+        "message",
+        "talk",
+        "communication",
+        "conversation",
+        "dialogue",
+        "speak"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "check",
+      "library": "custom",
+      "tags": [
+        "done",
+        "success",
+        "ok",
+        "completed",
+        "finished",
+        "tick"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "check_alt",
+      "library": "custom",
+      "tags": [
+        "check",
+        "alt",
+        "success",
+        "done",
+        "complete",
+        "finish",
+        "tick"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "check_circle_outline",
+      "library": "custom",
+      "tags": [
+        "check",
+        "circle",
+        "outline",
+        "success",
+        "done",
+        "complete",
+        "finish",
+        "tick"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "city",
+      "library": "custom",
+      "tags": [
+        "city",
+        "buildings",
+        "urban",
+        "town",
+        "architecture",
+        "skyscraper"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "clear",
+      "library": "custom",
+      "tags": [
+        "cross",
+        "x",
+        "exit",
+        "delete",
+        "remove",
+        "close"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "clock",
+      "library": "custom",
+      "tags": [
+        "time",
+        "watch"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "close",
+      "library": "custom",
+      "tags": [
+        "cross",
+        "x",
+        "exit",
+        "delete",
+        "remove",
+        "clear"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "cloud",
+      "library": "custom",
+      "tags": [
+        "cloud",
+        "weather",
+        "sky",
+        "storage",
+        "data",
+        "computing",
+        "hosting"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "code",
+      "library": "custom",
+      "tags": [
+        "programming",
+        "development"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "comment",
+      "library": "custom",
+      "tags": [
+        "comment",
+        "chat",
+        "message",
+        "talk",
+        "speak"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "compass",
+      "library": "custom",
+      "tags": [
+        "compass",
+        "navigation",
+        "direction",
+        "map",
+        "travel",
+        "route",
+        "gps"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "compass_alt",
+      "library": "custom",
+      "tags": [
+        "compass_alt",
+        "navigation",
+        "direction",
+        "map",
+        "travel",
+        "route",
+        "gps"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "configure",
+      "library": "custom",
+      "tags": [
+        "settings",
+        "cog",
+        "gear",
+        "preferences",
+        "options"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "construction",
+      "library": "custom",
+      "tags": [
+        "construction",
+        "building",
+        "work"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "copy",
+      "library": "custom",
+      "tags": [
+        "copy",
+        "duplicate",
+        "clone",
+        "replicate",
+        "paste",
+        "clipboard"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "crop",
+      "library": "custom",
+      "tags": [
+        "crop",
+        "resize",
+        "expand",
+        "shrink",
+        "scale",
+        "size"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "cross_box",
+      "library": "custom",
+      "tags": [
+        "close",
+        "delete",
+        "remove",
+        "x",
+        "clear",
+        "box"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "crypto",
+      "library": "custom",
+      "tags": [
+        "bitcoin",
+        "btc",
+        "cryptocurrency",
+        "crypto",
+        "currency"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "cube",
+      "library": "custom",
+      "tags": [
+        "cube",
+        "box",
+        "square",
+        "shape",
+        "3d",
+        "object",
+        "geometry"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "dashboard",
+      "library": "custom",
+      "tags": [
+        "home",
+        "house",
+        "overview",
+        "stats",
+        "statistics",
+        "analytics"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "dashboard_alt",
+      "library": "custom",
+      "tags": [
+        "dashboard",
+        "screen",
+        "monitor",
+        "display",
+        "data",
+        "analytics"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "database",
+      "library": "custom",
+      "tags": [
+        "database",
+        "storage",
+        "server",
+        "data",
+        "sql",
+        "mysql",
+        "postgresql"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "dialpad",
+      "library": "custom",
+      "tags": [
+        "dialpad",
+        "phone",
+        "call",
+        "number",
+        "keypad",
+        "telephone",
+        "mobile"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "dice_1",
+      "library": "custom",
+      "tags": [
+        "game",
+        "roll"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "dice_2",
+      "library": "custom",
+      "tags": [
+        "game",
+        "roll"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "dice_3",
+      "library": "custom",
+      "tags": [
+        "game",
+        "roll"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "dice_4",
+      "library": "custom",
+      "tags": [
+        "game",
+        "roll"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "dice_5",
+      "library": "custom",
+      "tags": [
+        "game",
+        "roll"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "dice_6",
+      "library": "custom",
+      "tags": [
+        "game",
+        "roll"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "documents",
+      "library": "custom",
+      "tags": [
+        "documents",
+        "files",
+        "paper",
+        "sheets",
+        "data",
+        "information",
+        "records"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "dots_horizontal",
+      "library": "custom",
+      "tags": [
+        "more"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "dots_vertical",
+      "library": "custom",
+      "tags": [
+        "more"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "download",
+      "library": "custom",
+      "tags": [
+        "download",
+        "save",
+        "cloud"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "dropbox",
+      "library": "custom",
+      "tags": [
+        "cloud",
+        "storage",
+        "file",
+        "folder",
+        "dropbox"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "dropdown",
+      "library": "custom",
+      "tags": [
+        "arrow",
+        "down",
+        "select",
+        "menu",
+        "options"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "edit",
+      "library": "custom",
+      "tags": [
+        "edit",
+        "pencil",
+        "write",
+        "change",
+        "modify"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "email",
+      "library": "custom",
+      "tags": [
+        "mail",
+        "email",
+        "contact",
+        "message"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "enter",
+      "library": "custom",
+      "tags": [
+        "arrow"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "error",
+      "library": "custom",
+      "tags": [
+        "error",
+        "alert",
+        "warning",
+        "problem",
+        "issue",
+        "bug",
+        "fail",
+        "failure",
+        "wrong",
+        "incorrect",
+        "cross",
+        "x"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "exit",
+      "library": "custom",
+      "tags": [
+        "cross",
+        "close",
+        "x",
+        "exit",
+        "leave",
+        "quit",
+        "end"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "facebook",
+      "library": "custom",
+      "tags": [
+        "social",
+        "network",
+        "facebook"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "facebook_alt",
+      "library": "custom",
+      "tags": [
+        "social",
+        "network",
+        "facebook",
+        "alt"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "feedback",
+      "library": "custom",
+      "tags": [
+        "feedback",
+        "chat",
+        "message",
+        "support",
+        "communication",
+        "talk"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "feedback_alt",
+      "library": "custom",
+      "tags": [
+        "feedback",
+        "comment",
+        "chat",
+        "message",
+        "communication",
+        "support",
+        "talk"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "figma",
+      "library": "custom",
+      "tags": [
+        "figma"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "file",
+      "library": "custom",
+      "tags": [
+        "document",
+        "paper",
+        "page",
+        "sheet",
+        "text",
+        "write",
+        "record"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "file_error",
+      "library": "custom",
+      "tags": [
+        "file",
+        "error"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "film",
+      "library": "custom",
+      "tags": [
+        "film",
+        "video",
+        "movie"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "fire",
+      "library": "custom",
+      "tags": [
+        "fire",
+        "flame",
+        "hot",
+        "burn",
+        "heat"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "flight",
+      "library": "custom",
+      "tags": [
+        "airplane",
+        "fly",
+        "plane",
+        "travel"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "flowchart",
+      "library": "custom",
+      "tags": [
+        "flowchart",
+        "diagram",
+        "chart"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "flower",
+      "library": "custom",
+      "tags": [
+        "nature",
+        "plant",
+        "garden",
+        "spring",
+        "summer"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "folder",
+      "library": "custom",
+      "tags": [
+        "folder"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "football",
+      "library": "custom",
+      "tags": [
+        "football",
+        "soccer",
+        "ball",
+        "game",
+        "sports",
+        "play"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "fullscreen",
+      "library": "custom",
+      "tags": [
+        "fullscreen",
+        "expand",
+        "enlarge",
+        "maximize",
+        "fit"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "gear",
+      "library": "custom",
+      "tags": [
+        "settings",
+        "options",
+        "preferences",
+        "configure"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "gem",
+      "library": "custom",
+      "tags": [
+        "gem",
+        "diamond",
+        "jewel",
+        "crystal",
+        "treasure",
+        "valuable",
+        "ruby",
+        "premium"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "ghost_play",
+      "library": "custom",
+      "tags": [
+        "video",
+        "play",
+        "start",
+        "begin",
+        "ghost"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "gift",
+      "library": "custom",
+      "tags": [
+        "gift",
+        "present",
+        "box",
+        "ribbon"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "github",
+      "library": "custom",
+      "tags": [
+        "social",
+        "github"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "globe",
+      "library": "custom",
+      "tags": [
+        "world",
+        "earth",
+        "planet",
+        "map"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "google_drive",
+      "library": "custom",
+      "tags": [
+        "google",
+        "drive",
+        "cloud",
+        "storage",
+        "files"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "grid",
+      "library": "custom",
+      "tags": [
+        "grid",
+        "layout",
+        "table",
+        "matrix",
+        "pattern"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "grip",
+      "library": "custom",
+      "tags": [
+        "grip",
+        "drag",
+        "move",
+        "reorder",
+        "resize"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "halftone",
+      "library": "custom",
+      "tags": [
+        "dots",
+        "circles",
+        "halftone",
+        "pattern",
+        "texture"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "headphones",
+      "library": "custom",
+      "tags": [
+        "audio",
+        "music",
+        "sound",
+        "listen",
+        "earphones"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "heart",
+      "library": "custom",
+      "tags": [
+        "favorite",
+        "like",
+        "love"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "help",
+      "library": "custom",
+      "tags": [
+        "help",
+        "question",
+        "mark",
+        "support",
+        "information"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "history",
+      "library": "custom",
+      "tags": [
+        "history",
+        "time",
+        "clock"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "history",
+      "library": "custom",
+      "tags": [
+        "history",
+        "time",
+        "clock",
+        "schedule",
+        "calendar",
+        "date",
+        "event",
+        "back"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "hive",
+      "library": "custom",
+      "tags": [
+        "hive",
+        "network",
+        "internet",
+        "connection",
+        "wifi",
+        "hexagon",
+        "grid",
+        "tesselation"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "home",
+      "library": "custom",
+      "tags": [
+        "house"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "home_alt",
+      "library": "custom",
+      "tags": [
+        "house"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "home_alt_2",
+      "library": "custom",
+      "tags": [
+        "home_alt_2",
+        "home",
+        "house",
+        "residence",
+        "building",
+        "architecture",
+        "structure"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "id",
+      "library": "custom",
+      "tags": [
+        "role",
+        "shield",
+        "security",
+        "protection",
+        "secure",
+        "safety",
+        "guard",
+        "defence",
+        "person",
+        "square"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "info",
+      "library": "custom",
+      "tags": [
+        "information",
+        "details",
+        "help",
+        "question",
+        "mark"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "instagram",
+      "library": "custom",
+      "tags": [
+        "instagram",
+        "social",
+        "media"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "invite",
+      "library": "custom",
+      "tags": [
+        "add",
+        "user",
+        "plus"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "invoice",
+      "library": "custom",
+      "tags": [
+        "bill",
+        "invoice",
+        "payment",
+        "receipt",
+        "statement"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "journal",
+      "library": "custom",
+      "tags": [
+        "journal",
+        "notebook",
+        "book",
+        "diary",
+        "write",
+        "record"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "key",
+      "library": "custom",
+      "tags": [
+        "password",
+        "security",
+        "access",
+        "login",
+        "unlock"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "keyboard",
+      "library": "custom",
+      "tags": [
+        "input",
+        "text",
+        "type",
+        "write",
+        "key",
+        "board",
+        "keyboard"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "keypad",
+      "library": "custom",
+      "tags": [
+        "keyboard",
+        "keypad",
+        "numbers",
+        "numpad",
+        "calculator",
+        "math"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "laptop",
+      "library": "custom",
+      "tags": [
+        "computer",
+        "pc",
+        "mac",
+        "apple",
+        "windows",
+        "linux",
+        "desktop",
+        "work",
+        "office",
+        "home",
+        "device",
+        "machine",
+        "electronics",
+        "technology"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "layers",
+      "library": "custom",
+      "tags": [],
+      "category": "Custom"
+    },
+    {
+      "key": "layout_columns",
+      "library": "custom",
+      "tags": [
+        "layout",
+        "columns",
+        "grid",
+        "table"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "layout_rows",
+      "library": "custom",
+      "tags": [
+        "layout",
+        "rows",
+        "grid",
+        "table"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "leaf",
+      "library": "custom",
+      "tags": [
+        "plant",
+        "nature",
+        "eco",
+        "environment",
+        "ecology",
+        "green",
+        "leaf"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "light_bulb",
+      "library": "custom",
+      "tags": [
+        "light",
+        "bulb",
+        "idea",
+        "inspiration"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "lightning",
+      "library": "custom",
+      "tags": [
+        "lightning",
+        "electricity",
+        "power",
+        "energy",
+        "electric",
+        "charge",
+        "thunder"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "lightning_alt",
+      "library": "custom",
+      "tags": [
+        "lightning_alt",
+        "lightning",
+        "electricity",
+        "energy",
+        "power",
+        "electric",
+        "charge"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "link",
+      "library": "custom",
+      "tags": [
+        "link",
+        "url",
+        "hyperlink",
+        "connect",
+        "anchor",
+        "href"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "link_external",
+      "library": "custom",
+      "tags": [
+        "link",
+        "external",
+        "url",
+        "web",
+        "internet",
+        "newtab"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "linkedin",
+      "library": "custom",
+      "tags": [
+        "social",
+        "linkedin"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "list",
+      "library": "custom",
+      "tags": [
+        "list",
+        "menu",
+        "order",
+        "bullet",
+        "item"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "loading",
+      "library": "custom",
+      "tags": [
+        "spinner",
+        "refresh",
+        "reload",
+        "sync",
+        "wait",
+        "loading"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "location",
+      "library": "custom",
+      "tags": [
+        "location",
+        "map",
+        "pin",
+        "gps"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "lock",
+      "library": "custom",
+      "tags": [
+        "lock",
+        "secure",
+        "password",
+        "protect",
+        "safe"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "mail",
+      "library": "custom",
+      "tags": [
+        "email",
+        "message",
+        "letter",
+        "envelope"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "map",
+      "library": "custom",
+      "tags": [
+        "map",
+        "location",
+        "navigation",
+        "travel",
+        "route",
+        "gps",
+        "earth"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "measure",
+      "library": "custom",
+      "tags": [
+        "measure",
+        "ruler",
+        "scale",
+        "size",
+        "length",
+        "distance",
+        "design"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "medium",
+      "library": "custom",
+      "tags": [
+        "medium"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "megaphone",
+      "library": "custom",
+      "tags": [
+        "phone",
+        "call",
+        "telephone",
+        "communication",
+        "mega",
+        "loud",
+        "volume"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "menu",
+      "library": "custom",
+      "tags": [
+        "hamburger",
+        "nav",
+        "navigation",
+        "list",
+        "menu_alt"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "menu_alt",
+      "library": "custom",
+      "tags": [
+        "hamburger",
+        "nav",
+        "navigation",
+        "list",
+        "menu"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "merchant",
+      "library": "custom",
+      "tags": [
+        "business",
+        "commerce",
+        "store",
+        "shop",
+        "retail"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "messages",
+      "library": "custom",
+      "tags": [
+        "chat",
+        "communication",
+        "conversation",
+        "inbox"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "metrics",
+      "library": "custom",
+      "tags": [
+        "graph",
+        "numbers",
+        "math",
+        "business",
+        "chart"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "microphone",
+      "library": "custom",
+      "tags": [
+        "audio",
+        "sound",
+        "record"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "microphone_alt",
+      "library": "custom",
+      "tags": [
+        "audio",
+        "sound",
+        "voice",
+        "record",
+        "mic",
+        "microphone"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "minus",
+      "library": "custom",
+      "tags": [
+        "subtract",
+        "remove",
+        "delete",
+        "hide"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "missing_image",
+      "library": "custom",
+      "tags": [
+        "missing_image",
+        "image",
+        "photo",
+        "picture",
+        "photography",
+        "gallery",
+        "picture"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "modem",
+      "library": "custom",
+      "tags": [
+        "modem",
+        "router",
+        "internet",
+        "connection",
+        "network",
+        "device",
+        "wifi"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "modem_alt",
+      "library": "custom",
+      "tags": [
+        "modem_alt",
+        "router",
+        "internet",
+        "connection",
+        "network",
+        "device",
+        "wifi"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "monitor",
+      "library": "custom",
+      "tags": [
+        "monitor",
+        "screen",
+        "display",
+        "computer",
+        "desktop",
+        "monitor",
+        "device"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "moon",
+      "library": "custom",
+      "tags": [
+        "moon",
+        "night",
+        "dark",
+        "sleep",
+        "astronomy"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "motorbike",
+      "library": "custom",
+      "tags": [
+        "vehicle",
+        "motorbike",
+        "motorcycle",
+        "bike",
+        "transport",
+        "sports"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "mouse",
+      "library": "custom",
+      "tags": [
+        "click",
+        "cursor",
+        "arrow",
+        "pointer"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "mug",
+      "library": "custom",
+      "tags": [
+        "mug",
+        "coffee",
+        "tea",
+        "drink",
+        "beverage",
+        "cup",
+        "mug"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "music",
+      "library": "custom",
+      "tags": [
+        "audio",
+        "sound",
+        "song",
+        "tune"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "mute",
+      "library": "custom",
+      "tags": [
+        "mute",
+        "sound",
+        "audio"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "navigation",
+      "library": "custom",
+      "tags": [
+        "navigation",
+        "direction",
+        "compass",
+        "map",
+        "route",
+        "travel",
+        "gps"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "navigation_alt",
+      "library": "custom",
+      "tags": [
+        "navigation_alt",
+        "direction",
+        "compass",
+        "map",
+        "route",
+        "travel",
+        "gps"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "new_file",
+      "library": "custom",
+      "tags": [
+        "new",
+        "file",
+        "create",
+        "add",
+        "document",
+        "text"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "new_folder",
+      "library": "custom",
+      "tags": [
+        "new",
+        "folder",
+        "create",
+        "add",
+        "directory",
+        "file"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "next",
+      "library": "custom",
+      "tags": [
+        "arrow",
+        "right",
+        "forward",
+        "next"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "nodes",
+      "library": "custom",
+      "tags": [
+        "nodes",
+        "network",
+        "connections",
+        "graph",
+        "diagram",
+        "flow"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "not_allowed",
+      "library": "custom",
+      "tags": [
+        "not_allowed",
+        "forbidden",
+        "stop",
+        "pause",
+        "square",
+        "rectangle"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "notebook",
+      "library": "custom",
+      "tags": [
+        "notebook",
+        "journal",
+        "book",
+        "diary",
+        "write",
+        "record"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "notepad",
+      "library": "custom",
+      "tags": [
+        "notepad",
+        "journal",
+        "book",
+        "diary",
+        "write",
+        "record"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "open",
+      "library": "custom",
+      "tags": [
+        "arrow",
+        "right",
+        "forward"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "paint",
+      "library": "custom",
+      "tags": [
+        "paint",
+        "color",
+        "brush",
+        "art",
+        "painting",
+        "draw",
+        "creative"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "pause",
+      "library": "custom",
+      "tags": [
+        "pause",
+        "stop",
+        "pause",
+        "square",
+        "rectangle"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "pencil",
+      "library": "custom",
+      "tags": [
+        "edit",
+        "write",
+        "update",
+        "change"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "people",
+      "library": "custom",
+      "tags": [
+        "social",
+        "team",
+        "users",
+        "friends",
+        "community",
+        "group"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "phone",
+      "library": "custom",
+      "tags": [
+        "call",
+        "contact",
+        "ring",
+        "telephone"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "pie",
+      "library": "custom",
+      "tags": [
+        "pie",
+        "chart",
+        "graph",
+        "data",
+        "statistics"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "pie_graph",
+      "library": "custom",
+      "tags": [
+        "pie",
+        "graph",
+        "chart",
+        "data",
+        "analytics"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "pin",
+      "library": "custom",
+      "tags": [
+        "pin",
+        "location",
+        "place",
+        "marker"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "play",
+      "library": "custom",
+      "tags": [
+        "play",
+        "start",
+        "begin",
+        "triangle",
+        "arrow"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "plug",
+      "library": "custom",
+      "tags": [
+        "plug",
+        "power",
+        "electricity",
+        "energy",
+        "socket",
+        "integration"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "plus",
+      "library": "custom",
+      "tags": [
+        "add",
+        "new",
+        "create",
+        "expand"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "present",
+      "library": "custom",
+      "tags": [
+        "present",
+        "gift",
+        "surprise",
+        "celebrate",
+        "birthday"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "previous",
+      "library": "custom",
+      "tags": [
+        "back",
+        "previous",
+        "arrow",
+        "left",
+        "backwards",
+        "backtrack",
+        "return"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "profile",
+      "library": "custom",
+      "tags": [
+        "profile",
+        "user",
+        "account"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "puzzle",
+      "library": "custom",
+      "tags": [
+        "puzzle",
+        "game",
+        "piece"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "puzzle_alt",
+      "library": "custom",
+      "tags": [
+        "puzzle",
+        "game",
+        "challenge",
+        "problem",
+        "solution",
+        "strategy",
+        "integrations",
+        "plugins"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "radio",
+      "library": "custom",
+      "tags": [
+        "music",
+        "audio",
+        "sound",
+        "radio",
+        "podcast"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "reading",
+      "library": "custom",
+      "tags": [
+        "reading",
+        "book",
+        "study",
+        "learn",
+        "education",
+        "knowledge",
+        "library"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "reddit",
+      "library": "custom",
+      "tags": [
+        "social",
+        "media",
+        "network",
+        "community"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "reel",
+      "library": "custom",
+      "tags": [
+        "film",
+        "movie",
+        "cinema",
+        "video"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "refresh",
+      "library": "custom",
+      "tags": [
+        "reload",
+        "sync",
+        "update",
+        "spin"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "remove_user",
+      "library": "custom",
+      "tags": [
+        "remove",
+        "user"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "robot",
+      "library": "custom",
+      "tags": [
+        "bot",
+        "robot",
+        "android",
+        "machine"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "role",
+      "library": "custom",
+      "tags": [
+        "role",
+        "shield",
+        "security",
+        "protection",
+        "secure",
+        "safety",
+        "guard",
+        "defence",
+        "person",
+        "square"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "router",
+      "library": "custom",
+      "tags": [
+        "router",
+        "network",
+        "internet",
+        "connection",
+        "wifi"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "save",
+      "library": "custom",
+      "tags": [
+        "save",
+        "download",
+        "disk",
+        "floppy",
+        "file"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "scanner",
+      "library": "custom",
+      "tags": [
+        "scanner",
+        "scan",
+        "device",
+        "hardware",
+        "barcode"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "search",
+      "library": "custom",
+      "tags": [
+        "find",
+        "magnifying glass"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "send",
+      "library": "custom",
+      "tags": [
+        "send",
+        "mail",
+        "message",
+        "paper airplane",
+        "email"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "server",
+      "library": "custom",
+      "tags": [
+        "server",
+        "cloud",
+        "data",
+        "storage",
+        "hosting",
+        "computing"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "settings",
+      "library": "custom",
+      "tags": [
+        "settings",
+        "gear",
+        "cog",
+        "preferences",
+        "options"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "share",
+      "library": "custom",
+      "tags": [
+        "share",
+        "arrow",
+        "up",
+        "top",
+        "upload"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "shop",
+      "library": "custom",
+      "tags": [
+        "shop",
+        "store",
+        "ecommerce",
+        "buy",
+        "purchase",
+        "cart",
+        "shopping"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "shopping",
+      "library": "custom",
+      "tags": [
+        "shopping",
+        "cart",
+        "buy",
+        "checkout",
+        "purchase"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "shrink",
+      "library": "custom",
+      "tags": [
+        "shrink",
+        "resize",
+        "expand",
+        "crop",
+        "scale",
+        "size"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "slack",
+      "library": "custom",
+      "tags": [
+        "social",
+        "slack"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "smartphone",
+      "library": "custom",
+      "tags": [],
+      "category": "Custom"
+    },
+    {
+      "key": "snapchat",
+      "library": "custom",
+      "tags": [
+        "social",
+        "network",
+        "snapchat"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "snow",
+      "library": "custom",
+      "tags": [
+        "weather",
+        "cold",
+        "winter",
+        "snowflake",
+        "snowing",
+        "snowy"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "sort",
+      "library": "custom",
+      "tags": [
+        "sort",
+        "filter",
+        "order",
+        "arrange",
+        "organize"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "star",
+      "library": "custom",
+      "tags": [
+        "star",
+        "favorite",
+        "like",
+        "rate",
+        "rank"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "star_active",
+      "library": "custom",
+      "tags": [
+        "star",
+        "favorite",
+        "like",
+        "rate",
+        "rank"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "stop",
+      "library": "custom",
+      "tags": [
+        "block",
+        "forbid",
+        "prohibit",
+        "restrict",
+        "square",
+        "stop"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "sun",
+      "library": "custom",
+      "tags": [
+        "light",
+        "day"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "support",
+      "library": "custom",
+      "tags": [
+        "help",
+        "support",
+        "question",
+        "faq",
+        "information",
+        "info"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "swatch",
+      "library": "custom",
+      "tags": [
+        "color",
+        "palette"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "swirl",
+      "library": "custom",
+      "tags": [
+        "swirl",
+        "circle",
+        "loop",
+        "round",
+        "spiral",
+        "curve",
+        "twist",
+        "vortex"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "table",
+      "library": "custom",
+      "tags": [
+        "table",
+        "data",
+        "grid",
+        "spreadsheet",
+        "list"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "tag",
+      "library": "custom",
+      "tags": [
+        "tag",
+        "label",
+        "price",
+        "offer",
+        "discount",
+        "sale"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "target",
+      "library": "custom",
+      "tags": [
+        "target",
+        "goal",
+        "aim",
+        "focus",
+        "bullseye"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "task",
+      "library": "custom",
+      "tags": [
+        "todo",
+        "task",
+        "list",
+        "checklist",
+        "assignment",
+        "job"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "test",
+      "library": "custom",
+      "tags": [],
+      "category": "Custom"
+    },
+    {
+      "key": "thermometer",
+      "library": "custom",
+      "tags": [
+        "temperature",
+        "hot",
+        "cold",
+        "weather",
+        "heat",
+        "warm"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "timer",
+      "library": "custom",
+      "tags": [
+        "clock",
+        "time",
+        "watch"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "train",
+      "library": "custom",
+      "tags": [
+        "transport"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "trash",
+      "library": "custom",
+      "tags": [
+        "delete",
+        "remove",
+        "bin",
+        "garbage",
+        "discard",
+        "dump",
+        "junk",
+        "waste"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "trash_alt",
+      "library": "custom",
+      "tags": [
+        "delete",
+        "remove",
+        "bin",
+        "garbage",
+        "discard",
+        "dump",
+        "junk",
+        "waste"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "trees",
+      "library": "custom",
+      "tags": [
+        "trees",
+        "forest",
+        "nature",
+        "environment",
+        "plants",
+        "woods",
+        "green",
+        "ecology"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "triangle",
+      "library": "custom",
+      "tags": [
+        "triangle",
+        "arrow",
+        "direction",
+        "up",
+        "top"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "trophy",
+      "library": "custom",
+      "tags": [
+        "trophy",
+        "award",
+        "prize",
+        "winner",
+        "champion",
+        "medal"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "truck",
+      "library": "custom",
+      "tags": [
+        "car",
+        "delivery",
+        "logistics",
+        "transportation"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "tv",
+      "library": "custom",
+      "tags": [
+        "television",
+        "screen",
+        "monitor",
+        "media"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "tv_add",
+      "library": "custom",
+      "tags": [
+        "television",
+        "screen",
+        "monitor",
+        "display"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "tv_alt",
+      "library": "custom",
+      "tags": [
+        "television",
+        "screen",
+        "monitor",
+        "display",
+        "media"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "twitter",
+      "library": "custom",
+      "tags": [
+        "twitter",
+        "social",
+        "media"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "umbrella",
+      "library": "custom",
+      "tags": [
+        "rain",
+        "weather",
+        "protection",
+        "shelter"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "unlock",
+      "library": "custom",
+      "tags": [
+        "unlock",
+        "open",
+        "access",
+        "free",
+        "release"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "upload",
+      "library": "custom",
+      "tags": [
+        "upload",
+        "cloud"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "upload_success",
+      "library": "custom",
+      "tags": [
+        "upload",
+        "cloud",
+        "success"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "usd",
+      "library": "custom",
+      "tags": [
+        "usd",
+        "dollar",
+        "money",
+        "currency",
+        "cash"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "user",
+      "library": "custom",
+      "tags": [
+        "person",
+        "profile"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "video",
+      "library": "custom",
+      "tags": [
+        "movie",
+        "film",
+        "cinema"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "volume",
+      "library": "custom",
+      "tags": [
+        "volume",
+        "audio",
+        "sound",
+        "speaker",
+        "music",
+        "control"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "vue",
+      "library": "custom",
+      "tags": [
+        "vue",
+        "framework",
+        "javascript",
+        "frontend",
+        "development"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "wallet",
+      "library": "custom",
+      "tags": [
+        "wallet",
+        "money",
+        "cash",
+        "finance",
+        "payment",
+        "buy",
+        "purchase"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "warning",
+      "library": "custom",
+      "tags": [
+        "alert",
+        "attention",
+        "caution",
+        "error",
+        "exclamation",
+        "problem",
+        "triangle",
+        "warning"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "wave",
+      "library": "custom",
+      "tags": [
+        "water",
+        "sea",
+        "ocean",
+        "wave",
+        "ripple",
+        "liquid"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "wifi_alt",
+      "library": "custom",
+      "tags": [
+        "wifi_alt",
+        "signal",
+        "wifi",
+        "internet",
+        "connection",
+        "network",
+        "wireless"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "window",
+      "library": "custom",
+      "tags": [
+        "window",
+        "browser",
+        "tab"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "windows",
+      "library": "custom",
+      "tags": [
+        "windows",
+        "browser",
+        "tab"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "workout",
+      "library": "custom",
+      "tags": [
+        "workout",
+        "exercise",
+        "fitness",
+        "gym",
+        "training"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "write",
+      "library": "custom",
+      "tags": [
+        "write",
+        "edit",
+        "pencil",
+        "pen"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "yinyang",
+      "library": "custom",
+      "tags": [
+        "balance",
+        "harmony",
+        "opposite",
+        "tao",
+        "yingyang"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "youtube",
+      "library": "custom",
+      "tags": [
+        "youtube",
+        "video",
+        "social",
+        "media"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "zoom_in",
+      "library": "custom",
+      "tags": [
+        "zoom in",
+        "magnify",
+        "enlarge",
+        "expand",
+        "scale"
+      ],
+      "category": "Custom"
+    },
+    {
+      "key": "zoom_out",
+      "library": "custom",
+      "tags": [
+        "zoom out",
+        "minify",
+        "reduce",
+        "shrink",
+        "scale down"
+      ],
+      "category": "Custom"
+    }
+  ],
+  "categories": [
+    {
+      "name": "Custom",
+      "icons": [
+        {
+          "key": "a11y",
+          "library": "custom",
+          "tags": [
+            "a11y",
+            "accessibility",
+            "wheelchair",
+            "disabled",
+            "handicap",
+            "access"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "a11y_alt",
+          "library": "custom",
+          "tags": [
+            "a11y_alt",
+            "accessibility",
+            "wheelchair",
+            "disability",
+            "handicap",
+            "disabled",
+            "inclusion"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "accessibility",
+          "library": "custom",
+          "tags": [
+            "accessibility",
+            "wheelchair",
+            "disabled",
+            "handicap",
+            "access"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "add_image",
+          "library": "custom",
+          "tags": [
+            "add image",
+            "add photo",
+            "add picture",
+            "upload image",
+            "upload photo",
+            "upload picture"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "add_photo",
+          "library": "custom",
+          "tags": [
+            "add photo",
+            "add image",
+            "add picture",
+            "upload photo",
+            "upload image",
+            "upload picture"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "add_video",
+          "library": "custom",
+          "tags": [
+            "video",
+            "add",
+            "plus",
+            "create",
+            "new"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "airplay",
+          "library": "custom",
+          "tags": [
+            "television",
+            "screen",
+            "monitor",
+            "display",
+            "broadcast",
+            "channels"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "analytics",
+          "library": "custom",
+          "tags": [
+            "analytics",
+            "chart",
+            "graph",
+            "data",
+            "report",
+            "statistics"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "apple",
+          "library": "custom",
+          "tags": [
+            "fruit",
+            "food",
+            "healthy"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "arrow_alt_down",
+          "library": "custom",
+          "tags": [],
+          "category": "Custom"
+        },
+        {
+          "key": "arrow_alt_left",
+          "library": "custom",
+          "tags": [],
+          "category": "Custom"
+        },
+        {
+          "key": "arrow_alt_right",
+          "library": "custom",
+          "tags": [],
+          "category": "Custom"
+        },
+        {
+          "key": "arrow_alt_up",
+          "library": "custom",
+          "tags": [],
+          "category": "Custom"
+        },
+        {
+          "key": "arrow_bottom_left",
+          "library": "custom",
+          "tags": [],
+          "category": "Custom"
+        },
+        {
+          "key": "arrow_bottom_right",
+          "library": "custom",
+          "tags": [],
+          "category": "Custom"
+        },
+        {
+          "key": "arrow_down",
+          "library": "custom",
+          "tags": [],
+          "category": "Custom"
+        },
+        {
+          "key": "arrow_left",
+          "library": "custom",
+          "tags": [],
+          "category": "Custom"
+        },
+        {
+          "key": "arrow_right",
+          "library": "custom",
+          "tags": [],
+          "category": "Custom"
+        },
+        {
+          "key": "arrow_top_left",
+          "library": "custom",
+          "tags": [],
+          "category": "Custom"
+        },
+        {
+          "key": "arrow_top_right",
+          "library": "custom",
+          "tags": [],
+          "category": "Custom"
+        },
+        {
+          "key": "arrow_up",
+          "library": "custom",
+          "tags": [],
+          "category": "Custom"
+        },
+        {
+          "key": "art",
+          "library": "custom",
+          "tags": [
+            "art",
+            "paint",
+            "brush",
+            "painting",
+            "draw",
+            "design",
+            "creative"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "attach",
+          "library": "custom",
+          "tags": [
+            "paperclip",
+            "clip",
+            "attachment"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "backspace",
+          "library": "custom",
+          "tags": [
+            "backspace",
+            "delete",
+            "remove",
+            "clear",
+            "erase"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "bag",
+          "library": "custom",
+          "tags": [
+            "bag",
+            "shopping",
+            "cart",
+            "ecommerce",
+            "buy",
+            "purchase",
+            "store"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "bank",
+          "library": "custom",
+          "tags": [
+            "finance",
+            "money",
+            "usd",
+            "loan",
+            "mortgage",
+            "account",
+            "capital"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "basketball",
+          "library": "custom",
+          "tags": [
+            "basketball",
+            "ball",
+            "game",
+            "sports",
+            "play"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "basketball_hoop",
+          "library": "custom",
+          "tags": [
+            "basketball_hoop",
+            "basketball",
+            "hoop",
+            "sports",
+            "game",
+            "play",
+            "ball"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "bell",
+          "library": "custom",
+          "tags": [
+            "notification",
+            "alert",
+            "reminder"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "bell_alt",
+          "library": "custom",
+          "tags": [
+            "notification",
+            "alert",
+            "reminder"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "bluetooth",
+          "library": "custom",
+          "tags": [
+            "wireless",
+            "connection",
+            "device",
+            "audio",
+            "music",
+            "sound"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "bookmark",
+          "library": "custom",
+          "tags": [
+            "bookmark",
+            "save",
+            "star"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "box",
+          "library": "custom",
+          "tags": [
+            "package",
+            "shipping",
+            "delivery",
+            "container"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "brain",
+          "library": "custom",
+          "tags": [
+            "brain",
+            "mind",
+            "intelligent",
+            "cognitive",
+            "smart",
+            "intelligence"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "broadcast",
+          "library": "custom",
+          "tags": [
+            "broadcast",
+            "signal",
+            "wifi",
+            "internet",
+            "connection",
+            "network",
+            "wireless"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "broadcast_alt",
+          "library": "custom",
+          "tags": [
+            "broadcast_alt",
+            "signal",
+            "wifi",
+            "internet",
+            "connection",
+            "network",
+            "wireless"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "bug",
+          "library": "custom",
+          "tags": [
+            "bug",
+            "error",
+            "problem",
+            "issue",
+            "warning",
+            "alert"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "building",
+          "library": "custom",
+          "tags": [
+            "building",
+            "architecture",
+            "structure",
+            "house",
+            "home",
+            "residence",
+            "office"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "calculator",
+          "library": "custom",
+          "tags": [
+            "math",
+            "calc",
+            "calculate",
+            "calculator"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "calendar",
+          "library": "custom",
+          "tags": [
+            "calendar",
+            "date",
+            "event",
+            "time",
+            "day",
+            "month",
+            "year"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "calendar_alt",
+          "library": "custom",
+          "tags": [
+            "calendar_alt",
+            "calendar",
+            "date",
+            "time",
+            "schedule",
+            "event",
+            "appointment"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "camera",
+          "library": "custom",
+          "tags": [
+            "camera",
+            "photo",
+            "picture",
+            "video",
+            "record",
+            "capture"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "captions",
+          "library": "custom",
+          "tags": [
+            "captions",
+            "subtitles",
+            "text",
+            "language"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "capture",
+          "library": "custom",
+          "tags": [
+            "capture",
+            "photo",
+            "camera"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "card",
+          "library": "custom",
+          "tags": [
+            "card",
+            "credit",
+            "debit",
+            "payment",
+            "money",
+            "bank",
+            "finance"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "cart",
+          "library": "custom",
+          "tags": [
+            "cart",
+            "shopping",
+            "buy",
+            "checkout",
+            "purchase"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "cast",
+          "library": "custom",
+          "tags": [
+            "cast",
+            "chromecast",
+            "stream",
+            "tv",
+            "video"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "cast",
+          "library": "custom",
+          "tags": [
+            "cast",
+            "screen",
+            "monitor",
+            "display",
+            "broadcast"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "cast_alt",
+          "library": "custom",
+          "tags": [
+            "cast",
+            "screen",
+            "monitor",
+            "display",
+            "broadcast"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "caution",
+          "library": "custom",
+          "tags": [
+            "warning",
+            "alert"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "center",
+          "library": "custom",
+          "tags": [
+            "center",
+            "align",
+            "middle",
+            "position",
+            "focus"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "channels_alt",
+          "library": "custom",
+          "tags": [
+            "television",
+            "screen",
+            "monitor",
+            "display",
+            "broadcast"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "chat",
+          "library": "custom",
+          "tags": [
+            "chat",
+            "message",
+            "talk",
+            "communication",
+            "conversation",
+            "dialogue",
+            "speak"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "check",
+          "library": "custom",
+          "tags": [
+            "done",
+            "success",
+            "ok",
+            "completed",
+            "finished",
+            "tick"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "check_alt",
+          "library": "custom",
+          "tags": [
+            "check",
+            "alt",
+            "success",
+            "done",
+            "complete",
+            "finish",
+            "tick"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "check_circle_outline",
+          "library": "custom",
+          "tags": [
+            "check",
+            "circle",
+            "outline",
+            "success",
+            "done",
+            "complete",
+            "finish",
+            "tick"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "city",
+          "library": "custom",
+          "tags": [
+            "city",
+            "buildings",
+            "urban",
+            "town",
+            "architecture",
+            "skyscraper"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "clear",
+          "library": "custom",
+          "tags": [
+            "cross",
+            "x",
+            "exit",
+            "delete",
+            "remove",
+            "close"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "clock",
+          "library": "custom",
+          "tags": [
+            "time",
+            "watch"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "close",
+          "library": "custom",
+          "tags": [
+            "cross",
+            "x",
+            "exit",
+            "delete",
+            "remove",
+            "clear"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "cloud",
+          "library": "custom",
+          "tags": [
+            "cloud",
+            "weather",
+            "sky",
+            "storage",
+            "data",
+            "computing",
+            "hosting"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "code",
+          "library": "custom",
+          "tags": [
+            "programming",
+            "development"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "comment",
+          "library": "custom",
+          "tags": [
+            "comment",
+            "chat",
+            "message",
+            "talk",
+            "speak"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "compass",
+          "library": "custom",
+          "tags": [
+            "compass",
+            "navigation",
+            "direction",
+            "map",
+            "travel",
+            "route",
+            "gps"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "compass_alt",
+          "library": "custom",
+          "tags": [
+            "compass_alt",
+            "navigation",
+            "direction",
+            "map",
+            "travel",
+            "route",
+            "gps"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "configure",
+          "library": "custom",
+          "tags": [
+            "settings",
+            "cog",
+            "gear",
+            "preferences",
+            "options"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "construction",
+          "library": "custom",
+          "tags": [
+            "construction",
+            "building",
+            "work"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "copy",
+          "library": "custom",
+          "tags": [
+            "copy",
+            "duplicate",
+            "clone",
+            "replicate",
+            "paste",
+            "clipboard"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "crop",
+          "library": "custom",
+          "tags": [
+            "crop",
+            "resize",
+            "expand",
+            "shrink",
+            "scale",
+            "size"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "cross_box",
+          "library": "custom",
+          "tags": [
+            "close",
+            "delete",
+            "remove",
+            "x",
+            "clear",
+            "box"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "crypto",
+          "library": "custom",
+          "tags": [
+            "bitcoin",
+            "btc",
+            "cryptocurrency",
+            "crypto",
+            "currency"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "cube",
+          "library": "custom",
+          "tags": [
+            "cube",
+            "box",
+            "square",
+            "shape",
+            "3d",
+            "object",
+            "geometry"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "dashboard",
+          "library": "custom",
+          "tags": [
+            "home",
+            "house",
+            "overview",
+            "stats",
+            "statistics",
+            "analytics"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "dashboard_alt",
+          "library": "custom",
+          "tags": [
+            "dashboard",
+            "screen",
+            "monitor",
+            "display",
+            "data",
+            "analytics"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "database",
+          "library": "custom",
+          "tags": [
+            "database",
+            "storage",
+            "server",
+            "data",
+            "sql",
+            "mysql",
+            "postgresql"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "dialpad",
+          "library": "custom",
+          "tags": [
+            "dialpad",
+            "phone",
+            "call",
+            "number",
+            "keypad",
+            "telephone",
+            "mobile"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "dice_1",
+          "library": "custom",
+          "tags": [
+            "game",
+            "roll"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "dice_2",
+          "library": "custom",
+          "tags": [
+            "game",
+            "roll"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "dice_3",
+          "library": "custom",
+          "tags": [
+            "game",
+            "roll"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "dice_4",
+          "library": "custom",
+          "tags": [
+            "game",
+            "roll"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "dice_5",
+          "library": "custom",
+          "tags": [
+            "game",
+            "roll"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "dice_6",
+          "library": "custom",
+          "tags": [
+            "game",
+            "roll"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "documents",
+          "library": "custom",
+          "tags": [
+            "documents",
+            "files",
+            "paper",
+            "sheets",
+            "data",
+            "information",
+            "records"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "dots_horizontal",
+          "library": "custom",
+          "tags": [
+            "more"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "dots_vertical",
+          "library": "custom",
+          "tags": [
+            "more"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "download",
+          "library": "custom",
+          "tags": [
+            "download",
+            "save",
+            "cloud"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "dropbox",
+          "library": "custom",
+          "tags": [
+            "cloud",
+            "storage",
+            "file",
+            "folder",
+            "dropbox"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "dropdown",
+          "library": "custom",
+          "tags": [
+            "arrow",
+            "down",
+            "select",
+            "menu",
+            "options"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "edit",
+          "library": "custom",
+          "tags": [
+            "edit",
+            "pencil",
+            "write",
+            "change",
+            "modify"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "email",
+          "library": "custom",
+          "tags": [
+            "mail",
+            "email",
+            "contact",
+            "message"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "enter",
+          "library": "custom",
+          "tags": [
+            "arrow"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "error",
+          "library": "custom",
+          "tags": [
+            "error",
+            "alert",
+            "warning",
+            "problem",
+            "issue",
+            "bug",
+            "fail",
+            "failure",
+            "wrong",
+            "incorrect",
+            "cross",
+            "x"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "exit",
+          "library": "custom",
+          "tags": [
+            "cross",
+            "close",
+            "x",
+            "exit",
+            "leave",
+            "quit",
+            "end"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "facebook",
+          "library": "custom",
+          "tags": [
+            "social",
+            "network",
+            "facebook"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "facebook_alt",
+          "library": "custom",
+          "tags": [
+            "social",
+            "network",
+            "facebook",
+            "alt"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "feedback",
+          "library": "custom",
+          "tags": [
+            "feedback",
+            "chat",
+            "message",
+            "support",
+            "communication",
+            "talk"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "feedback_alt",
+          "library": "custom",
+          "tags": [
+            "feedback",
+            "comment",
+            "chat",
+            "message",
+            "communication",
+            "support",
+            "talk"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "figma",
+          "library": "custom",
+          "tags": [
+            "figma"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "file",
+          "library": "custom",
+          "tags": [
+            "document",
+            "paper",
+            "page",
+            "sheet",
+            "text",
+            "write",
+            "record"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "file_error",
+          "library": "custom",
+          "tags": [
+            "file",
+            "error"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "film",
+          "library": "custom",
+          "tags": [
+            "film",
+            "video",
+            "movie"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "fire",
+          "library": "custom",
+          "tags": [
+            "fire",
+            "flame",
+            "hot",
+            "burn",
+            "heat"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "flight",
+          "library": "custom",
+          "tags": [
+            "airplane",
+            "fly",
+            "plane",
+            "travel"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "flowchart",
+          "library": "custom",
+          "tags": [
+            "flowchart",
+            "diagram",
+            "chart"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "flower",
+          "library": "custom",
+          "tags": [
+            "nature",
+            "plant",
+            "garden",
+            "spring",
+            "summer"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "folder",
+          "library": "custom",
+          "tags": [
+            "folder"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "football",
+          "library": "custom",
+          "tags": [
+            "football",
+            "soccer",
+            "ball",
+            "game",
+            "sports",
+            "play"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "fullscreen",
+          "library": "custom",
+          "tags": [
+            "fullscreen",
+            "expand",
+            "enlarge",
+            "maximize",
+            "fit"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "gear",
+          "library": "custom",
+          "tags": [
+            "settings",
+            "options",
+            "preferences",
+            "configure"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "gem",
+          "library": "custom",
+          "tags": [
+            "gem",
+            "diamond",
+            "jewel",
+            "crystal",
+            "treasure",
+            "valuable",
+            "ruby",
+            "premium"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "ghost_play",
+          "library": "custom",
+          "tags": [
+            "video",
+            "play",
+            "start",
+            "begin",
+            "ghost"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "gift",
+          "library": "custom",
+          "tags": [
+            "gift",
+            "present",
+            "box",
+            "ribbon"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "github",
+          "library": "custom",
+          "tags": [
+            "social",
+            "github"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "globe",
+          "library": "custom",
+          "tags": [
+            "world",
+            "earth",
+            "planet",
+            "map"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "google_drive",
+          "library": "custom",
+          "tags": [
+            "google",
+            "drive",
+            "cloud",
+            "storage",
+            "files"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "grid",
+          "library": "custom",
+          "tags": [
+            "grid",
+            "layout",
+            "table",
+            "matrix",
+            "pattern"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "grip",
+          "library": "custom",
+          "tags": [
+            "grip",
+            "drag",
+            "move",
+            "reorder",
+            "resize"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "halftone",
+          "library": "custom",
+          "tags": [
+            "dots",
+            "circles",
+            "halftone",
+            "pattern",
+            "texture"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "headphones",
+          "library": "custom",
+          "tags": [
+            "audio",
+            "music",
+            "sound",
+            "listen",
+            "earphones"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "heart",
+          "library": "custom",
+          "tags": [
+            "favorite",
+            "like",
+            "love"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "help",
+          "library": "custom",
+          "tags": [
+            "help",
+            "question",
+            "mark",
+            "support",
+            "information"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "history",
+          "library": "custom",
+          "tags": [
+            "history",
+            "time",
+            "clock"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "history",
+          "library": "custom",
+          "tags": [
+            "history",
+            "time",
+            "clock",
+            "schedule",
+            "calendar",
+            "date",
+            "event",
+            "back"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "hive",
+          "library": "custom",
+          "tags": [
+            "hive",
+            "network",
+            "internet",
+            "connection",
+            "wifi",
+            "hexagon",
+            "grid",
+            "tesselation"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "home",
+          "library": "custom",
+          "tags": [
+            "house"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "home_alt",
+          "library": "custom",
+          "tags": [
+            "house"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "home_alt_2",
+          "library": "custom",
+          "tags": [
+            "home_alt_2",
+            "home",
+            "house",
+            "residence",
+            "building",
+            "architecture",
+            "structure"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "id",
+          "library": "custom",
+          "tags": [
+            "role",
+            "shield",
+            "security",
+            "protection",
+            "secure",
+            "safety",
+            "guard",
+            "defence",
+            "person",
+            "square"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "info",
+          "library": "custom",
+          "tags": [
+            "information",
+            "details",
+            "help",
+            "question",
+            "mark"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "instagram",
+          "library": "custom",
+          "tags": [
+            "instagram",
+            "social",
+            "media"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "invite",
+          "library": "custom",
+          "tags": [
+            "add",
+            "user",
+            "plus"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "invoice",
+          "library": "custom",
+          "tags": [
+            "bill",
+            "invoice",
+            "payment",
+            "receipt",
+            "statement"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "journal",
+          "library": "custom",
+          "tags": [
+            "journal",
+            "notebook",
+            "book",
+            "diary",
+            "write",
+            "record"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "key",
+          "library": "custom",
+          "tags": [
+            "password",
+            "security",
+            "access",
+            "login",
+            "unlock"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "keyboard",
+          "library": "custom",
+          "tags": [
+            "input",
+            "text",
+            "type",
+            "write",
+            "key",
+            "board",
+            "keyboard"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "keypad",
+          "library": "custom",
+          "tags": [
+            "keyboard",
+            "keypad",
+            "numbers",
+            "numpad",
+            "calculator",
+            "math"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "laptop",
+          "library": "custom",
+          "tags": [
+            "computer",
+            "pc",
+            "mac",
+            "apple",
+            "windows",
+            "linux",
+            "desktop",
+            "work",
+            "office",
+            "home",
+            "device",
+            "machine",
+            "electronics",
+            "technology"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "layers",
+          "library": "custom",
+          "tags": [],
+          "category": "Custom"
+        },
+        {
+          "key": "layout_columns",
+          "library": "custom",
+          "tags": [
+            "layout",
+            "columns",
+            "grid",
+            "table"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "layout_rows",
+          "library": "custom",
+          "tags": [
+            "layout",
+            "rows",
+            "grid",
+            "table"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "leaf",
+          "library": "custom",
+          "tags": [
+            "plant",
+            "nature",
+            "eco",
+            "environment",
+            "ecology",
+            "green",
+            "leaf"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "light_bulb",
+          "library": "custom",
+          "tags": [
+            "light",
+            "bulb",
+            "idea",
+            "inspiration"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "lightning",
+          "library": "custom",
+          "tags": [
+            "lightning",
+            "electricity",
+            "power",
+            "energy",
+            "electric",
+            "charge",
+            "thunder"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "lightning_alt",
+          "library": "custom",
+          "tags": [
+            "lightning_alt",
+            "lightning",
+            "electricity",
+            "energy",
+            "power",
+            "electric",
+            "charge"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "link",
+          "library": "custom",
+          "tags": [
+            "link",
+            "url",
+            "hyperlink",
+            "connect",
+            "anchor",
+            "href"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "link_external",
+          "library": "custom",
+          "tags": [
+            "link",
+            "external",
+            "url",
+            "web",
+            "internet",
+            "newtab"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "linkedin",
+          "library": "custom",
+          "tags": [
+            "social",
+            "linkedin"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "list",
+          "library": "custom",
+          "tags": [
+            "list",
+            "menu",
+            "order",
+            "bullet",
+            "item"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "loading",
+          "library": "custom",
+          "tags": [
+            "spinner",
+            "refresh",
+            "reload",
+            "sync",
+            "wait",
+            "loading"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "location",
+          "library": "custom",
+          "tags": [
+            "location",
+            "map",
+            "pin",
+            "gps"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "lock",
+          "library": "custom",
+          "tags": [
+            "lock",
+            "secure",
+            "password",
+            "protect",
+            "safe"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "mail",
+          "library": "custom",
+          "tags": [
+            "email",
+            "message",
+            "letter",
+            "envelope"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "map",
+          "library": "custom",
+          "tags": [
+            "map",
+            "location",
+            "navigation",
+            "travel",
+            "route",
+            "gps",
+            "earth"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "measure",
+          "library": "custom",
+          "tags": [
+            "measure",
+            "ruler",
+            "scale",
+            "size",
+            "length",
+            "distance",
+            "design"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "medium",
+          "library": "custom",
+          "tags": [
+            "medium"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "megaphone",
+          "library": "custom",
+          "tags": [
+            "phone",
+            "call",
+            "telephone",
+            "communication",
+            "mega",
+            "loud",
+            "volume"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "menu",
+          "library": "custom",
+          "tags": [
+            "hamburger",
+            "nav",
+            "navigation",
+            "list",
+            "menu_alt"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "menu_alt",
+          "library": "custom",
+          "tags": [
+            "hamburger",
+            "nav",
+            "navigation",
+            "list",
+            "menu"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "merchant",
+          "library": "custom",
+          "tags": [
+            "business",
+            "commerce",
+            "store",
+            "shop",
+            "retail"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "messages",
+          "library": "custom",
+          "tags": [
+            "chat",
+            "communication",
+            "conversation",
+            "inbox"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "metrics",
+          "library": "custom",
+          "tags": [
+            "graph",
+            "numbers",
+            "math",
+            "business",
+            "chart"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "microphone",
+          "library": "custom",
+          "tags": [
+            "audio",
+            "sound",
+            "record"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "microphone_alt",
+          "library": "custom",
+          "tags": [
+            "audio",
+            "sound",
+            "voice",
+            "record",
+            "mic",
+            "microphone"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "minus",
+          "library": "custom",
+          "tags": [
+            "subtract",
+            "remove",
+            "delete",
+            "hide"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "missing_image",
+          "library": "custom",
+          "tags": [
+            "missing_image",
+            "image",
+            "photo",
+            "picture",
+            "photography",
+            "gallery",
+            "picture"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "modem",
+          "library": "custom",
+          "tags": [
+            "modem",
+            "router",
+            "internet",
+            "connection",
+            "network",
+            "device",
+            "wifi"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "modem_alt",
+          "library": "custom",
+          "tags": [
+            "modem_alt",
+            "router",
+            "internet",
+            "connection",
+            "network",
+            "device",
+            "wifi"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "monitor",
+          "library": "custom",
+          "tags": [
+            "monitor",
+            "screen",
+            "display",
+            "computer",
+            "desktop",
+            "monitor",
+            "device"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "moon",
+          "library": "custom",
+          "tags": [
+            "moon",
+            "night",
+            "dark",
+            "sleep",
+            "astronomy"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "motorbike",
+          "library": "custom",
+          "tags": [
+            "vehicle",
+            "motorbike",
+            "motorcycle",
+            "bike",
+            "transport",
+            "sports"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "mouse",
+          "library": "custom",
+          "tags": [
+            "click",
+            "cursor",
+            "arrow",
+            "pointer"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "mug",
+          "library": "custom",
+          "tags": [
+            "mug",
+            "coffee",
+            "tea",
+            "drink",
+            "beverage",
+            "cup",
+            "mug"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "music",
+          "library": "custom",
+          "tags": [
+            "audio",
+            "sound",
+            "song",
+            "tune"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "mute",
+          "library": "custom",
+          "tags": [
+            "mute",
+            "sound",
+            "audio"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "navigation",
+          "library": "custom",
+          "tags": [
+            "navigation",
+            "direction",
+            "compass",
+            "map",
+            "route",
+            "travel",
+            "gps"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "navigation_alt",
+          "library": "custom",
+          "tags": [
+            "navigation_alt",
+            "direction",
+            "compass",
+            "map",
+            "route",
+            "travel",
+            "gps"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "new_file",
+          "library": "custom",
+          "tags": [
+            "new",
+            "file",
+            "create",
+            "add",
+            "document",
+            "text"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "new_folder",
+          "library": "custom",
+          "tags": [
+            "new",
+            "folder",
+            "create",
+            "add",
+            "directory",
+            "file"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "next",
+          "library": "custom",
+          "tags": [
+            "arrow",
+            "right",
+            "forward",
+            "next"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "nodes",
+          "library": "custom",
+          "tags": [
+            "nodes",
+            "network",
+            "connections",
+            "graph",
+            "diagram",
+            "flow"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "not_allowed",
+          "library": "custom",
+          "tags": [
+            "not_allowed",
+            "forbidden",
+            "stop",
+            "pause",
+            "square",
+            "rectangle"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "notebook",
+          "library": "custom",
+          "tags": [
+            "notebook",
+            "journal",
+            "book",
+            "diary",
+            "write",
+            "record"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "notepad",
+          "library": "custom",
+          "tags": [
+            "notepad",
+            "journal",
+            "book",
+            "diary",
+            "write",
+            "record"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "open",
+          "library": "custom",
+          "tags": [
+            "arrow",
+            "right",
+            "forward"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "paint",
+          "library": "custom",
+          "tags": [
+            "paint",
+            "color",
+            "brush",
+            "art",
+            "painting",
+            "draw",
+            "creative"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "pause",
+          "library": "custom",
+          "tags": [
+            "pause",
+            "stop",
+            "pause",
+            "square",
+            "rectangle"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "pencil",
+          "library": "custom",
+          "tags": [
+            "edit",
+            "write",
+            "update",
+            "change"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "people",
+          "library": "custom",
+          "tags": [
+            "social",
+            "team",
+            "users",
+            "friends",
+            "community",
+            "group"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "phone",
+          "library": "custom",
+          "tags": [
+            "call",
+            "contact",
+            "ring",
+            "telephone"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "pie",
+          "library": "custom",
+          "tags": [
+            "pie",
+            "chart",
+            "graph",
+            "data",
+            "statistics"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "pie_graph",
+          "library": "custom",
+          "tags": [
+            "pie",
+            "graph",
+            "chart",
+            "data",
+            "analytics"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "pin",
+          "library": "custom",
+          "tags": [
+            "pin",
+            "location",
+            "place",
+            "marker"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "play",
+          "library": "custom",
+          "tags": [
+            "play",
+            "start",
+            "begin",
+            "triangle",
+            "arrow"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "plug",
+          "library": "custom",
+          "tags": [
+            "plug",
+            "power",
+            "electricity",
+            "energy",
+            "socket",
+            "integration"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "plus",
+          "library": "custom",
+          "tags": [
+            "add",
+            "new",
+            "create",
+            "expand"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "present",
+          "library": "custom",
+          "tags": [
+            "present",
+            "gift",
+            "surprise",
+            "celebrate",
+            "birthday"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "previous",
+          "library": "custom",
+          "tags": [
+            "back",
+            "previous",
+            "arrow",
+            "left",
+            "backwards",
+            "backtrack",
+            "return"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "profile",
+          "library": "custom",
+          "tags": [
+            "profile",
+            "user",
+            "account"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "puzzle",
+          "library": "custom",
+          "tags": [
+            "puzzle",
+            "game",
+            "piece"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "puzzle_alt",
+          "library": "custom",
+          "tags": [
+            "puzzle",
+            "game",
+            "challenge",
+            "problem",
+            "solution",
+            "strategy",
+            "integrations",
+            "plugins"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "radio",
+          "library": "custom",
+          "tags": [
+            "music",
+            "audio",
+            "sound",
+            "radio",
+            "podcast"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "reading",
+          "library": "custom",
+          "tags": [
+            "reading",
+            "book",
+            "study",
+            "learn",
+            "education",
+            "knowledge",
+            "library"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "reddit",
+          "library": "custom",
+          "tags": [
+            "social",
+            "media",
+            "network",
+            "community"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "reel",
+          "library": "custom",
+          "tags": [
+            "film",
+            "movie",
+            "cinema",
+            "video"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "refresh",
+          "library": "custom",
+          "tags": [
+            "reload",
+            "sync",
+            "update",
+            "spin"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "remove_user",
+          "library": "custom",
+          "tags": [
+            "remove",
+            "user"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "robot",
+          "library": "custom",
+          "tags": [
+            "bot",
+            "robot",
+            "android",
+            "machine"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "role",
+          "library": "custom",
+          "tags": [
+            "role",
+            "shield",
+            "security",
+            "protection",
+            "secure",
+            "safety",
+            "guard",
+            "defence",
+            "person",
+            "square"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "router",
+          "library": "custom",
+          "tags": [
+            "router",
+            "network",
+            "internet",
+            "connection",
+            "wifi"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "save",
+          "library": "custom",
+          "tags": [
+            "save",
+            "download",
+            "disk",
+            "floppy",
+            "file"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "scanner",
+          "library": "custom",
+          "tags": [
+            "scanner",
+            "scan",
+            "device",
+            "hardware",
+            "barcode"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "search",
+          "library": "custom",
+          "tags": [
+            "find",
+            "magnifying glass"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "send",
+          "library": "custom",
+          "tags": [
+            "send",
+            "mail",
+            "message",
+            "paper airplane",
+            "email"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "server",
+          "library": "custom",
+          "tags": [
+            "server",
+            "cloud",
+            "data",
+            "storage",
+            "hosting",
+            "computing"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "settings",
+          "library": "custom",
+          "tags": [
+            "settings",
+            "gear",
+            "cog",
+            "preferences",
+            "options"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "share",
+          "library": "custom",
+          "tags": [
+            "share",
+            "arrow",
+            "up",
+            "top",
+            "upload"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "shop",
+          "library": "custom",
+          "tags": [
+            "shop",
+            "store",
+            "ecommerce",
+            "buy",
+            "purchase",
+            "cart",
+            "shopping"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "shopping",
+          "library": "custom",
+          "tags": [
+            "shopping",
+            "cart",
+            "buy",
+            "checkout",
+            "purchase"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "shrink",
+          "library": "custom",
+          "tags": [
+            "shrink",
+            "resize",
+            "expand",
+            "crop",
+            "scale",
+            "size"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "slack",
+          "library": "custom",
+          "tags": [
+            "social",
+            "slack"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "smartphone",
+          "library": "custom",
+          "tags": [],
+          "category": "Custom"
+        },
+        {
+          "key": "snapchat",
+          "library": "custom",
+          "tags": [
+            "social",
+            "network",
+            "snapchat"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "snow",
+          "library": "custom",
+          "tags": [
+            "weather",
+            "cold",
+            "winter",
+            "snowflake",
+            "snowing",
+            "snowy"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "sort",
+          "library": "custom",
+          "tags": [
+            "sort",
+            "filter",
+            "order",
+            "arrange",
+            "organize"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "star",
+          "library": "custom",
+          "tags": [
+            "star",
+            "favorite",
+            "like",
+            "rate",
+            "rank"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "star_active",
+          "library": "custom",
+          "tags": [
+            "star",
+            "favorite",
+            "like",
+            "rate",
+            "rank"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "stop",
+          "library": "custom",
+          "tags": [
+            "block",
+            "forbid",
+            "prohibit",
+            "restrict",
+            "square",
+            "stop"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "sun",
+          "library": "custom",
+          "tags": [
+            "light",
+            "day"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "support",
+          "library": "custom",
+          "tags": [
+            "help",
+            "support",
+            "question",
+            "faq",
+            "information",
+            "info"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "swatch",
+          "library": "custom",
+          "tags": [
+            "color",
+            "palette"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "swirl",
+          "library": "custom",
+          "tags": [
+            "swirl",
+            "circle",
+            "loop",
+            "round",
+            "spiral",
+            "curve",
+            "twist",
+            "vortex"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "table",
+          "library": "custom",
+          "tags": [
+            "table",
+            "data",
+            "grid",
+            "spreadsheet",
+            "list"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "tag",
+          "library": "custom",
+          "tags": [
+            "tag",
+            "label",
+            "price",
+            "offer",
+            "discount",
+            "sale"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "target",
+          "library": "custom",
+          "tags": [
+            "target",
+            "goal",
+            "aim",
+            "focus",
+            "bullseye"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "task",
+          "library": "custom",
+          "tags": [
+            "todo",
+            "task",
+            "list",
+            "checklist",
+            "assignment",
+            "job"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "test",
+          "library": "custom",
+          "tags": [],
+          "category": "Custom"
+        },
+        {
+          "key": "thermometer",
+          "library": "custom",
+          "tags": [
+            "temperature",
+            "hot",
+            "cold",
+            "weather",
+            "heat",
+            "warm"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "timer",
+          "library": "custom",
+          "tags": [
+            "clock",
+            "time",
+            "watch"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "train",
+          "library": "custom",
+          "tags": [
+            "transport"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "trash",
+          "library": "custom",
+          "tags": [
+            "delete",
+            "remove",
+            "bin",
+            "garbage",
+            "discard",
+            "dump",
+            "junk",
+            "waste"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "trash_alt",
+          "library": "custom",
+          "tags": [
+            "delete",
+            "remove",
+            "bin",
+            "garbage",
+            "discard",
+            "dump",
+            "junk",
+            "waste"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "trees",
+          "library": "custom",
+          "tags": [
+            "trees",
+            "forest",
+            "nature",
+            "environment",
+            "plants",
+            "woods",
+            "green",
+            "ecology"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "triangle",
+          "library": "custom",
+          "tags": [
+            "triangle",
+            "arrow",
+            "direction",
+            "up",
+            "top"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "trophy",
+          "library": "custom",
+          "tags": [
+            "trophy",
+            "award",
+            "prize",
+            "winner",
+            "champion",
+            "medal"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "truck",
+          "library": "custom",
+          "tags": [
+            "car",
+            "delivery",
+            "logistics",
+            "transportation"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "tv",
+          "library": "custom",
+          "tags": [
+            "television",
+            "screen",
+            "monitor",
+            "media"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "tv_add",
+          "library": "custom",
+          "tags": [
+            "television",
+            "screen",
+            "monitor",
+            "display"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "tv_alt",
+          "library": "custom",
+          "tags": [
+            "television",
+            "screen",
+            "monitor",
+            "display",
+            "media"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "twitter",
+          "library": "custom",
+          "tags": [
+            "twitter",
+            "social",
+            "media"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "umbrella",
+          "library": "custom",
+          "tags": [
+            "rain",
+            "weather",
+            "protection",
+            "shelter"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "unlock",
+          "library": "custom",
+          "tags": [
+            "unlock",
+            "open",
+            "access",
+            "free",
+            "release"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "upload",
+          "library": "custom",
+          "tags": [
+            "upload",
+            "cloud"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "upload_success",
+          "library": "custom",
+          "tags": [
+            "upload",
+            "cloud",
+            "success"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "usd",
+          "library": "custom",
+          "tags": [
+            "usd",
+            "dollar",
+            "money",
+            "currency",
+            "cash"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "user",
+          "library": "custom",
+          "tags": [
+            "person",
+            "profile"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "video",
+          "library": "custom",
+          "tags": [
+            "movie",
+            "film",
+            "cinema"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "volume",
+          "library": "custom",
+          "tags": [
+            "volume",
+            "audio",
+            "sound",
+            "speaker",
+            "music",
+            "control"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "vue",
+          "library": "custom",
+          "tags": [
+            "vue",
+            "framework",
+            "javascript",
+            "frontend",
+            "development"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "wallet",
+          "library": "custom",
+          "tags": [
+            "wallet",
+            "money",
+            "cash",
+            "finance",
+            "payment",
+            "buy",
+            "purchase"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "warning",
+          "library": "custom",
+          "tags": [
+            "alert",
+            "attention",
+            "caution",
+            "error",
+            "exclamation",
+            "problem",
+            "triangle",
+            "warning"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "wave",
+          "library": "custom",
+          "tags": [
+            "water",
+            "sea",
+            "ocean",
+            "wave",
+            "ripple",
+            "liquid"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "wifi_alt",
+          "library": "custom",
+          "tags": [
+            "wifi_alt",
+            "signal",
+            "wifi",
+            "internet",
+            "connection",
+            "network",
+            "wireless"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "window",
+          "library": "custom",
+          "tags": [
+            "window",
+            "browser",
+            "tab"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "windows",
+          "library": "custom",
+          "tags": [
+            "windows",
+            "browser",
+            "tab"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "workout",
+          "library": "custom",
+          "tags": [
+            "workout",
+            "exercise",
+            "fitness",
+            "gym",
+            "training"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "write",
+          "library": "custom",
+          "tags": [
+            "write",
+            "edit",
+            "pencil",
+            "pen"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "yinyang",
+          "library": "custom",
+          "tags": [
+            "balance",
+            "harmony",
+            "opposite",
+            "tao",
+            "yingyang"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "youtube",
+          "library": "custom",
+          "tags": [
+            "youtube",
+            "video",
+            "social",
+            "media"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "zoom_in",
+          "library": "custom",
+          "tags": [
+            "zoom in",
+            "magnify",
+            "enlarge",
+            "expand",
+            "scale"
+          ],
+          "category": "Custom"
+        },
+        {
+          "key": "zoom_out",
+          "library": "custom",
+          "tags": [
+            "zoom out",
+            "minify",
+            "reduce",
+            "shrink",
+            "scale down"
+          ],
+          "category": "Custom"
+        }
+      ]
+    }
+  ],
+  "totalCount": 270
+}

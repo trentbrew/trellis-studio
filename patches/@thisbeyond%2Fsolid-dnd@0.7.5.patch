@@ -1,0 +1,41 @@
+--- a/dist/dev.js
++++ b/dist/dev.js
+@@ -203,12 +203,10 @@
+   const removeTransformer = (type, id, transformerId) => {
+     const displayType = type.substring(0, type.length - 1);
+     if (!untrack(() => state[type][id])) {
+-      console.warn(`Cannot remove transformer from nonexistent ${displayType} with id: ${id}`);
+       return;
+     }
+     if (!untrack(() => state[type][id]["transformers"][transformerId])) {
+-      console.warn(`Cannot remove from ${displayType} with id ${id}, nonexistent transformer with id: ${transformerId}`);
+       return;
+     }
+     setState(type, id, "transformers", transformerId, void 0);
+   };
+@@ -290,8 +288,7 @@
+   const removeDraggable = (id) => {
+     if (!untrack(() => state.draggables[id])) {
+-      console.warn(`Cannot remove nonexistent draggable with id: ${id}`);
+       return;
+     }
+     setState("draggables", id, "_pendingCleanup", true);
+     queueMicrotask(() => cleanupDraggable(id));
+   };
+@@ -356,8 +353,7 @@
+   const removeDroppable = (id) => {
+     if (!untrack(() => state.droppables[id])) {
+-      console.warn(`Cannot remove nonexistent droppable with id: ${id}`);
+       return;
+     }
+     setState("droppables", id, "_pendingCleanup", true);
+     queueMicrotask(() => cleanupDroppable(id));
+   };
+@@ -400,7 +396,6 @@
+   const removeSensor = (id) => {
+     if (!untrack(() => state.sensors[id])) {
+-      console.warn(`Cannot remove nonexistent sensor with id: ${id}`);
+       return;
+     }
+     const cleanupActive = state.active.sensorId === id;
+     batch(() => {

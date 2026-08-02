@@ -1,0 +1,16 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "projections": {
+    "workspaceType": "app",
+    "pinned": ["notes", "records", "content", "links"]
+  },
+  "preview": {
+    "services": {
+      "expo": {
+        "port": 8081,
+        "type": "terminal",
+        "command": "bun install && bunx expo start --port 8081"
+      }
+    }
+  }
+}

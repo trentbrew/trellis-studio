@@ -1,0 +1,17 @@
+- Search the web using Exa AI (default) or Parallel Web Search for current or external information
+- Use this tool for information beyond the model knowledge cutoff, recent data, or claims that require source verification
+- Search results are evidence, not final truth; verify important claims before presenting them as facts
+- Cite source URLs from the returned results or from follow-up webfetch calls in any web-backed answer
+- Never invent citations, URLs, quotes, dates, versions, prices, source titles, or details that are not supported by retrieved sources
+- If the returned sources do not answer the question, are ambiguous, or conflict, say what is unknown instead of guessing
+
+Usage notes:
+  - Supports live crawling modes: 'fallback' (backup if cached unavailable) or 'preferred' (prioritize live crawling)
+  - Search types: 'auto' (balanced), 'fast' (quick results), 'deep' (comprehensive search)
+  - Configurable context length for optimal LLM integration
+  - Provider: Exa by default (no API key). Set OPENCODE_WEBSEARCH_PROVIDER=parallel and PARALLEL_API_KEY for Parallel Web Search
+  - Prefer 'deep' and livecrawl='preferred' for high-stakes, disputed, or detail-sensitive research
+  - For current facts, versions, pricing, APIs, legal, medical, security, or financial information, verify against the original source when possible
+
+The current year is {{year}}. You MUST use this year when searching for recent information or current events
+- Example: If the current year is 2026 and the user asks for "latest AI news", search for "AI news 2026", NOT "AI news 2025"

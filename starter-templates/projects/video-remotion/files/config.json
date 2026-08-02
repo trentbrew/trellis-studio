@@ -1,0 +1,17 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "projections": {
+    "workspaceType": "video",
+    "pinned": ["notes", "scenes", "scripts", "media"]
+  },
+  "preview": {
+    "services": {
+      "remotion": {
+        "port": 3000,
+        "type": "web",
+        "command": "bun install && bun run dev",
+        "url": "http://localhost:3000"
+      }
+    }
+  }
+}

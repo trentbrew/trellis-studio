@@ -1,0 +1,152 @@
+name: Publish npm (turtlecode)
+
+on:
+  push:
+    tags:
+      - "turtlecode-v*"
+  workflow_dispatch:
+    inputs:
+      bump:
+        description: "Semver bump (ignored when version is set)"
+        required: false
+        type: choice
+        default: patch
+        options:
+          - patch
+          - minor
+          - major
+      version:
+        description: "Exact version (overrides bump)"
+        required: false
+        type: string
+      dry_run:
+        description: "Build and npm publish --dry-run only"
+        required: false
+        type: boolean
+        default: false
+
+concurrency:
+  group: publish-turtlecode-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    if: github.repository == 'trentbrew/turtlecode'
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: https://registry.npmjs.org
+
+      - name: Install dependencies
+        env:
+          HUSKY: "0"
+        run: bun install
+
+      - name: Resolve version
+        id: version
+        working-directory: packages/cli
+        run: |
+          set -euo pipefail
+          current=$(node -p "require('./package.json').version")
+          if [ "${{ github.event_name }}" = "push" ]; then
+            tag="${GITHUB_REF#refs/tags/}"
+            new="${tag#turtlecode-v}"
+            if [ "$new" != "$current" ]; then
+              echo "Tag ${tag} does not match package.json (${current})"
+              exit 1
+            fi
+            echo "bumped=false" >> "$GITHUB_OUTPUT"
+          else
+            bump="${{ inputs.bump }}"
+            ver="${{ inputs.version }}"
+            if [ -n "$ver" ]; then
+              new="$ver"
+            else
+              IFS='.' read -r major minor patch <<< "$current"
+              case "$bump" in
+                patch) patch=$((patch + 1)) ;;
+                minor) minor=$((minor + 1)); patch=0 ;;
+                major) major=$((major + 1)); minor=0; patch=0 ;;
+                *) echo "Invalid bump: $bump"; exit 1 ;;
+              esac
+              new="${major}.${minor}.${patch}"
+            fi
+            node -e "
+              const fs = require('fs');
+              const path = 'package.json';
+              const pkg = JSON.parse(fs.readFileSync(path, 'utf8'));
+              pkg.version = '${new}';
+              const opt = pkg.optionalDependencies || {};
+              for (const k of Object.keys(opt)) opt[k] = '${new}';
+              pkg.optionalDependencies = opt;
+              fs.writeFileSync(path, JSON.stringify(pkg, null, 2) + '\n');
+            "
+            echo "bumped=true" >> "$GITHUB_OUTPUT"
+          fi
+          echo "version=${new}" >> "$GITHUB_OUTPUT"
+          echo "turtlecode ${current} → ${new}"
+
+      - name: CLI tests
+        working-directory: packages/cli
+        run: bun run test
+
+      - name: Build and publish
+        working-directory: packages/cli
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          set -euo pipefail
+          args=""
+          if [ "${{ inputs.dry_run }}" = "true" ]; then
+            args="--dry-run"
+          fi
+          bun script/publish.ts $args
+
+      - name: Commit, tag, and release
+        if: >-
+          github.event_name == 'workflow_dispatch' &&
+          steps.version.outputs.bumped == 'true' &&
+          inputs.dry_run != true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          version="${{ steps.version.outputs.version }}"
+          tag="turtlecode-v${version}"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add packages/cli/package.json
+          git commit -m "release: turtlecode ${tag}"
+          git tag -a "${tag}" -m "turtlecode ${tag}"
+          git push origin HEAD "${tag}"
+          gh release create "${tag}" \
+            --repo "${{ github.repository }}" \
+            --title "turtlecode ${tag}" \
+            --generate-notes
+
+      - name: Summary
+        run: |
+          echo "### turtlecode@${{ steps.version.outputs.version }}" >> "$GITHUB_STEP_SUMMARY"
+          if [ "${{ inputs.dry_run }}" = "true" ]; then
+            echo "Dry run only — nothing published." >> "$GITHUB_STEP_SUMMARY"
+          elif [ "${{ github.event_name }}" = "push" ]; then
+            echo "Published from tag." >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "Published via workflow_dispatch; tag and GitHub release created." >> "$GITHUB_STEP_SUMMARY"
+          fi
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "Next: sync desk pins (\`just sync-pins --turtlecode ${{ steps.version.outputs.version }}\`) or cloud workflow." >> "$GITHUB_STEP_SUMMARY"

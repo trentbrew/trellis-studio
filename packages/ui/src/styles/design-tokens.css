@@ -1,0 +1,283 @@
+/**
+ * Trellis Studio Design Tokens - Sensible Defaults
+ * A complete design system with professional, accessible defaults
+ */
+
+/* ==========================================================================
+   FONT FAMILIES
+   ========================================================================== */
+
+:root {
+  /* System font stacks for reliability and performance */
+  --font-family-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-family-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  --font-family-header: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  
+  /* Font feature settings */
+  --font-family-sans--font-feature-settings: normal;
+  --font-family-mono--font-feature-settings: normal;
+  --font-family-header--font-feature-settings: normal;
+}
+
+/* ==========================================================================
+   TYPOGRAPHY SCALE
+   ========================================================================== */
+
+:root {
+  /* Font sizes - modular scale for visual hierarchy */
+  --font-size-xs: 0.75rem;    /* 12px */
+  --font-size-sm: 0.875rem;   /* 14px */
+  --font-size-base: 1rem;     /* 16px */
+  --font-size-lg: 1.125rem;   /* 18px */
+  --font-size-xl: 1.25rem;    /* 20px */
+  --font-size-2xl: 1.5rem;    /* 24px */
+  --font-size-3xl: 1.875rem;  /* 30px */
+  --font-size-4xl: 2.25rem;   /* 36px */
+  
+  /* Font weights */
+  --font-weight-light: 300;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  
+  /* Line heights - optimized for readability */
+  --line-height-tight: 1.25;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.625;
+  --line-height-loose: 2;
+  
+  /* Letter spacing */
+  --letter-spacing-tight: -0.025em;
+  --letter-spacing-normal: 0;
+  --letter-spacing-wide: 0.025em;
+}
+
+/* ==========================================================================
+   COLORS - DARK THEME (GitHub-inspired)
+   ========================================================================== */
+
+:root {
+  /* Background colors */
+  --color-background-primary: #0d1117;
+  --color-background-secondary: #161b22;
+  --color-background-tertiary: #1c2128;
+  --color-background-overlay: #21262d;
+  
+  /* Surface colors */
+  --color-surface-primary: #161b22;
+  --color-surface-secondary: #1c2128;
+  --color-surface-tertiary: #21262d;
+  --color-surface-elevated: #30363d;
+  
+  /* Border colors */
+  --color-border-primary: #30363d;
+  --color-border-secondary: #21262d;
+  --color-border-tertiary: #6e7681;
+  
+  /* Text colors */
+  --color-text-primary: #e6edf3;
+  --color-text-secondary: #8b949e;
+  --color-text-tertiary: #6e7681;
+  --color-text-inverse: #0d1117;
+  
+  /* Accent colors */
+  --color-accent-blue: #58a6ff;
+  --color-accent-green: #3fb950;
+  --color-accent-yellow: #d29922;
+  --color-accent-orange: #f85149;
+  --color-accent-purple: #a371f7;
+  --color-accent-pink: #bc8cff;
+  
+  /* Semantic colors */
+  --color-success: #3fb950;
+  --color-warning: #d29922;
+  --color-error: #f85149;
+  --color-info: #58a6ff;
+  
+  /* Icon colors */
+  --color-icon-primary: #e6edf3;
+  --color-icon-secondary: #8b949e;
+  --color-icon-tertiary: #6e7681;
+}
+
+/* ==========================================================================
+   SPACING SCALE
+   ========================================================================== */
+
+:root {
+  /* Base spacing unit (4px) */
+  --spacing-unit: 0.25rem;
+  
+  /* Spacing scale - powers of 2 for consistency */
+  --spacing-0: 0;
+  --spacing-1: 0.25rem;  /* 4px */
+  --spacing-2: 0.5rem;   /* 8px */
+  --spacing-3: 0.75rem;  /* 12px */
+  --spacing-4: 1rem;     /* 16px */
+  --spacing-5: 1.25rem;  /* 20px */
+  --spacing-6: 1.5rem;   /* 24px */
+  --spacing-8: 2rem;     /* 32px */
+  --spacing-10: 2.5rem; /* 40px */
+  --spacing-12: 3rem;   /* 48px */
+  --spacing-16: 4rem;   /* 64px */
+  --spacing-20: 5rem;   /* 80px */
+  --spacing-24: 6rem;   /* 96px */
+  
+  /* Common spacing aliases */
+  --spacing-xs: var(--spacing-1);
+  --spacing-sm: var(--spacing-2);
+  --spacing-md: var(--spacing-4);
+  --spacing-lg: var(--spacing-6);
+  --spacing-xl: var(--spacing-8);
+  --spacing-2xl: var(--spacing-12);
+  --spacing-3xl: var(--spacing-16);
+  
+  /* Base spacing for calculations */
+  --spacing: var(--spacing-4);
+}
+
+/* ==========================================================================
+   LAYOUT & CONTAINERS
+   ========================================================================== */
+
+:root {
+  /* Breakpoints - responsive design */
+  --breakpoint-sm: 40rem;   /* 640px */
+  --breakpoint-md: 48rem;   /* 768px */
+  --breakpoint-lg: 64rem;   /* 1024px */
+  --breakpoint-xl: 80rem;   /* 1280px */
+  --breakpoint-2xl: 96rem;  /* 1536px */
+  
+  /* Container max widths */
+  --container-xs: 20rem;    /* 320px */
+  --container-sm: 24rem;    /* 384px */
+  --container-md: 28rem;    /* 448px */
+  --container-lg: 32rem;    /* 512px */
+  --container-xl: 36rem;    /* 576px */
+  --container-2xl: 42rem;   /* 672px */
+  --container-3xl: 48rem;   /* 768px */
+  --container-4xl: 56rem;   /* 896px */
+  --container-5xl: 64rem;   /* 1024px */
+  --container-6xl: 72rem;   /* 1152px */
+  --container-7xl: 80rem;   /* 1280px */
+}
+
+/* ==========================================================================
+   SHADOWS & EFFECTS
+   ========================================================================== */
+
+:root {
+  /* Box shadows */
+  --shadow-sm: 0 1px 2px rgba(1, 4, 9, 0.05);
+  --shadow: 0 1px 3px rgba(1, 4, 9, 0.1), 0 1px 2px rgba(1, 4, 9, 0.06);
+  --shadow-md: 0 4px 6px rgba(1, 4, 9, 0.07), 0 2px 4px rgba(1, 4, 9, 0.06);
+  --shadow-lg: 0 10px 15px rgba(1, 4, 9, 0.1), 0 4px 6px rgba(1, 4, 9, 0.05);
+  --shadow-xl: 0 20px 25px rgba(1, 4, 9, 0.1), 0 10px 10px rgba(1, 4, 9, 0.04);
+  
+  /* Glow effects */
+  --glow-sm: 0 0 20px rgba(88, 166, 255, 0.3);
+  --glow: 0 0 30px rgba(88, 166, 255, 0.4);
+  --glow-lg: 0 0 40px rgba(88, 166, 255, 0.5);
+}
+
+/* ==========================================================================
+   BORDER RADIUS
+   ========================================================================== */
+
+:root {
+  --radius-none: 0;
+  --radius-sm: 0.125rem;  /* 2px */
+  --radius: 0.25rem;      /* 4px */
+  --radius-md: 0.375rem;  /* 6px */
+  --radius-lg: 0.5rem;    /* 8px */
+  --radius-xl: 0.75rem;   /* 12px */
+  --radius-2xl: 1rem;    /* 16px */
+  --radius-full: 9999px;
+}
+
+/* ==========================================================================
+   ANIMATIONS & TRANSITIONS
+   ========================================================================== */
+
+:root {
+  /* Transition durations */
+  --transition-fast: 150ms;
+  --transition-normal: 250ms;
+  --transition-slow: 350ms;
+  
+  /* Transition timing functions */
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  
+  /* Transitions */
+  --transition-colors: color var(--transition-normal) var(--ease-out),
+                     background-color var(--transition-normal) var(--ease-out),
+                     border-color var(--transition-normal) var(--ease-out);
+  --transition-transform: transform var(--transition-normal) var(--ease-out);
+  --transition-all: all var(--transition-normal) var(--ease-out);
+}
+
+/* ==========================================================================
+   Z-INDEX SCALE
+   ========================================================================== */
+
+:root {
+  --z-index-dropdown: 1000;
+  --z-index-sticky: 1020;
+  --z-index-fixed: 1030;
+  --z-index-modal-backdrop: 1040;
+  --z-index-modal: 1050;
+  --z-index-popover: 1060;
+  --z-index-tooltip: 1070;
+}
+
+/* ==========================================================================
+   LEGACY ALIASES (for backward compatibility)
+   ========================================================================== */
+
+:root {
+  /* Background aliases */
+  --bg: var(--color-background-primary);
+  --surface: var(--color-surface-primary);
+  
+  /* Text aliases */
+  --text: var(--color-text-primary);
+  --text-muted: var(--color-text-secondary);
+  
+  /* Border aliases */
+  --border: var(--color-border-primary);
+  
+  /* Accent aliases */
+  --accent: var(--color-accent-blue);
+  --accent-green: var(--color-accent-green);
+  --accent-orange: var(--color-accent-yellow);
+  
+  /* Font aliases */
+  --font-size-small: var(--font-size-sm);
+  --font-size-base: var(--font-size-base);
+  --font-size-large: var(--font-size-lg);
+  --font-size-x-large: var(--font-size-xl);
+  
+  /* Font weight aliases */
+  --font-weight-regular: var(--font-weight-normal);
+  --font-weight-medium: var(--font-weight-medium);
+  
+  /* Line height aliases */
+  --line-height-normal: var(--line-height-normal);
+  --line-height-large: var(--line-height-relaxed);
+  --line-height-x-large: var(--line-height-loose);
+  
+  /* Container aliases */
+  --container-3xs: var(--container-xs);
+  --container-2xs: var(--container-sm);
+  --container-xs: var(--container-sm);
+  --container-sm: var(--container-md);
+  --container-md: var(--container-lg);
+  --container-lg: var(--container-xl);
+  --container-xl: var(--container-2xl);
+  --container-2xl: var(--container-3xl);
+  --container-3xl: var(--container-4xl);
+  --container-4xl: var(--container-5xl);
+}
