@@ -56,6 +56,7 @@ import { MediaAnalysis } from "@/util/media-analysis"
 import { Process } from "@/util/process"
 import { Trellis } from "@/trellis"
 import { TrellisEnforcement } from "@/hooks/trellis-enforcement"
+import { hooks } from "@/hooks/dispatcher"
 
 // @ts-ignore
 globalThis.AI_SDK_LOG_WARNINGS = false
@@ -714,6 +715,13 @@ export namespace SessionPrompt {
         system.push(STRUCTURED_OUTPUT_SYSTEM_PROMPT)
       }
 
+      void hooks.dispatchVoid("beforeSubmitPrompt", {
+        sessionID,
+        agent: agent.name,
+        modelID: model.id,
+        directory: Instance.directory,
+      })
+
       const result = await processor.process({
         user: lastUser,
         agent,
@@ -762,6 +770,31 @@ export namespace SessionPrompt {
       }
 
       if (result === "stop") {
+        void hooks.dispatchVoid("stop", {
+          sessionID,
+          directory: Instance.directory,
+          agent: agent.name,
+        })
+        void (async () => {
+          try {
+            let tokens = 0
+            let cost = 0
+            for await (const item of MessageV2.stream(sessionID)) {
+              if (item.info.role !== "assistant") continue
+              const t = item.info.tokens
+              tokens += (t?.input ?? 0) + (t?.output ?? 0) + (t?.reasoning ?? 0) + (t?.cache?.read ?? 0) + (t?.cache?.write ?? 0)
+              cost += item.info.cost ?? 0
+            }
+            if (tokens > 0) {
+              Trellis.recordUsage(
+                { sessionId: sessionID, tokens, cost, model: model.id },
+                Instance.directory,
+              )
+            }
+          } catch {
+            // usage rollup is a nicety — never break the loop
+          }
+        })()
         if (modelFinished && !processor.message.error && format.type !== "json_schema") {
           const assistantText = (await MessageV2.parts(processor.message.id))
             .filter(
@@ -961,6 +994,17 @@ export namespace SessionPrompt {
               args,
             },
           )
+          const gate = await hooks.dispatch("preToolUse", {
+            tool: item.id,
+            sessionID: ctx.sessionID,
+            callID: ctx.callID,
+            args: args as Record<string, unknown>,
+            directory: Instance.directory,
+            agent: ctx.agent,
+          })
+          if (!gate.continue) {
+            throw new Error(gate.message ?? gate.reason ?? `Tool blocked by hook`)
+          }
           const result = await item.execute(args, ctx)
           const output = {
             ...result,
@@ -981,6 +1025,15 @@ export namespace SessionPrompt {
             },
             output,
           )
+          void hooks.dispatchVoid("postToolUse", {
+            tool: item.id,
+            sessionID: ctx.sessionID,
+            callID: ctx.callID,
+            args: args as Record<string, unknown>,
+            output: output.output,
+            directory: Instance.directory,
+            agent: ctx.agent,
+          })
           Trellis.record({
             tool: item.id,
             sessionID: ctx.sessionID,
@@ -1034,6 +1087,18 @@ export namespace SessionPrompt {
           },
         )
 
+        const gate = await hooks.dispatch("preToolUse", {
+          tool: key,
+          sessionID: ctx.sessionID,
+          callID: opts.toolCallId,
+          args: args as Record<string, unknown>,
+          directory: Instance.directory,
+          agent: ctx.agent,
+        })
+        if (!gate.continue) {
+          throw new Error(gate.message ?? gate.reason ?? `Tool blocked by hook`)
+        }
+
         await ctx.ask({
           permission: key,
           metadata: {},
@@ -1053,6 +1118,15 @@ export namespace SessionPrompt {
           },
           result,
         )
+        void hooks.dispatchVoid("postToolUse", {
+          tool: key,
+          sessionID: ctx.sessionID,
+          callID: opts.toolCallId,
+          args: args as Record<string, unknown>,
+          output: result,
+          directory: Instance.directory,
+          agent: ctx.agent,
+        })
         Trellis.record({
           tool: key,
           sessionID: ctx.sessionID,

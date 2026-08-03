@@ -1,9 +1,10 @@
 import { TrellisVcsEngine } from "trellis"
 import { TrellisKernel, SqliteKernelBackend, type EAVStore } from "trellis/core"
 import { createHash } from "node:crypto"
-import { existsSync, statSync } from "node:fs"
+import { existsSync, statSync, readdirSync, readFileSync } from "node:fs"
 import { dirname, join } from "node:path"
 import { createRequire } from "node:module"
+import { listLaneMetas } from "trellis/vcs"
 import {
   summary as evalSummaryFn,
   agentReport as evalAgentFn,
@@ -11,6 +12,8 @@ import {
   scoreIssue as evalIssueFn,
 } from "./eval"
 import * as Dogfood from "./dogfood"
+import { registerTrellisGate } from "@/hooks/trellis-gate"
+import { registerTrellisLifecycle } from "@/hooks/trellis-lifecycle"
 import * as Imports from "./imports"
 import { Instance } from "../project/instance"
 import { Filesystem } from "../util/filesystem"
@@ -988,6 +991,11 @@ The mission is the telos. Everything we do serves it.`
       eng.watch()
       log.info("trellis file watcher started", { directory: k })
 
+      // Hard-deny gate: kernel authority (canToolRun) enforced at preToolUse.
+      registerTrellisGate()
+      // Lifecycle: plan-first nudge (sessionStart) + checkpoint (sessionEnd).
+      registerTrellisLifecycle()
+
       engines.set(k, eng)
       const active = await Account.active()
       const agentId = active?.id ?? "unknown"
@@ -1201,6 +1209,142 @@ The mission is the telos. Everything we do serves it.`
       log.warn("issue criteria check failed", { id, error: String(err) })
       return undefined
     }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Desk affordances (Phase 2): lane status, presence, lane ops, usage rollup
+  // ---------------------------------------------------------------------------
+
+  export type LaneStatusInfo = {
+    laneID: string
+    status: string
+    issueId?: string
+    worktreePath?: string
+    dirty: boolean
+  }
+
+  export function laneStatus(sessionID: string | undefined, dir?: string): LaneStatusInfo | undefined {
+    const eng = engine(dir)
+    if (!eng) return undefined
+    const metas = listLaneMetas(join(dir ?? Instance.directory, ".trellis"))
+    const lane = sessionID
+      ? metas.find((l) => l.sessionId === sessionID)
+      : metas.find((l) => l.status === "active")
+    if (!lane) return undefined
+    return {
+      laneID: lane.id,
+      status: lane.status,
+      issueId: lane.issueId,
+      worktreePath: lane.worktreePath,
+      dirty: Boolean(lane.headOpHash && lane.headOpHash !== lane.baseOpHash),
+    }
+  }
+
+  export function presence(dir?: string) {
+    const base = join(dir ?? Instance.directory, ".trellis", "presence")
+    let files: string[] = []
+    try {
+      files = readdirSync(base)
+    } catch {
+      return []
+    }
+    const staleAfter = 5 * 60_000
+    const now = Date.now()
+    const metas = listLaneMetas(join(dir ?? Instance.directory, ".trellis"))
+    const rows: Array<Record<string, unknown>> = []
+    for (const file of files) {
+      if (!file.endsWith(".json")) continue
+      try {
+        const rec = JSON.parse(readFileSync(join(base, file), "utf-8"))
+        const last = Number(rec.lastHeartbeat ?? rec.heartbeats?.[0]?.at ?? 0)
+        if (now - last > staleAfter) continue
+        const lane = rec.laneId ? metas.find((l) => l.id === rec.laneId) : undefined
+        rows.push({
+          sessionId: rec.sessionId,
+          agentId: rec.agentId,
+          displayName: rec.displayName ?? rec.agentId,
+          client: rec.client,
+          laneId: rec.laneId,
+          laneStatus: lane?.status,
+          issueId: rec.claimedIssueId ?? lane?.issueId,
+          issueTitle: rec.claimedIssueTitle,
+          status: rec.status,
+        })
+      } catch {
+        // skip malformed presence files
+      }
+    }
+    return rows.sort((a, b) => String(a.agentId).localeCompare(String(b.agentId)))
+  }
+
+  export async function promoteLane(laneId: string, dir?: string, opts?: { message?: string }) {
+    const eng = engine(dir)
+    if (!eng) return undefined
+    try {
+      const result = await eng.promoteLane(laneId, { requireTest: true })
+      if (opts?.message) {
+        try {
+          await eng.createMilestone(opts.message)
+        } catch {
+          // milestone is a nicety — promote already succeeded
+        }
+      }
+      log.info("trellis lane promoted", { laneId })
+      return { promoted: true, laneId }
+    } catch (err) {
+      log.warn("lane promote failed", { laneId, error: String(err) })
+      return { promoted: false, laneId, error: err instanceof Error ? err.message : String(err) }
+    }
+  }
+
+  export async function closeIssueGated(id: string, dir?: string, opts?: { confirm?: boolean }) {
+    const eng = engine(dir)
+    if (!eng) return undefined
+    try {
+      const results = await eng.runCriteria(id)
+      const readiness = eng.checkCompletionReadiness()
+      const passed = readiness.readyToClose ?? false
+      if (!passed) {
+        return { closed: false, reason: "criteria-not-passed", results }
+      }
+      if (!opts?.confirm) {
+        return { closed: false, reason: "needs-confirm", results }
+      }
+      const outcome = await eng.closeIssue(id, { confirm: true })
+      return { closed: true, results, promoteResult: Boolean(outcome.promoteResult) }
+    } catch (err) {
+      log.warn("issue close failed", { id, error: String(err) })
+      return { closed: false, error: err instanceof Error ? err.message : String(err) }
+    }
+  }
+
+  export function recordUsage(
+    input: {
+      sessionId: string
+      laneId?: string
+      tokens: number
+      inputTokens?: number
+      outputTokens?: number
+      cost?: number
+      model?: string
+    },
+    dir?: string,
+  ) {
+    const eng = engine(dir)
+    if (!eng) return false
+    try {
+      eng.recordSessionUsage(input)
+      return true
+    } catch (err) {
+      log.warn("usage record failed", { error: String(err) })
+      return false
+    }
+  }
+
+  export function reentryStatus(dir?: string) {
+    const eng = engine(dir)
+    if (!eng) return { checkpoint: null, activeLaneId: undefined, issueIds: [] }
+    return eng.reentryStatus()
   }
 
   export async function updateIssue(
@@ -2853,7 +2997,7 @@ The mission is the telos. Everything we do serves it.`
     const mgr = pm(dir)
     if (!mgr) return undefined
     try {
-      const result = await mgr.approvePlan("user:alice")
+      const result = await mgr.approvePlan("user:trent")
       log.info("plan approved", { id: result.planId, ops: result.operationsExecuted })
       return result
     } catch (err) {
@@ -2866,7 +3010,7 @@ The mission is the telos. Everything we do serves it.`
     const mgr = pm(dir)
     if (!mgr) return undefined
     try {
-      await mgr.rejectPlan(reason, "user:alice")
+      await mgr.rejectPlan(reason, "user:trent")
       log.info("plan rejected", { reason })
       return { success: true }
     } catch (err) {

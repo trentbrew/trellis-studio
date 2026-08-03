@@ -2815,5 +2815,140 @@ export const TrellisRoutes = lazy(() =>
         if (!result) return c.json({ error: "Failed to set telos" }, 500)
         return c.json(result)
       },
+    )
+
+    // ---------------------------------------------------------------------------
+    // Desk affordances (Phase 2): lane status, presence, lane ops, usage rollup
+    // ---------------------------------------------------------------------------
+    .get(
+      "/lane-status",
+      describeRoute({
+        summary: "Get lane status for a session",
+        operationId: "trellis.lane.status",
+      }),
+      validator(
+        "query",
+        dirQuery.extend({ sessionID: z.string().optional() }),
+      ),
+      async (c) => {
+        const q = c.req.valid("query")
+        const status = Trellis.laneStatus(q.sessionID, q.directory)
+        return c.json(status ?? { laneID: undefined })
+      },
+    )
+    .get(
+      "/presence",
+      describeRoute({
+        summary: "List live agent presence",
+        operationId: "trellis.presence",
+      }),
+      validator("query", dirQuery),
+      async (c) => {
+        return c.json(Trellis.presence(c.req.valid("query").directory))
+      },
+    )
+    .post(
+      "/lane-promote",
+      describeRoute({
+        summary: "Promote a lane (AC-verified)",
+        operationId: "trellis.lane.promote",
+      }),
+      validator("query", dirQuery),
+      validator(
+        "json",
+        z.object({
+          laneId: z.string(),
+          message: z.string().optional(),
+        }),
+      ),
+      async (c) => {
+        const q = c.req.valid("query")
+        const body = c.req.valid("json")
+        const result = await Trellis.promoteLane(body.laneId, q.directory, { message: body.message })
+        if (!result) return c.json({ promoted: false, error: "engine unavailable" }, 500)
+        return c.json(result)
+      },
+    )
+    .post(
+      "/issues/:id/close",
+      describeRoute({
+        summary: "Close an issue — AC-gated; auto-promotes only after criteria pass and confirm",
+        operationId: "trellis.issue.close",
+      }),
+      validator("query", dirQuery),
+      validator("json", z.object({ confirm: z.boolean().optional() })),
+      async (c) => {
+        const id = c.req.param("id")
+        const q = c.req.valid("query")
+        const body = c.req.valid("json")
+        const result = await Trellis.closeIssueGated(id, q.directory, { confirm: body.confirm })
+        if (!result) return c.json({ closed: false, error: "engine unavailable" }, 500)
+        return c.json(result)
+      },
+    )
+    .post(
+      "/milestones",
+      describeRoute({
+        summary: "Create a milestone",
+        operationId: "trellis.milestone.create",
+      }),
+      validator("query", dirQuery),
+      validator("json", z.object({ message: z.string() })),
+      async (c) => {
+        const q = c.req.valid("query")
+        const body = c.req.valid("json")
+        const op = await Trellis.milestone(body.message, {}, q.directory)
+        if (!op) return c.json({ error: "Failed to create milestone" }, 500)
+        return c.json({ milestoneId: op.vcs.milestoneId })
+      },
+    )
+    .get(
+      "/garden",
+      describeRoute({
+        summary: "List idea garden clusters",
+        operationId: "trellis.garden.list",
+      }),
+      validator("query", dirQuery),
+      async (c) => {
+        const q = c.req.valid("query")
+        return c.json(Trellis.gardenList(q.directory) ?? [])
+      },
+    )
+    .post(
+      "/usage",
+      describeRoute({
+        summary: "Record a session LLM usage rollup (EAV)",
+        operationId: "trellis.usage.record",
+      }),
+      validator("query", dirQuery),
+      validator(
+        "json",
+        z.object({
+          sessionId: z.string(),
+          laneId: z.string().optional(),
+          tokens: z.number(),
+          inputTokens: z.number().optional(),
+          outputTokens: z.number().optional(),
+          cost: z.number().optional(),
+          model: z.string().optional(),
+        }),
+      ),
+      async (c) => {
+        const q = c.req.valid("query")
+        const body = c.req.valid("json")
+        const ok = Trellis.recordUsage(body, q.directory)
+        return c.json({ recorded: ok })
+      },
+    )
+    .get(
+      "/reentry-status",
+      describeRoute({
+        summary: "Re-entry status (whereami banner)",
+        operationId: "trellis.reentry.status",
+      }),
+      validator("query", dirQuery),
+      async (c) => {
+        return c.json(Trellis.reentryStatus(c.req.valid("query").directory))
+      },
     ),
 )

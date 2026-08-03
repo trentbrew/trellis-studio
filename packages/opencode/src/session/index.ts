@@ -27,8 +27,9 @@ import { ProjectID } from "../project/schema"
 import { WorkspaceID } from "../control-plane/schema"
 import { SessionID, MessageID, PartID } from "./schema"
 import { SessionLane } from "./lane"
+import { hooks } from "@/hooks/dispatcher"
 
-import type { Provider } from "@/provider/provider"
+import { Provider } from "@/provider/provider"
 import { ModelID, ProviderID } from "@/provider/schema"
 import { Permission } from "@/permission"
 import { Global } from "@/global"
@@ -455,6 +456,43 @@ export namespace Session {
           }
         }
 
+        const hookResult = yield* Effect.promise(() =>
+          hooks.dispatch("sessionStart", {
+            sessionID: result.id,
+            directory: result.directory,
+            title: result.title,
+            laneID: result.laneID,
+          }),
+        )
+        if (hookResult.nudge) {
+          yield* Effect.promise(async () => {
+            let model = await Provider.defaultModel()
+            for await (const item of MessageV2.stream(result.id)) {
+              if (item.info.role === "user" && item.info.model) {
+                model = item.info.model
+                break
+              }
+            }
+            const msg: MessageV2.User = {
+              id: MessageID.ascending(),
+              sessionID: result.id,
+              role: "user",
+              time: { created: Date.now() },
+              agent: "planner",
+              model,
+            }
+            await Session.updateMessage(msg)
+            await Session.updatePart({
+              id: PartID.ascending(),
+              messageID: msg.id,
+              sessionID: result.id,
+              type: "text",
+              text: hookResult.nudge!,
+              synthetic: true,
+            } satisfies MessageV2.TextPart)
+          })
+        }
+
         return result
       })
 
@@ -502,6 +540,14 @@ export namespace Session {
           for (const child of kids) {
             yield* remove(child.id)
           }
+          yield* Effect.sync(() => {
+            void hooks.dispatchVoid("sessionEnd", {
+              sessionID,
+              directory: session.directory,
+              laneID: session.laneID,
+              title: session.title,
+            })
+          })
           yield* unshare(sessionID).pipe(Effect.ignore)
           yield* Effect.sync(() => {
             SyncEvent.run(Event.Deleted, { sessionID, info: session })

@@ -12,6 +12,7 @@ import { SessionProcessor } from "./processor"
 import { fn } from "@/util/fn"
 import { Agent } from "@/agent/agent"
 import { Plugin } from "@/plugin"
+import { hooks } from "@/hooks/dispatcher"
 import { Config } from "@/config/config"
 import { NotFoundError } from "@/storage/db"
 import { ModelID, ProviderID } from "@/provider/schema"
@@ -173,6 +174,12 @@ export namespace SessionCompaction {
           { sessionID: input.sessionID },
           { context: [], prompt: undefined },
         )
+        yield* Effect.sync(() => {
+          void hooks.dispatchVoid("preCompact", {
+            sessionID: input.sessionID,
+            directory: Instance.directory,
+          })
+        })
         const defaultPrompt = `Provide a detailed prompt for continuing our conversation above.
 Focus on information that would be helpful for continuing the conversation, including what we did, what we're doing, which files we're working on, and what we're going to do next.
 The summary that you construct will be used so that another agent can read it and continue the work.

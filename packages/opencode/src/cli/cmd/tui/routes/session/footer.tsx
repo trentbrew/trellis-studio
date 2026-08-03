@@ -1,10 +1,53 @@
 import { createMemo, Match, onCleanup, onMount, Show, Switch } from "solid-js"
+import { createEffect, createSignal } from "solid-js"
 import { useTheme } from "../../context/theme"
 import { useSync } from "../../context/sync"
+import { useSDK } from "../../context/sdk"
 import { useDirectory } from "../../context/directory"
 import { useConnected } from "../../component/dialog-model"
 import { createStore } from "solid-js/store"
 import { useRoute } from "../../context/route"
+
+function LaneBadge() {
+  const { theme } = useTheme()
+  const sdk = useSDK()
+  const route = useRoute()
+  const sessionID = createMemo(() => (route.data.type === "session" ? route.data.sessionID : undefined))
+  const [lane, setLane] = createSignal<{ laneID?: string; dirty?: boolean; issueId?: string } | null>(null)
+
+  const poll = async () => {
+    if (!sessionID()) {
+      setLane(null)
+      return
+    }
+    try {
+      const q = new URLSearchParams({ sessionID: sessionID()! })
+      if (sdk.directory) q.set("directory", sdk.directory)
+      const res = await fetch(`${sdk.url}/trellis/lane-status?${q}`)
+      if (res.ok) setLane((await res.json()) as { laneID?: string; dirty?: boolean; issueId?: string })
+    } catch {
+      // server not ready
+    }
+  }
+
+  createEffect(() => {
+    void sessionID()
+    void poll()
+    const t = setInterval(poll, 5000)
+    onCleanup(() => clearInterval(t))
+  })
+
+  return (
+    <Show when={lane()?.laneID}>
+      <text fg={lane()?.dirty ? theme.warning : theme.success}>
+        <span style={{ fg: lane()?.dirty ? theme.warning : theme.success }}>◆</span> lane{" "}
+        {lane()!.laneID!.slice(-10)}
+        <Show when={lane()?.issueId}> · {lane()?.issueId}</Show>
+      </text>
+    </Show>
+  )
+}
+
 
 export function Footer() {
   const { theme } = useTheme()
@@ -60,6 +103,7 @@ export function Footer() {
             </text>
           </Match>
           <Match when={connected()}>
+            <LaneBadge />
             <Show when={permissions().length > 0}>
               <text fg={theme.warning}>
                 <span style={{ fg: theme.warning }}>△</span> {permissions().length} Permission
