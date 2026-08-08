@@ -61,6 +61,19 @@ export namespace SessionLane {
     return { laneID: meta.id }
   }
 
+  /**
+   * Bind a session to its existing lane (re-attach on resume). Never creates or
+   * enters a lane — new lanes require explicit activation (`Session.activateLane`
+   * / desk affordance / issue start). Prevents ghost lanes for every chat session.
+   */
+  export async function bind(input: { sessionID: SessionID; directory: string }): Promise<Binding | undefined> {
+    await Trellis.init(input.directory)
+    const existing = lanes(input.directory).find(
+      (lane) => lane.sessionId === input.sessionID && lane.status === "active",
+    )
+    return existing ? { laneID: existing.id } : undefined
+  }
+
   export async function fork(input: {
     parent: SessionRef
     childSessionID: SessionID
@@ -115,7 +128,16 @@ export namespace SessionLane {
       laneID = binding?.laneID
     }
     if (!laneID) return undefined
-    await activate({ directory: input.directory, laneID })
+    try {
+      await activate({ directory: input.directory, laneID })
+    } catch (err) {
+      // Lane may have been deleted - create a new one
+      console.warn(`[SessionLane] Failed to activate lane ${laneID}, creating new lane for session ${input.sessionID}`)
+      const binding = await ensure({ sessionID: input.sessionID, directory: input.directory })
+      laneID = binding?.laneID
+      if (!laneID) return undefined
+      await activate({ directory: input.directory, laneID })
+    }
     return { laneID }
   }
 

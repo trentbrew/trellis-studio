@@ -3,6 +3,7 @@ import { describeRoute, validator, resolver } from "hono-openapi"
 import z from "zod"
 import { existsSync, statSync } from "node:fs"
 import { Trellis } from "../../trellis"
+import { mentionTargets, MentionTarget } from "../../trellis/mentions"
 import { Note } from "../../trellis/note"
 import { CalendarEvent, type CalendarEventColor, type CalendarEventType } from "../../trellis/calendar-event"
 import * as SemanticLinks from "../../trellis/semantic-links"
@@ -2845,6 +2846,28 @@ export const TrellisRoutes = lazy(() =>
       validator("query", dirQuery),
       async (c) => {
         return c.json(Trellis.presence(c.req.valid("query").directory))
+      },
+    )
+    .get(
+      "/mentions",
+      describeRoute({
+        summary: "List routable @mention targets (human + live agents + active lanes)",
+        operationId: "trellis.mentions",
+        responses: {
+          200: {
+            description: "Mention targets",
+            content: {
+              "application/json": {
+                schema: resolver(z.object({ targets: MentionTarget.array() })),
+              },
+            },
+          },
+        },
+      }),
+      validator("query", dirQuery),
+      async (c) => {
+        const q = c.req.valid("query")
+        return c.json({ targets: mentionTargets(q.directory) })
       },
     )
     .post(

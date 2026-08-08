@@ -102,6 +102,8 @@
     "monaco-editor": "0.52.2",
     "motion": "latest",
     "papaparse": "5.5.3",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
     "remeda": "catalog:",
     "shiki": "catalog:",
     "solid-js": "catalog:",

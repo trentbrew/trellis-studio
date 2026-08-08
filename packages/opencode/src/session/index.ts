@@ -445,8 +445,11 @@ export namespace Session {
         }
 
         if (input.bindLane !== false) {
+          // Bind to an existing lane only (re-attach on resume). Never auto-create:
+          // fresh sessions get no lane — explicit activation (Session.activateLane
+          // / desk affordance / issue start) creates one. Prevents ghost lanes.
           const lane = yield* Effect.promise(() =>
-            SessionLane.ensure({ sessionID: result.id, directory: result.directory }),
+            SessionLane.bind({ sessionID: result.id, directory: result.directory }),
           )
           if (lane) {
             result.laneID = lane.laneID

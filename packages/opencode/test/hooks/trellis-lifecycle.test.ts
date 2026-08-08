@@ -21,7 +21,7 @@ describe("trellis-lifecycle", () => {
     const tmp = await tmpdir({ git: true })
     cleanup = tmp
     dir = tmp.path
-    await Instance.provide({ directory: dir, fn: () => Trellis.init(dir) })
+    await Instance.provide({ directory: dir, fn: () => Trellis.init(dir, { create: true }) })
   })
 
   afterAll(async () => {

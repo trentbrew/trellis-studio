@@ -960,7 +960,7 @@ The mission is the telos. Everything we do serves it.`
   // Init / Open
   // ---------------------------------------------------------------------------
 
-  export async function init(dir?: string) {
+  export async function init(dir?: string, opts?: { create?: boolean }) {
     const k = key(dir ?? Instance.directory)
 
     if (engines.has(k)) return engines.get(k)!
@@ -977,7 +977,17 @@ The mission is the telos. Everything we do serves it.`
       const eng = new TrellisVcsEngine({ rootPath: k })
 
       if (!TrellisVcsEngine.isRepo(k)) {
-        log.info("initializing trellis repo", { directory: k })
+        if (!opts?.create) {
+          // Auto-init is disabled by default: opening a workspace must never
+          // create a `.trellis` root on the fly. Run `trellis init` explicitly
+          // (or call `Trellis.init(dir, { create: true })`) to create one.
+          log.warn(
+            `[trellis] ${k} is not a Trellis workspace — skipping. Run \`trellis init\` to create a root explicitly (auto-init disabled).`,
+            { directory: k },
+          )
+          return undefined
+        }
+        log.info("initializing trellis repo (explicit)", { directory: k })
         const result = await eng.initRepo()
         log.info("trellis repo initialized", { directory: k, opsCreated: result.opsCreated })
         Bus.publish(Event.Initialized, { directory: k, opsCreated: result.opsCreated })

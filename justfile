@@ -38,6 +38,20 @@ desktop:
     echo "Starting Tauri (vite on :1420)..."
     bun tauri dev
 
+# Run the TUI from source (warms a local model backend first, if one is running)
+tui *ARGS:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    cd packages/opencode
+    # Preload weights so the model console's first prompt is instant rather than
+    # paying a multi-second load. Non-fatal: the TUI runs fine without a backend.
+    bun script/warm-model.ts || true
+    exec bun run --conditions=browser ./src/index.ts {{ARGS}}
+
+# Probe localhost for running model backends and pin weights in memory
+warm:
+    cd packages/opencode && bun script/warm-model.ts
+
 # Trellis file watcher (lane-aware when state.json has activeLaneId)
 watch:
     #!/usr/bin/env bash

@@ -218,6 +218,27 @@ export function Autocomplete(props: {
     }
   }
 
+  // Mentions are plain-text routing tokens (not prompt parts): delete the
+  // `@query` the user typed and insert the target, e.g. `@agent:explore `.
+  function insertMentionText(target: string) {
+    const input = props.input()
+    const currentCursorOffset = input.cursorOffset
+
+    input.cursorOffset = store.index
+    const startCursor = input.logicalCursor
+    input.cursorOffset = currentCursorOffset
+    const endCursor = input.logicalCursor
+
+    input.deleteRange(startCursor.row, startCursor.col, endCursor.row, endCursor.col)
+    const insert = target + " "
+    input.insertText(insert)
+    input.cursorOffset = store.index + Bun.stringWidth(insert)
+
+    props.setPrompt((draft) => {
+      draft.input = input.plainText
+    })
+  }
+
   const [files] = createResource(
     () => search(),
     async (query) => {
@@ -331,6 +352,42 @@ export function Autocomplete(props: {
     return options
   })
 
+  type MentionTargetJson = {
+    id: string
+    label: string
+    kind: string
+    laneId?: string
+    issueId?: string
+  }
+
+  const [mentions] = createResource(
+    () => (store.visible === "@" ? "load" : null),
+    async (load) => {
+      if (!load) return []
+      try {
+        const dir = sdk.directory ? `?directory=${encodeURIComponent(sdk.directory)}` : ""
+        const res = await fetch(`${sdk.url}/trellis/mentions${dir}`, {
+          headers: {
+            "x-opencode-directory": sdk.directory ? encodeURIComponent(sdk.directory) : "",
+          },
+        })
+        if (!res.ok) return []
+        const data = (await res.json()) as { targets?: MentionTargetJson[] }
+        return (data.targets ?? []).map(
+          (t): AutocompleteOption => ({
+            display: t.id,
+            value: t.id,
+            description: t.label,
+            onSelect: () => insertMentionText(t.id),
+          }),
+        )
+      } catch {
+        return []
+      }
+    },
+    { initialValue: [] },
+  )
+
   const agents = createMemo(() => {
     const agents = sync.data.agent
     return agents
@@ -386,9 +443,12 @@ export function Autocomplete(props: {
     const filesValue = files()
     const agentsValue = agents()
     const commandsValue = commands()
+    const mentionsValue = mentions()
 
     const mixed: AutocompleteOption[] =
-      store.visible === "@" ? [...agentsValue, ...(filesValue || []), ...mcpResources()] : [...commandsValue]
+      store.visible === "@"
+        ? [...mentionsValue, ...agentsValue, ...(filesValue || []), ...mcpResources()]
+        : [...commandsValue]
 
     const searchValue = search()
 

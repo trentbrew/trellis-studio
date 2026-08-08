@@ -1,4 +1,5 @@
 import { detect as detectPersonalFact } from "../capture/personal-events"
+import { routeTurnEndMentions } from "../trellis/mentions"
 
 const REMINDER_TAG = "trellis-enforcement"
 export const TRELLIS_HOOK_METADATA_KEY = "trellisHook"
@@ -13,6 +14,7 @@ export type TrellisHookEvent = {
     | "turn-end-enrichment"
     | "turn-end-research"
     | "turn-end-cms-reconcile"
+    | "turn-end-mention"
   phase: "tool" | "turn-end"
   label: string
 }
@@ -49,6 +51,7 @@ function hookEvent(kind: TrellisHookEvent["kind"], phase: TrellisHookEvent["phas
     "turn-end-enrichment": "Graph enrichment follow-up",
     "turn-end-research": "Research capture follow-up",
     "turn-end-cms-reconcile": "CMS reconcile follow-up",
+    "turn-end-mention": "Mention routing follow-up",
   }
   return {
     id: REMINDER_TAG,
@@ -361,6 +364,26 @@ export namespace TrellisEnforcement {
     if (!text) {
       reset(input.sessionID)
       return undefined
+    }
+
+    // Mention routing first: @human ends the turn (operator answers), @agent:
+    // emits a follow-up nudge to run the referenced subagent. Overrides capture
+    // reminders so a request-for-decision is never buried by enrichment noise.
+    const mention = routeTurnEndMentions({
+      sessionID: input.sessionID,
+      agent: input.agent,
+      assistantText: text,
+    })
+    if (mention.pause) {
+      reset(input.sessionID)
+      return undefined
+    }
+    if (mention.nudgeText && state.turnEndNudges < 1) {
+      state.turnEndNudges += 1
+      return {
+        text: mention.nudgeText,
+        hook: hookEvent("turn-end-mention", "turn-end"),
+      }
     }
 
     if (state.cmsEntryFailures > 0 && state.fileFallbackPaths.length > 0 && !satisfied(text, "cms-reconcile") && state.turnEndNudges < 1) {

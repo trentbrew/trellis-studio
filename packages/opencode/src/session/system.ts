@@ -123,6 +123,7 @@ export namespace SystemPrompt {
       `  Whiteboards: Trellis Studio stores diagrams as .whiteboard files (Excalidraw JSON on disk). You have a whiteboard tool — use it instead of hand-editing raw element JSON.`,
       `    Actions: list_catalog, describe, apply_template (template.sprint-retro, template.flow-diagram, template.system-context, …), insert_figure (figure.mindmap-node, figure.api-endpoint, layout.architecture-layers, …).`,
       `    Optional bind on insert_figure links canvas nodes to graph refs (issue:42, entity:decision-7). The human can also sketch in the Whiteboards projection or Code view; your edits land in the same file.`,
+      `  Mentions: to route attention or hand off work use @human (pause and ask the operator for a decision), @agent:<name> (reference a subagent you will run via the task tool this turn), or @lane:<id> / @issue:TRL-123 (reference a lane or issue). A turn that needs a human decision MUST end with @human.`,
     ]
     if (active.length) {
       lines.push(`  Active issues:`)
