@@ -117,4 +117,30 @@ describe("session lane binding (W5)", () => {
       },
     })
   })
+
+  test("concurrent activateLane calls do not throw", async () => {
+    await using tmp = await tmpdir({ git: true })
+    dir = tmp.path
+
+    await Instance.provide({
+      directory: dir,
+      init: InstanceBootstrap,
+      fn: async () => {
+        await Trellis.init(dir, { create: true })
+        const session = await Session.create({})
+        const eng = Trellis.engine(dir!)!
+
+        const results = await Promise.all([
+          Session.activateLane(session.id),
+          Session.activateLane(session.id),
+          Session.activateLane(session.id),
+        ])
+
+        const laneID = results[0]?.laneID
+        expect(laneID).toBeTruthy()
+        expect(eng.getActiveLaneId()).toBe(laneID)
+        await Session.remove(session.id)
+      },
+    })
+  })
 })

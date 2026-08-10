@@ -29,6 +29,17 @@ export namespace SessionLane {
     return listLaneMetas(join(dir, ".trellis"))
   }
 
+  const tails = new Map<string, Promise<unknown>>()
+
+  function serial<T>(dir: string, fn: () => Promise<T>): Promise<T> {
+    const prev = tails.get(dir) ?? Promise.resolve()
+    const run = prev.catch(() => { }).then(fn)
+    tails.set(dir, run)
+    return run.finally(() => {
+      if (tails.get(dir) === run) tails.delete(dir)
+    })
+  }
+
   export async function resolve(input: { id: SessionID; directory: string; laneID?: string }) {
     if (input.laneID) return input.laneID
     const match = lanes(input.directory).find((lane) => lane.sessionId === input.id && lane.status === "active")
@@ -38,7 +49,13 @@ export namespace SessionLane {
   async function enter(eng: NonNullable<ReturnType<typeof engine>>, laneID: string) {
     if (eng.getActiveLaneId() === laneID) return
     if (eng.getActiveLaneId()) await eng.leaveLane()
-    await eng.enterLane(laneID)
+    try {
+      await eng.enterLane(laneID)
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err)
+      if (msg.includes(`Already in lane '${laneID}'`)) return
+      throw err
+    }
   }
 
   export async function ensure(input: { sessionID: SessionID; directory: string }): Promise<Binding | undefined> {
@@ -57,7 +74,7 @@ export namespace SessionLane {
     if (eng.getActiveLaneId()) await eng.leaveLane()
 
     const meta = await eng.createLane({ sessionId: input.sessionID })
-    await eng.enterLane(meta.id)
+    await enter(eng, meta.id)
     return { laneID: meta.id }
   }
 
@@ -121,24 +138,27 @@ export namespace SessionLane {
     directory: string
     laneID?: string
   }): Promise<Binding | undefined> {
-    await Trellis.init(input.directory)
-    let laneID = input.laneID ?? (await resolve({ id: input.sessionID, directory: input.directory }))
-    if (!laneID) {
-      const binding = await ensure({ sessionID: input.sessionID, directory: input.directory })
-      laneID = binding?.laneID
-    }
-    if (!laneID) return undefined
-    try {
-      await activate({ directory: input.directory, laneID })
-    } catch (err) {
-      // Lane may have been deleted - create a new one
-      console.warn(`[SessionLane] Failed to activate lane ${laneID}, creating new lane for session ${input.sessionID}`)
-      const binding = await ensure({ sessionID: input.sessionID, directory: input.directory })
-      laneID = binding?.laneID
-      if (!laneID) return undefined
-      await activate({ directory: input.directory, laneID })
-    }
-    return { laneID }
+    return serial(input.directory, async () => {
+      await Trellis.init(input.directory)
+      let laneID = input.laneID ?? (await resolve({ id: input.sessionID, directory: input.directory }))
+      if (!laneID) {
+        const binding = await ensure({ sessionID: input.sessionID, directory: input.directory })
+        return binding
+      }
+      try {
+        await activate({ directory: input.directory, laneID })
+      } catch (err) {
+        // Lane may have been deleted - create a new one
+        console.warn(
+          `[SessionLane] Failed to activate lane ${laneID}, creating new lane for session ${input.sessionID}`,
+        )
+        const binding = await ensure({ sessionID: input.sessionID, directory: input.directory })
+        laneID = binding?.laneID
+        if (!laneID) return undefined
+        await activate({ directory: input.directory, laneID })
+      }
+      return { laneID }
+    })
   }
 
   export async function deactivate(dir?: string) {
