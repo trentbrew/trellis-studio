@@ -50,6 +50,14 @@ test-image.png
 test-cors.ts
 .cursorrules
 
+# Ephemeral desk scratch (campus rug/)
+/rug/
+
+# Local dev noise
+**/nohup-*.log
+packages/app/install.log
+packages/app/_code.txt
+
 # Playwright / script debug artifacts
 packages/app/playwright-*.txt
 packages/app/.script-out*.txt
