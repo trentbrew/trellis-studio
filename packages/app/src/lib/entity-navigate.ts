@@ -5,6 +5,8 @@ import { entityFromHref } from "@opencode-ai/ui/lib/entity-ref"
 import { browse } from "@/lib/preview-url"
 import { pushCmsNav } from "@/lib/cms-navigate"
 import { resolveEntityRoute, type EntityFact, type EntityRoute } from "@/lib/entity-route"
+import { entityTab, shellOpensAsTab } from "@/lib/entity-tab"
+import { looksLikeFile } from "@/lib/wiki-link"
 
 type FileApi = ReturnType<typeof useFile>
 type LayoutApi = ReturnType<typeof useLayout>
@@ -15,17 +17,35 @@ export type EntityNav = {
   setSearchParams: (params: Record<string, string | undefined>, options?: { replace?: boolean }) => void
   searchParams: Record<string, string | string[] | undefined>
   sessionKey: string
-  file: FileApi
+  file?: FileApi
   layout: LayoutApi
   dialog?: DialogApi
   lookup?: (id: string) => Promise<EntityFact[] | undefined>
 }
 
+export type EntityNavOptions = {
+  /** Open in dialog only — do not change session view or navigate away. */
+  dialogOnly?: boolean
+}
+
 const openFile = (raw: string, nav: EntityNav) => {
+  const file = nav.file
+  if (!file) return
   const path = raw.startsWith("file:") ? raw.slice(5) : raw
   if (!path) return
-  nav.file.load(path)
-  const tab = nav.file.tab(path)
+  void (async () => {
+    const resolved = await file.resolve(path)
+    file.load(resolved)
+    const tab = file.tab(resolved)
+    const tabs = nav.layout.tabs(nav.sessionKey)
+    tabs.open(tab)
+    tabs.setActive(tab)
+    nav.setSearchParams(params(nav, "code"))
+  })()
+}
+
+const openEntityTab = (id: string, nav: EntityNav) => {
+  const tab = entityTab(id)
   const tabs = nav.layout.tabs(nav.sessionKey)
   tabs.open(tab)
   tabs.setActive(tab)
@@ -35,8 +55,18 @@ const openFile = (raw: string, nav: EntityNav) => {
 const params = (nav: EntityNav, view: string) =>
   ({ ...nav.searchParams, view }) as Record<string, string | undefined>
 
-export function applyEntityRoute(route: EntityRoute, nav: EntityNav) {
+const pushDialog = (nav: EntityNav, id: string, type: string) => {
+  nav.dialog?.push(id, type)
+}
+
+export function applyEntityRoute(route: EntityRoute, nav: EntityNav, opts?: EntityNavOptions) {
+  const dialogOnly = opts?.dialogOnly ?? false
+
   if (route.kind === "trellis") {
+    if (dialogOnly && nav.dialog) {
+      pushDialog(nav, `issue:${route.issue}`, "issue")
+      return
+    }
     nav.navigate(`/trellis?issue=${encodeURIComponent(route.issue)}`)
     return
   }
@@ -74,15 +104,21 @@ export function applyEntityRoute(route: EntityRoute, nav: EntityNav) {
     return
   }
 
-  nav.setSearchParams(params(nav, "graph"))
-  nav.dialog?.push(route.id, route.type)
+  // Document + container shells open as session tabs (not modal dialogs).
+  if (shellOpensAsTab(route.type)) {
+    openEntityTab(route.id, nav)
+    return
+  }
+
+  pushDialog(nav, route.id, route.type)
+  if (!dialogOnly) nav.setSearchParams(params(nav, "graph"))
 }
 
-export async function openEntityRef(id: string, nav: EntityNav) {
+export async function openEntityRef(id: string, nav: EntityNav, opts?: EntityNavOptions) {
   const ref = id.trim()
   if (!ref) return false
   const route = await resolveEntityRoute(ref, nav.lookup)
-  applyEntityRoute(route, nav)
+  applyEntityRoute(route, nav, { dialogOnly: true, ...opts })
   return true
 }
 
@@ -95,6 +131,10 @@ export function handleReferenceClick(href: string, nav: EntityNav, event?: Mouse
   const entity = entityFromHref(href)
   if (entity) {
     event?.preventDefault()
+    if (looksLikeFile(entity)) {
+      openFile(entity, nav)
+      return true
+    }
     void openEntityRef(entity, nav)
     return true
   }
@@ -106,7 +146,7 @@ export function handleReferenceClick(href: string, nav: EntityNav, event?: Mouse
     const ns = slash === -1 ? rest : rest.slice(0, slash)
     const target = decodeURIComponent(slash === -1 ? "" : rest.slice(slash + 1))
     if (ns === "issue") {
-      nav.navigate(`/trellis?issue=${encodeURIComponent(target)}`)
+      void openEntityRef(`issue:${target}`, nav)
       return true
     }
     if (ns === "entity") {

@@ -225,4 +225,25 @@ describe("createSessionTabs", () => {
       dispose()
     })
   })
+
+  test("keeps entity tabs active without a file path", () => {
+    createRoot((dispose) => {
+      const tab = "entity://project%3Arox"
+      const [state] = createStore({
+        active: tab as string | undefined,
+        all: [tab, "context"],
+      })
+      const tabs = createMemo(() => ({ active: () => state.active, all: () => state.all }))
+      const result = createSessionTabs({
+        tabs,
+        pathFromTab: () => undefined,
+        normalizeTab: (value) => value,
+      })
+
+      expect(result.activeTab()).toBe(tab)
+      expect(result.activeFileTab()).toBe(tab)
+      expect(result.closableTab()).toBe(tab)
+      dispose()
+    })
+  })
 })

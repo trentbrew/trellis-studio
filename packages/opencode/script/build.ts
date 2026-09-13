@@ -5,6 +5,7 @@ import fs from "fs"
 import path from "path"
 import { fileURLToPath } from "url"
 import { createSolidTransformPlugin } from "@opentui/solid/bun-plugin"
+import type { BunPlugin } from "bun"
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -64,6 +65,18 @@ const singleFlag = process.argv.includes("--single")
 const baselineFlag = process.argv.includes("--baseline")
 const skipInstall = process.argv.includes("--skip-install")
 const plugin = createSolidTransformPlugin()
+
+// Any bare `sql.js` import (trellis VectorStore / SqlJsKernelBackend) goes through our
+// shim instead: the browser condition would otherwise pick a fetch-only emscripten
+// loader with no wasm on disk to load, aborting the process on boot. See sqljs-shim.ts.
+const sqlJsShimPlugin: BunPlugin = {
+  name: "sqljs-node-shim",
+  setup(build) {
+    build.onResolve({ filter: /^sql\.js$/ }, () => ({
+      path: path.resolve(dir, "src/trellis/sqljs-shim.ts"),
+    }))
+  },
+}
 const skipEmbedWebUi = process.argv.includes("--skip-embed-web-ui")
 
 const createEmbeddedWebUIBundle = async () => {
@@ -208,7 +221,7 @@ for (const item of targets) {
   await Bun.build({
     conditions: ["browser"],
     tsconfig: "./tsconfig.json",
-    plugins: [plugin],
+    plugins: [plugin, sqlJsShimPlugin],
     compile: {
       autoloadBunfig: false,
       autoloadDotenv: false,

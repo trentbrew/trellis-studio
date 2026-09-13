@@ -533,7 +533,7 @@ function wikiExtension(): import("marked").MarkedExtension {
           if (!ns) {
             if (/^TRL-\d+$/i.test(target)) ns = "issue"
             else if (/^DEC-\d+$/i.test(target)) ns = "decision"
-            else ns = "entity"
+            else ns = "file"
           }
           return {
             type: "wikilink",

@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# Corepack shims refuse this repo's packageManager: bun@…. Use:
+#   PATH="$PWD/script/pnpm-shim:$PATH" pnpm check
+set -euo pipefail
+root="$(cd "$(dirname "$0")/../.." && pwd)"
+if [[ "${1:-}" == "check" ]]; then
+  cd "$root/packages/app"
+  exec bun test --preload ./happydom.ts src/pages/graph-enter.test.ts
+fi
+echo "trellis-studio: use bun. pnpm shim only implements \`check\`." >&2
+exit 1

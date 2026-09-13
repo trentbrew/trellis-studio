@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Trellis — Graph spawn populate (TRL-74 design mock)</title>
+  <style>
+    :root {
+      --background: #0c0c0e;
+      --surface: #141418;
+      --well: #101014;
+      --text: #e8e8ec;
+      --text-muted: #888894;
+      --primary: #14b8a6;
+      --spawn: #10b981;
+      --destructive: #ef4444;
+      --border: #2a2a32;
+      --radius-sm: 4px;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+      --spawn-ms: 300ms;
+      --spawn-ease: cubic-bezier(0.22, 1, 0.36, 1);
+      --halo-ms: 6000ms;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--background);
+      color: var(--text);
+      font: 400 13px/1.5 "IBM Plex Sans", system-ui, sans-serif;
+    }
+    .bar {
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+    .wrap { display: grid; grid-template-columns: 200px 1fr; min-height: calc(100vh - 40px); }
+    .rail {
+      border-right: 1px solid var(--border);
+      background: var(--surface);
+      padding: 12px;
+    }
+    .rail h2 { margin: 0 0 12px; font-size: 11px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--text-muted); }
+    .chip {
+      display: flex; align-items: center; gap: 8px; padding: 6px 0;
+      width: 100%; border: 0; background: transparent; color: var(--text);
+      font: inherit; text-align: left; cursor: pointer;
+    }
+    .drawer {
+      position: absolute; top: 12px; right: 12px; width: 140px;
+      padding: 8px; border: 1px solid var(--border);
+      border-radius: var(--radius-md); background: var(--surface);
+      font-size: 11px; color: var(--text-muted);
+    }
+    .dot { width: 8px; height: 8px; border-radius: 50%; }
+    .stage {
+      position: relative;
+      background: var(--well);
+      overflow: hidden;
+    }
+    svg { width: 100%; height: 100%; min-height: 420px; display: block; }
+    .node { transform-box: fill-box; transform-origin: center; }
+    .node.enter {
+      animation: spawn var(--spawn-ms) var(--spawn-ease) both;
+    }
+    .node.fresh .halo {
+      animation: halo var(--halo-ms) ease-out forwards;
+    }
+    @keyframes spawn {
+      from { opacity: 0; transform: scale(0.18); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    @keyframes halo {
+      0% { opacity: 0.55; transform: scale(2.2); }
+      100% { opacity: 0; transform: scale(1); }
+    }
+    .reduced .node.enter { animation: spawn-rm 80ms ease-out both; }
+    .reduced .node.fresh .halo { animation: none; opacity: 0.1; transform: none; }
+    @media (prefers-reduced-motion: reduce) {
+      .node.enter { animation: spawn-rm 80ms ease-out both; }
+      .node.fresh .halo { animation: none; opacity: 0.1; transform: none; }
+    }
+    @keyframes spawn-rm {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    .overlay {
+      position: absolute; inset: 0;
+      display: none;
+      align-items: center; justify-content: center;
+      background: color-mix(in srgb, var(--background) 72%, transparent);
+      color: var(--text-muted);
+      font-size: 12px;
+    }
+    .overlay.on { display: flex; }
+    .flash { animation: flash 180ms ease-out; }
+    @keyframes flash {
+      0%, 40% { opacity: 0; }
+      100% { opacity: 1; }
+    }
+    .chrome {
+      position: absolute; left: 12px; bottom: 16px;
+      width: 180px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      background: color-mix(in srgb, var(--surface) 88%, transparent);
+      padding: 8px;
+    }
+    .chrome .row { display: flex; gap: 4px; margin-bottom: 8px; }
+    .chrome button {
+      flex: 1; border: 0; border-radius: var(--radius-sm);
+      padding: 6px; font: 500 10px/1 "IBM Plex Sans", sans-serif;
+      letter-spacing: 0.04em; text-transform: uppercase; cursor: pointer;
+      background: transparent; color: var(--text-muted);
+    }
+    .chrome button[aria-pressed="true"] {
+      background: var(--surface); color: var(--text);
+    }
+    .legend {
+      padding: 12px 16px;
+      border-top: 1px solid var(--border);
+      background: var(--surface);
+      display: flex; flex-wrap: wrap; gap: 12px 20px;
+      font-size: 11px; color: var(--text-muted);
+    }
+    .legend label { display: flex; align-items: center; gap: 6px; cursor: pointer; }
+    [data-design-note] { outline: 1px dashed color-mix(in srgb, var(--primary) 35%, transparent); outline-offset: 2px; }
+  </style>
+</head>
+<body>
+  <div class="bar">Trellis — Graph spawn populate (TRL-74 design mock)</div>
+  <div class="wrap">
+    <aside class="rail" aria-label="Entity filter rail">
+      <h2>Entities</h2>
+      <button type="button" class="chip"><span class="dot" style="background:#e879f9"></span> Issue</button>
+      <button type="button" class="chip"><span class="dot" style="background:#f472b6"></span> Project</button>
+      <button type="button" class="chip"><span class="dot" style="background:#14b8a6"></span> File</button>
+    </aside>
+    <div class="stage" data-design-note="Canvas always visible — never an overlay veil">
+      <div class="overlay" id="veil">Loading graph</div>
+      <div class="chrome" data-design-note="2D is the default pressed state">
+        <div class="row">
+          <button type="button" id="m2d" aria-pressed="true">2D</button>
+          <button type="button" id="m3d" aria-pressed="false">3D</button>
+        </div>
+        <div style="font-size:10px;letter-spacing:.04em;text-transform:uppercase;color:var(--text-muted)">Graph · no remount on patch</div>
+      </div>
+      <svg id="g" viewBox="0 0 640 420" tabindex="0" role="img" aria-label="Graph canvas" aria-busy="false">
+        <g id="links" stroke="#2a2a32" stroke-width="1.2" fill="none"></g>
+        <g id="nodes"></g>
+      </svg>
+      <aside class="drawer" tabindex="0" aria-label="Detail drawer">Selection</aside>
+    </div>
+  </div>
+  <div class="legend">
+    <label><input type="radio" name="mode" value="good" checked /> Seamless spawn (goal)</label>
+    <label><input type="radio" name="mode" value="bad" /> Janky remount (today)</label>
+    <label><input type="checkbox" id="rm" /> prefers-reduced-motion</label>
+    <span>Play: nodes arrive in waves. Goal = stay on canvas. Today = flash + veil.</span>
+  </div>
+  <script>
+    const pts = [
+      [180, 160, "#e879f9"], [280, 120, "#f472b6"], [360, 200, "#14b8a6"],
+      [220, 260, "#38bdf8"], [420, 140, "#a78bfa"], [480, 240, "#fbbf24"],
+      [140, 220, "#34d399"], [320, 300, "#fb923c"], [520, 180, "#60a5fa"],
+    ]
+    const nodesEl = document.getElementById("nodes")
+    const linksEl = document.getElementById("links")
+    const veil = document.getElementById("veil")
+    const svg = document.getElementById("g")
+    let mode = "good"
+    let i = 0
+    let timer
+
+    function clear() {
+      nodesEl.innerHTML = ""
+      linksEl.innerHTML = ""
+      i = 0
+    }
+
+    function addNode(idx, enter) {
+      const [x, y, c] = pts[idx]
+      const g = document.createElementNS("http://www.w3.org/2000/svg", "g")
+      g.setAttribute("transform", `translate(${x},${y})`)
+      g.classList.add("node")
+      if (enter) g.classList.add("enter")
+      if (idx === 3 && enter) g.classList.add("fresh")
+      g.innerHTML = `<circle class="halo" r="8" fill="none" stroke="var(--spawn)" stroke-width="2" opacity="0"/><circle r="8" fill="${c}"/><circle r="8" fill="none" stroke="${c}" stroke-width="1.5" opacity="0.35"/>`
+      nodesEl.appendChild(g)
+      if (idx > 0) {
+        const [x0, y0] = pts[idx - 1]
+        const l = document.createElementNS("http://www.w3.org/2000/svg", "line")
+        l.setAttribute("x1", x0); l.setAttribute("y1", y0)
+        l.setAttribute("x2", x); l.setAttribute("y2", y)
+        linksEl.appendChild(l)
+      }
+    }
+
+    function tickGood() {
+      if (i >= pts.length) return
+      addNode(i, true)
+      i++
+    }
+
+    function tickBad() {
+      veil.classList.add("on")
+      svg.classList.add("flash")
+      clear()
+      setTimeout(() => {
+        veil.classList.remove("on")
+        svg.classList.remove("flash")
+        for (let k = 0; k <= i && k < pts.length; k++) addNode(k, false)
+        i = Math.min(i + 2, pts.length)
+      }, 220)
+    }
+
+    function play() {
+      clear(); veil.classList.remove("on")
+      if (timer) clearInterval(timer)
+      if (mode === "good") {
+        timer = setInterval(tickGood, 380)
+      } else {
+        i = 1
+        timer = setInterval(tickBad, 700)
+      }
+    }
+
+    document.querySelectorAll('input[name="mode"]').forEach((el) => {
+      el.addEventListener("change", (e) => { mode = e.target.value; play() })
+    })
+    document.getElementById("rm").addEventListener("change", (e) => {
+      document.body.classList.toggle("reduced", e.target.checked)
+    })
+    document.getElementById("m2d").onclick = () => {
+      document.getElementById("m2d").setAttribute("aria-pressed", "true")
+      document.getElementById("m3d").setAttribute("aria-pressed", "false")
+    }
+    document.getElementById("m3d").onclick = () => {
+      document.getElementById("m3d").setAttribute("aria-pressed", "true")
+      document.getElementById("m2d").setAttribute("aria-pressed", "false")
+    }
+    play()
+  </script>
+</body>
+</html>

@@ -64,7 +64,6 @@ import { Persist, persisted } from "@/utils/persist"
 import FileTree from "@/components/file-tree"
 import { FileTreeContextMenu, useFileTreeContextMenu } from "@/components/file-tree-context-menu"
 import { BrowserPanel } from "@/pages/session/browser-panel"
-import { DatabasePanel } from "@/pages/session/database-panel"
 import { CmsPanel } from "@/pages/session/cms-panel"
 import { ProjectionPanel } from "@/pages/session/projection-panel"
 import {
@@ -83,8 +82,6 @@ import {
 import { projectionIcon } from "@/lib/projections/icons"
 import type { ProjectionDefinition } from "@/lib/projections/types"
 import { PreviewProvider } from "@/context/preview"
-import { AgentSegment } from "@/components/status-bar/segments/agent-segment"
-import { TerminalCountSegment } from "@/components/status-bar/segments/terminal-count-segment"
 import { SessionContextUsage } from "@/components/session-context-usage"
 import { SessionContextTab, SortableTab, FileVisual } from "@/components/session"
 import { useCommand } from "@/context/command"
@@ -99,6 +96,9 @@ import { useSync } from "@/context/sync"
 import { isCloudWorkspaceReady, resolveFileTreePanelState } from "@/lib/file-tree-empty-state"
 import { createFileTabListSync } from "@/pages/session/file-tab-scroll"
 import { FileTabContent } from "@/pages/session/file-tabs"
+import { EntityTabContent } from "@/pages/session/entity-tab"
+import { idFromEntityTab, isEntityTab, typeFromEntityId } from "@/lib/entity-tab"
+import { EntityIcon } from "@/lib/entity-theme"
 import { FilesGrid } from "@/pages/session/files-grid"
 import { createOpenSessionFileTab, createSessionTabs, type Sizing, type TopTab } from "@/pages/session/helpers"
 import { setSessionHandoff } from "@/pages/session/handoff"
@@ -110,6 +110,9 @@ const AssetsPanel = lazy(() =>
 )
 const DesignPanel = lazy(() =>
   import("@/pages/session/design-panel").then((module) => ({ default: module.DesignPanel })),
+)
+const DatabasePanel = lazy(() =>
+  import("@/pages/session/database-panel").then((module) => ({ default: module.DatabasePanel })),
 )
 
 function PanelLoading(props: { label: string }) {
@@ -551,18 +554,33 @@ function RailButton(props: {
   )
 }
 
+function entityLeaf(id: string): string {
+  if (!id.includes(":")) return id
+  return id.split(":").slice(1).join(":") || id
+}
+
 // Simple tab component (non-sortable)
 function SimpleTab(props: { tab: string; onTabClose: (tab: string) => void }): JSX.Element {
   const file = useFile()
   const language = useLanguage()
   const command = useCommand()
   const path = createMemo(() => file.pathFromTab(props.tab))
+  const entity = createMemo(() => idFromEntityTab(props.tab))
   const dirty = createMemo(() => {
     const value = path()
     if (!value) return false
     return file.dirty(value)
   })
   const content = createMemo(() => {
+    const eid = entity()
+    if (eid) {
+      return (
+        <div class="flex items-center gap-1.5 min-w-0">
+          <EntityIcon type={typeFromEntityId(eid)} size={12} class="shrink-0" />
+          <span class="truncate text-12-regular">{entityLeaf(eid)}</span>
+        </div>
+      )
+    }
     const value = path()
     if (!value) return
     return <FileVisual path={value} dirty={dirty()} />
@@ -1225,7 +1243,6 @@ export function SessionSidePanel(props: {
                 <For each={visibleRailItems().filter((it) => it.id !== "graph")}>{(item) => renderRailItem(item)}</For>
                 {projectionRailChrome()}
                 <div class="flex-1 min-h-0" aria-hidden="true" />
-                <TerminalCountSegment variant="rail" tooltipPlacement={railTooltipPlacement()} />
               </>
             }
           >
@@ -1233,7 +1250,6 @@ export function SessionSidePanel(props: {
               <For each={visibleRailItems().filter((it) => it.id !== "graph")}>{(item) => renderRailItem(item)}</For>
               {projectionRailChrome()}
             </div>
-            <TerminalCountSegment variant="rail" tooltipPlacement={railTooltipPlacement()} />
           </Show>
 
           <DropdownMenu gutter={8} placement={railBottom() ? "top-end" : "right-start"}>
@@ -1413,7 +1429,6 @@ export function SessionSidePanel(props: {
             </DropdownMenu.Portal>
           </DropdownMenu>
 
-          <AgentSegment variant="rail" tooltipPlacement={railTooltipPlacement()} />
         </div>
 
         <aside
@@ -1445,7 +1460,9 @@ export function SessionSidePanel(props: {
 
             <Show when={routeTab() === "graph"}>
               <div class="flex-1 min-h-0 overflow-hidden contain-strict animate-in fade-in slide-in-from-right-4 duration-200">
-                <DatabasePanel />
+                <Suspense fallback={<PanelLoading label="Loading graph..." />}>
+                  <DatabasePanel />
+                </Suspense>
               </div>
             </Show>
 
@@ -1779,7 +1796,11 @@ export function SessionSidePanel(props: {
                   </Show>
 
                   <Show when={activeFileTab()} keyed>
-                    {(tab) => <FileTabContent tab={tab} />}
+                    {(tab) => (
+                      <Show when={isEntityTab(tab)} fallback={<FileTabContent tab={tab} />}>
+                        <EntityTabContent tab={tab} />
+                      </Show>
+                    )}
                   </Show>
                 </Tabs>
               </div>

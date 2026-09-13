@@ -1,4 +1,5 @@
-import { createMemo, Show, type JSX } from "solid-js"
+import { createMemo, createSignal, Show, type JSX } from "solid-js"
+import { Icon } from "@opencode-ai/ui/icon"
 import { IconButton } from "@opencode-ai/ui/icon-button"
 import { EntityIcon } from "@/lib/entity-theme"
 import { EntityDetailPanel } from "./panel"
@@ -33,6 +34,7 @@ export function EntitySurface(props: {
   class?: string
 }) {
   const layout = () => props.layout ?? "panel"
+  const [sidebar, setSidebar] = createSignal(true)
   const items = createMemo(() => {
     if (props.items) return props.items
     if (props.navV2 && layout() === "panel") return V2_TABS
@@ -49,7 +51,7 @@ export function EntitySurface(props: {
       data-ui-component="app.entity.surface"
       data-ui-pattern="layout.inspector"
       data-entity-layout={layout()}
-      class={`flex h-full min-h-0 flex-col bg-panel ${props.class ?? ""}`}
+      class={`flex flex-1 min-h-0 w-full flex-col overflow-hidden bg-panel ${props.class ?? ""}`}
     >
       <Show when={props.header !== false}>
         <EntitySurfaceHeader
@@ -79,11 +81,11 @@ export function EntitySurface(props: {
           />
         }
       >
-        <div data-ui-slot="body" class="flex min-h-0 flex-1">
+        <div data-ui-slot="body" class="flex min-h-0 flex-1 overflow-hidden">
           <section
             data-ui-component="app.entity.surface-preview"
             data-ui-slot="preview"
-            class="min-w-0 flex-1 overflow-hidden bg-well"
+            class="min-w-0 flex-1 min-h-0 overflow-hidden bg-well flex flex-col"
           >
             {props.preview ?? entityAdapter(props.type).preview?.({ id: props.id, type: props.type }) ?? (
               <EntityPreview id={props.id} type={props.type} />
@@ -96,6 +98,8 @@ export function EntitySurface(props: {
             priority={props.priority}
             initialTab={tab()}
             items={items()}
+            open={sidebar()}
+            onOpen={setSidebar}
           />
         </div>
       </Show>
@@ -111,22 +115,42 @@ export function EntitySurfaceSidebar(props: {
   initialTab?: DetailTab
   items?: DetailTabItem[]
   class?: string
+  open?: boolean
+  onOpen?: (open: boolean) => void
 }) {
   const items = () => props.items ?? tabItems(inspectorSections(props.type, "split"))
+  const open = () => props.open ?? true
   return (
     <aside
       data-ui-component="app.entity.surface-sidebar"
       data-ui-slot="detail"
-      class={`w-72 shrink-0 border-l border-border-weaker-base bg-sidebar flex flex-col min-h-0 ${props.class ?? ""}`}
+      data-collapsed={open() ? undefined : "true"}
+      class={`shrink-0 border-l border-border-weaker-base bg-sidebar flex flex-col min-h-0 overflow-hidden transition-[width] duration-150 ease-out ${open() ? "w-72" : "w-9"} ${props.class ?? ""}`}
     >
-      <EntityDetailPanel
-        id={props.id}
-        type={props.type}
-        status={props.status}
-        priority={props.priority}
-        initialTab={props.initialTab ?? defaultTab(props.type, "split")}
-        items={items()}
-      />
+      <Show
+        when={open()}
+        fallback={
+          <button
+            type="button"
+            class="flex h-full w-full items-start justify-center pt-2 text-icon-weak hover:text-text-base hover:bg-surface-raised-base/50 transition-colors"
+            title="Expand details"
+            aria-label="Expand details"
+            onClick={() => props.onOpen?.(true)}
+          >
+            <Icon name="chevron-left" size="small" />
+          </button>
+        }
+      >
+        <EntityDetailPanel
+          id={props.id}
+          type={props.type}
+          status={props.status}
+          priority={props.priority}
+          initialTab={props.initialTab ?? defaultTab(props.type, "split")}
+          items={items()}
+          onCollapse={() => props.onOpen?.(false)}
+        />
+      </Show>
     </aside>
   )
 }

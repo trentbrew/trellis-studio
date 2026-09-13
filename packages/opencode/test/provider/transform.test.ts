@@ -483,6 +483,56 @@ describe("ProviderTransform.schema - strict object (DeepSeek / Big Pickle)", () 
     expect(result.type).not.toBeNull()
   })
 
+  test("merges zod discriminated anyOf with const discriminator to root object", () => {
+    const schema = {
+      $schema: "https://json-schema.org/draft/2020-12/schema",
+      anyOf: [
+        {
+          type: "object",
+          properties: {
+            action: { type: "string", const: "list_icons" },
+            query: { type: "string" },
+          },
+          required: ["action"],
+          additionalProperties: false,
+        },
+        {
+          type: "object",
+          properties: {
+            action: { type: "string", const: "update_brand" },
+            name: { type: "string" },
+            logoPath: { anyOf: [{ type: "string" }, { type: "null" }] },
+          },
+          required: ["action"],
+          additionalProperties: false,
+        },
+      ],
+    } as any
+
+    const result = ProviderTransform.schema(deepseekModel, schema) as any
+
+    expect(result.type).toBe("object")
+    expect(result.properties.action.enum).toEqual(["list_icons", "update_brand"])
+    expect(result.properties.query).toBeDefined()
+    expect(result.properties.name).toBeDefined()
+    expect(result.properties.logoPath).toEqual({ type: "string" })
+    expect(result.required).toEqual(["action"])
+  })
+
+  test("strips string null type nodes", () => {
+    const schema = {
+      type: "null",
+      properties: {
+        command: { type: "string" },
+      },
+    } as any
+
+    const result = ProviderTransform.schema(deepseekModel, schema) as any
+
+    expect(result.type).toBe("object")
+    expect(result.properties.command.type).toBe("string")
+  })
+
   test("strips type null nodes", () => {
     const schema = {
       type: null,

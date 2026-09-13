@@ -5,6 +5,7 @@ import { AppMarkdown } from "@/components/app-markdown"
 import type { FileContent } from "@opencode-ai/sdk/v2"
 import { sampledChecksum } from "@opencode-ai/util/encode"
 import { useSDK } from "@/context/sdk"
+import { useEntityLinkNav } from "@/lib/use-entity-link-nav"
 import { CsvViewer } from "@/pages/session/csv-editor"
 import { isMd, isCsv, isVideo, isAudio, isImage, rawUrl } from "./helpers"
 
@@ -44,6 +45,7 @@ export function FilePreview(props: {
   onLinkClick?: (path: string) => void
 }) {
   const sdk = useSDK()
+  const { onLinkClick: onReferenceClick } = useEntityLinkNav()
   const text = createMemo(() => {
     if (!props.file || props.file.type !== "text" || props.file.encoding === "base64") return
     return props.file.content
@@ -186,6 +188,7 @@ export function FilePreview(props: {
                     cacheKey={sum()}
                     basePath={props.path}
                     onLinkClick={(href) => {
+                      if (onReferenceClick(href)) return
                       const resolved = resolveLink(props.path, href)
                       if (!resolved) return
                       props.onLinkClick?.(resolved)

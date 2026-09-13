@@ -38,10 +38,22 @@ export function EntityDetailTabs(props: {
   setTab: (tab: DetailTab) => void
   items?: DetailTabItem[]
   class?: string
+  onCollapse?: () => void
 }) {
   const items = () => props.items ?? DEFAULT_TABS
   return (
     <div class={`shrink-0 flex items-center gap-1 px-2 py-1.5 border-b border-border-weaker-base ${props.class ?? ""}`}>
+      <Show when={props.onCollapse}>
+        <button
+          type="button"
+          class="flex h-7 w-7 shrink-0 items-center justify-center rounded text-icon-weak hover:text-text-base hover:bg-surface-raised-base/50 transition-colors"
+          title="Collapse details"
+          aria-label="Collapse details"
+          onClick={() => props.onCollapse?.()}
+        >
+          <Icon name="chevron-right" size="small" />
+        </button>
+      </Show>
       <For each={items()}>
         {(item) => {
           const active = () => props.tab === item.id

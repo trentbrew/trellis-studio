@@ -7,6 +7,7 @@ import { mentionTargets, MentionTarget } from "../../trellis/mentions"
 import { Note } from "../../trellis/note"
 import { CalendarEvent, type CalendarEventColor, type CalendarEventType } from "../../trellis/calendar-event"
 import * as SemanticLinks from "../../trellis/semantic-links"
+import * as EntityMaterialize from "../../trellis/entity-materialize"
 import { CsvImportBody, CsvImportResult, importCsv } from "../../trellis/csv-import"
 import { ProjectBrand } from "../../trellis/project-brand"
 import { MCP } from "../../mcp"
@@ -1459,7 +1460,7 @@ export const TrellisRoutes = lazy(() =>
             const id = `mcp:${name}`
             base.nodes.push({ id, label: name, type: "mcp", status: status.status })
           }
-        } catch {}
+        } catch { }
 
         return c.json(base)
       },
@@ -1799,6 +1800,7 @@ export const TrellisRoutes = lazy(() =>
             ...(body.meta ?? {}),
             reason: body.meta?.reason ?? "cms rich_text semantic link sync",
           })
+          await EntityMaterialize.ensureFromFacts(body.facts, q.directory ?? "", body.meta)
           return c.json(result)
         } catch (err) {
           const msg = err instanceof Error ? err.message : String(err)

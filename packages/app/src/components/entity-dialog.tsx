@@ -25,10 +25,11 @@ import { createStore } from "solid-js/store"
 import { useSDK } from "@/context/sdk"
 import { useTrellis, type WorkUnit } from "@/context/trellis"
 import { useTrellisStore } from "@/context/trellis-store"
+import { AppMarkdown } from "@/components/app-markdown"
 import { EntityIcon, entityColor } from "@/lib/entity-theme"
+import { useEntityLinkNav } from "@/lib/use-entity-link-nav"
 import { MetaField, Pill, SectionHeader, TagChip } from "@/components/affordance"
 import { EntityActivity, EntitySurface, EntitySurfaceSidebar } from "@/components/entity-detail"
-import { resolveSubtitle, resolveTitle } from "@/components/entity-detail/adapters"
 import { autoNoteTitle, noteFromFacts } from "@/lib/projections/notes-model"
 import { apiDeleteNote, apiSaveNote } from "@/lib/projections/notes-api"
 import { NoteEditor } from "@/pages/session/note-editor"
@@ -41,8 +42,24 @@ import {
   type EntityDialogMode,
   type EntityDialogStackApi,
 } from "@/components/entity-dialog-stack"
+import { entityShellClass, SHELL_ACCENT, SHELL_SIZE } from "@/lib/entity-shell"
+import { entityTab, shellOpensAsTab } from "@/lib/entity-tab"
+import { getWorkspaceKey } from "@/pages/session/helpers"
+import { useSessionKey } from "@/pages/session/session-layout"
+import { useLayout } from "@/context/layout"
+import { useParams, useSearchParams } from "@solidjs/router"
+import { DataProvider } from "@opencode-ai/ui/context"
+import { sampledChecksum } from "@opencode-ai/util/encode"
 
-const base = { w: 760, h: 620 }
+const STUB = {
+  session: [],
+  session_status: {},
+  session_diff: {},
+  message: {},
+  part: {},
+}
+
+const base = { w: 880, h: 720 }
 
 type Push = {
   mode?: EntityDialogMode
@@ -86,6 +103,10 @@ export function EntityDialogProvider(props: ParentProps) {
   const dialog = useDialog()
   const trellis = useTrellis()
   const sdk = useSDK()
+  const layout = useLayout()
+  const params = useParams()
+  const [searchParams, setSearchParams] = useSearchParams()
+  const { sessionKey } = useSessionKey()
   const stack = createEntityDialogStack({ base })
 
   const api: Ctx = {
@@ -100,9 +121,23 @@ export function EntityDialogProvider(props: ParentProps) {
     sdk,
     push(id, type, opts) {
       const next = full(id, type)
+      const t = kind(next, type)
+      // Document + container shells open as session tabs — retire modal for those.
+      if (shellOpensAsTab(t)) {
+        const key = getWorkspaceKey(params.dir) || sessionKey()
+        const tab = entityTab(next)
+        const tabs = layout.tabs(key)
+        tabs.open(tab)
+        tabs.setActive(tab)
+        setSearchParams({ ...searchParams, view: "code" } as Record<string, string | undefined>)
+        return
+      }
+      const shell = entityShellClass(t)
+      const size = SHELL_SIZE[shell]
+      stack.api.setSize(size.w, size.h)
       stack.api.push({
         id: next,
-        type: kind(next, type),
+        type: t,
         mode: opts?.mode,
         draft: opts?.draft,
       })
@@ -124,12 +159,17 @@ export function useEntityDialog() {
   return ctx
 }
 
+export function useEntityDialogOptional() {
+  return useContext(Context)
+}
+
 function EntityDialogHost() {
   const dialog = useEntityDialog()
 
   return (
     <EntityDialogStackHost
       stack={dialog.stack}
+      size={dialog.size}
       render={(entry, index) => <EntityCard entry={entry} index={index()} />}
     />
   )
@@ -146,10 +186,15 @@ function EntityCard(props: { entry: EntityDialogEntry; index: number }) {
     if (isNote()) return noteFromFacts(props.entry.id, store.facts).title
     return short(props.entry.id)
   })
+  const shell = createMemo(() => entityShellClass(props.entry.type))
+  const accent = createMemo(() => SHELL_ACCENT[shell()])
 
   return (
     <EntityDialogStackCard index={props.index} transform={transform()}>
-      <div class="shrink-0 border-b border-border-weaker-base px-4 py-3 flex items-center gap-3">
+      <div
+        class="shrink-0 border-b border-border-weaker-base px-4 py-3 flex items-center gap-3"
+        style={{ "border-top": `2px solid ${accent()}` }}
+      >
         <Show when={props.index > 0}>
           <button
             class="inline-flex items-center gap-1 rounded-md px-1.5 py-1 text-xs text-text-weak hover:text-text-base hover:bg-surface-raised-base/60 transition-colors"
@@ -176,7 +221,7 @@ function EntityCard(props: { entry: EntityDialogEntry; index: number }) {
         </Show>
       </div>
 
-      <div class="min-h-0 flex-1 overflow-hidden">
+      <div class="flex min-h-0 flex-1 flex-col overflow-hidden">
         <Switch fallback={<GenericContent id={props.entry.id} type={props.entry.type} />}>
           <Match when={props.entry.type === "issue"}>
             <IssueContent id={props.entry.id} />
@@ -200,6 +245,8 @@ function EntitySidebar(props: { entityId: string; type: string }) {
 function IssueContent(props: { id: string }) {
   const dialog = useEntityDialog()
   const trellis = dialog.trellis
+  const sdk = useSDK()
+  const { onLinkClick } = useEntityLinkNav()
   const [state, setState] = createStore({
     busy: false,
     adding: false,
@@ -213,6 +260,8 @@ function IssueContent(props: { id: string }) {
   const [traces] = createResource(id, (next) => trellis.fetchDecisionChain(`issue:${next}`), { initialValue: [] })
   const issue = () => detail.latest
   const trace = () => traces.latest ?? []
+  const desc = createMemo(() => issue()?.description?.trim())
+  const descSum = createMemo(() => sampledChecksum(desc() ?? ""))
 
   const act = async (run: () => Promise<unknown>) => {
     setState("busy", true)
@@ -290,8 +339,14 @@ function IssueContent(props: { id: string }) {
 
                 <h1 class="text-16-semibold text-text-strong leading-tight">{issue().title}</h1>
 
-                <Show when={issue().description}>
-                  <div class="text-13-regular text-text-base whitespace-pre-wrap">{issue().description}</div>
+                <Show when={desc()}>
+                  {(text) => (
+                    <DataProvider data={STUB} directory={sdk.directory} mediaUrl={sdk.url}>
+                      <div class="entity-md-preview text-13-regular text-text-base">
+                        <AppMarkdown text={text()} cacheKey={descSum()} onLinkClick={onLinkClick} />
+                      </div>
+                    </DataProvider>
+                  )}
                 </Show>
 
                 <Show when={issue().labels.length > 0}>
@@ -785,12 +840,5 @@ function NoteContent(props: { id: string }) {
 }
 
 function GenericContent(props: { id: string; type: string }) {
-  const dialog = useEntityDialog()
-  const [ent] = createResource(() => props.id, dialog.trellis.fetchEntity, { initialValue: undefined })
-  const entity = () => ent.latest
-  const ctx = () => ({ id: props.id, type: props.type, facts: entity()?.facts ?? [] })
-  const title = createMemo(() => resolveTitle(ctx()))
-  const subtitle = createMemo(() => resolveSubtitle(ctx()))
-
-  return <EntitySurface id={props.id} type={props.type} title={title()} subtitle={subtitle()} layout="split" />
+  return <EntitySurface id={props.id} type={props.type} layout="split" header={false} />
 }

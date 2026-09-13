@@ -64,7 +64,7 @@ describe("applyAgentTurnDestination", () => {
       nav,
     )
 
-    expect(nav.file.load).toHaveBeenCalledWith("crdt-blog-post.md")
+    expect(nav.file?.load).toHaveBeenCalledWith("crdt-blog-post.md")
     expect(nav.setSearchParams).toHaveBeenCalledWith({
       view: "code",
       lens: undefined,

@@ -158,6 +158,8 @@ export const createSessionTabs = (input: TabsInput) => {
       return active
     if (active === "review" && review()) return active
     if (active && input.pathFromTab(active)) return input.normalizeTab(active)
+    // Entity tabs and other non-file strip tabs live in openedTabs without a path.
+    if (active && openedTabs().includes(active)) return active
 
     const first = openedTabs()[0]
     if (first) return first

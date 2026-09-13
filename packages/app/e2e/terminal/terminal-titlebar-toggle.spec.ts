@@ -1,14 +1,14 @@
 import { test, expect } from "../fixtures"
 import { waitTerminalReady } from "../actions"
-import { railTerminalToggleSelector, terminalPanelSelector, terminalSelector } from "../selectors"
+import { terminalPanelSelector, terminalSelector, terminalToggleSelector } from "../selectors"
 import { terminalToggleKey } from "../utils"
 
-test("icon rail terminal toggle opens and closes panel", async ({ page, gotoSession }) => {
+test("titlebar terminal toggle opens and closes panel", async ({ page, gotoSession }) => {
   await gotoSession()
 
   const panel = page.locator(terminalPanelSelector)
   const terminal = page.locator(terminalSelector)
-  const toggle = page.locator(railTerminalToggleSelector).first()
+  const toggle = page.locator(terminalToggleSelector).first()
 
   if (!(await panel.isVisible())) {
     await page.keyboard.press(terminalToggleKey)

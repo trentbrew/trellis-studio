@@ -14,6 +14,7 @@ export function EntityDetailPanel(props: {
   initialTab?: DetailTab
   items?: DetailTabItem[]
   class?: string
+  onCollapse?: () => void
 }) {
   const isFile = createMemo(() => props.type === "file" || props.type === "directory")
   // Adapter default, constrained to the tabs this panel actually renders so a
@@ -37,7 +38,7 @@ export function EntityDetailPanel(props: {
 
   return (
     <div class={`flex flex-col min-h-0 flex-1 ${props.class ?? ""}`}>
-      <EntityDetailTabs tab={tab()} setTab={setTab} items={props.items} />
+      <EntityDetailTabs tab={tab()} setTab={setTab} items={props.items} onCollapse={props.onCollapse} />
       <Show when={tab() === "preview"}>
         <EntityPreview id={props.id} type={props.type} />
       </Show>

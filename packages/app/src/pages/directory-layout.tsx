@@ -9,6 +9,7 @@ import { SDKProvider } from "@/context/sdk"
 import { TrellisProvider } from "@/context/trellis"
 import { TrellisStoreProvider } from "@/context/trellis-store"
 import { EntityDialogProvider } from "@/components/entity-dialog"
+import { EntityLinkHoverLayer } from "@/components/entity-link-hover"
 import { SyncProvider, useSync } from "@/context/sync"
 import { JobBridge } from "@/components/status-bar/job-bridge"
 import { GraphPreloadTrigger } from "@/components/graph-preload-trigger"
@@ -58,7 +59,10 @@ function DirectoryDataProvider(props: ParentProps<{ directory: string }>) {
         <LocalProvider>
           <NowPlayingBadge />
           <PreviewBadge />
-          <EntityDialogProvider>{props.children}</EntityDialogProvider>
+          <EntityDialogProvider>
+            <EntityLinkHoverLayer />
+            {props.children}
+          </EntityDialogProvider>
         </LocalProvider>
       </WhiteboardEmbedProvider>
     </DataProvider>

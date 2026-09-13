@@ -96,3 +96,30 @@ export function isKnownWhiteboardLocation(path: string): boolean {
   }
   return false
 }
+
+export const ENTITY_CMS_DIR = "@entities"
+export const ENTITY_CMS_EXT = ".md"
+
+export function defaultEntityMarkdownPath(id: string): string {
+  const colon = id.indexOf(":")
+  const collection = colon === -1 ? "entity" : id.slice(0, colon)
+  const slug = colon === -1 ? id : id.slice(colon + 1)
+  return `${ENTITY_CMS_DIR}/${collection}/${slug}${ENTITY_CMS_EXT}`
+}
+
+export function isEntityMarkdownPath(path: string): boolean {
+  const norm = path.replace(/\\/g, "/").replace(/^\.\//, "")
+  return norm.startsWith(`${ENTITY_CMS_DIR}/`) && norm.toLowerCase().endsWith(ENTITY_CMS_EXT)
+}
+
+export function entityIdFromMarkdownPath(path: string): string | undefined {
+  const norm = path.replace(/\\/g, "/").replace(/^\.\//, "")
+  if (!isEntityMarkdownPath(norm)) return undefined
+  const rest = norm.slice(`${ENTITY_CMS_DIR}/`.length)
+  const slash = rest.lastIndexOf("/")
+  if (slash === -1) return undefined
+  const collection = rest.slice(0, slash)
+  const slug = rest.slice(slash + 1).replace(/\.md$/i, "")
+  if (!collection || !slug) return undefined
+  return `${collection}:${slug}`
+}

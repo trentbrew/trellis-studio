@@ -21,6 +21,7 @@ import { useTrellisOptional } from "@/context/trellis"
 import { useTrellisStoreOptional } from "@/context/trellis-store"
 import { searchMentions } from "@/lib/mention-search"
 import { mentionTrellisCtx } from "@/lib/mention-trellis"
+import { useEntityLinkNav } from "@/lib/use-entity-link-nav"
 import { defaultEntityColor, defaultEntityIcon } from "@/lib/entity-theme"
 import { formatServerError } from "@/utils/server-errors"
 import { getSessionHandoff } from "@/pages/session/handoff"
@@ -82,6 +83,7 @@ export function FileTabContent(props: { tab: string }) {
   const sync = useSync()
   const trellis = useTrellisOptional()
   const trellisStore = useTrellisStoreOptional()
+  const { mentionNavigate } = useEntityLinkNav()
   const fileComponent = useFileComponent()
   const { sessionKey, tabs, view } = useSessionLayout()
   const activeFileTab = createSessionTabs({
@@ -526,14 +528,7 @@ export function FileTabContent(props: { tab: string }) {
                   await file.load(id)
                   return file.text(id)
                 },
-                navigate: (attrs) => {
-                  if (attrs.type === "file") {
-                    const t = file.tab(attrs.id)
-                    file.load(attrs.id)
-                    tabs().open(t)
-                    tabs().setActive(t)
-                  }
-                },
+                navigate: mentionNavigate,
                 onCreate: async (rel) => {
                   try {
                     await sdk.client.file.write({ fileWriteInput: { path: rel, content: "", format: false } })

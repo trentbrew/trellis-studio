@@ -21,6 +21,7 @@ import { Log } from "../util/log"
 import { Protected } from "./protected"
 import { Ripgrep } from "./ripgrep"
 import * as SemanticLinks from "../trellis/semantic-links"
+import * as EntityMaterialize from "../trellis/entity-materialize"
 import { Trellis } from "../trellis"
 
 export namespace File {
@@ -464,7 +465,7 @@ export namespace File {
     }) => Effect.Effect<string[]>
   }
 
-  export class Service extends ServiceMap.Service<Service, Interface>()("@opencode/File") {}
+  export class Service extends ServiceMap.Service<Service, Interface>()("@opencode/File") { }
 
   export const layer = Layer.effect(
     Service,
@@ -814,6 +815,15 @@ export namespace File {
           yield* Effect.promise(async () => {
             await Trellis.init(Instance.directory).catch(() => undefined)
             if (!Trellis.storeStats(Instance.directory)) return
+            if (EntityMaterialize.shouldIngestMarkdown(input.path, input.content)) {
+              await EntityMaterialize.ingest(input.path, input.content, Instance.directory, {
+                actor: "file-write",
+                actorKind: "system",
+                source: "entity-markdown",
+                reason: "cms entity markdown ingest",
+              })
+              return
+            }
             SemanticLinks.syncMarkdownFile(input.path, input.content, Instance.directory, {
               actor: "file-write",
               actorKind: "system",

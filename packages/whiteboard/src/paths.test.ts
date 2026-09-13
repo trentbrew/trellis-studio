@@ -1,7 +1,10 @@
 import { describe, expect, test } from "bun:test"
 import {
   dedupeWhiteboardPath,
+  defaultEntityMarkdownPath,
   defaultWhiteboardPath,
+  entityIdFromMarkdownPath,
+  isEntityMarkdownPath,
   isKnownWhiteboardLocation,
   isSketchWhiteboardPath,
   legacyWhiteboardDirs,
@@ -53,5 +56,15 @@ describe("materialized whiteboard paths", () => {
   test("whiteboardPathForIntent builds under rule dir", () => {
     expect(whiteboardPathForIntent("roadmap", "durable")).toBe("@canvases/roadmap.whiteboard")
     expect(whiteboardPathForIntent("roadmap", "sketch")).toBe(".trellis/sketch/roadmap.whiteboard")
+  })
+
+  test("defaultEntityMarkdownPath uses @entities namespace", () => {
+    expect(defaultEntityMarkdownPath("artifact:jd")).toBe("@entities/artifact/jd.md")
+  })
+
+  test("entityIdFromMarkdownPath reverses default path", () => {
+    expect(entityIdFromMarkdownPath("@entities/person/ada.md")).toBe("person:ada")
+    expect(isEntityMarkdownPath("@entities/person/ada.md")).toBe(true)
+    expect(isEntityMarkdownPath("jd.md")).toBe(false)
   })
 })

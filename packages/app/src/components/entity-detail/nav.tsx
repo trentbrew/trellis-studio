@@ -1,5 +1,5 @@
 import { createContext, useContext, type ParentProps } from "solid-js"
-import { useEntityDialog } from "@/components/entity-dialog"
+import { useEntityDialogOptional } from "@/components/entity-dialog"
 
 export type NavigateFn = (id: string, namespace?: string) => void
 
@@ -12,8 +12,8 @@ export function EntityNavProvider(props: ParentProps<{ navigate: NavigateFn }>) 
 export function useEntityNavigate(): NavigateFn {
   const override = useContext(NavContext)
   if (override) return override
-  const dialog = useEntityDialog()
-  return (id, ns) => dialog.push(id, ns)
+  const dialog = useEntityDialogOptional()
+  return (id, ns) => dialog?.push(id, ns)
 }
 
 // Hover is a separate channel because most consumers don't care about it;

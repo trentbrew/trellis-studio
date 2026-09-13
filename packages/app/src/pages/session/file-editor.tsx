@@ -1544,8 +1544,8 @@ function MarkdownWithFrontmatter(props: {
   }
 
   return (
-    <div data-component="markdown-with-frontmatter" class="flex h-full min-h-0">
-      <div class="flex-1 min-h-0">
+    <div data-component="markdown-with-frontmatter" class="flex h-full min-h-0 overflow-hidden">
+      <div class="flex h-full min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
         <MarkdownEditor
           path={props.path}
           value={split().body}
@@ -1712,8 +1712,8 @@ export function FileEditor(props: {
   }
 
   return (
-    <div class="h-full min-h-0 flex flex-col relative">
-      <div class="flex items-center justify-between px-3 py-2 border-b border-border-weaker-base bg-transparent">
+    <div class="flex h-full min-h-0 flex-1 flex-col overflow-hidden relative">
+      <div class="flex items-center justify-between px-3 py-2 border-b border-border-weaker-base bg-transparent shrink-0">
         <div class="flex items-center gap-3 min-w-0">
           <Show when={md() && mode() === "rich"}>
             <div class="flex items-center gap-1">
@@ -1838,17 +1838,19 @@ export function FileEditor(props: {
             <CodeEditor path={props.path} value={props.value} active={props.active} onChange={props.onChange} />
           </Match>
           <Match when={md() && mode() === "rich"}>
-            <MarkdownWithFrontmatter
-              path={props.path}
-              value={props.value}
-              active={props.active}
-              onChange={props.onChange}
-              mention={props.mention}
-              frontmatterPanel={props.frontmatterPanel}
-              onRef={(r) => {
-                mdRef = r
-              }}
-            />
+            <div class="h-full min-h-0 overflow-hidden">
+              <MarkdownWithFrontmatter
+                path={props.path}
+                value={props.value}
+                active={props.active}
+                onChange={props.onChange}
+                mention={props.mention}
+                frontmatterPanel={props.frontmatterPanel}
+                onRef={(r) => {
+                  mdRef = r
+                }}
+              />
+            </div>
           </Match>
           <Match when={mode() === "raw" && !base()}>
             <CodeEditor path={props.path} value={props.value} active={props.active} onChange={props.onChange} />

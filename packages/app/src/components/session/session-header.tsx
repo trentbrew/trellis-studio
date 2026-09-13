@@ -21,8 +21,10 @@ import { useSessionLayout } from "@/pages/session/session-layout"
 import { messageAgentColor } from "@/utils/agent"
 import { decode64 } from "@/utils/base64"
 import { Persist, persisted } from "@/utils/persist"
+import { AgentSegment } from "@/components/status-bar/segments/agent-segment"
 import { StatusSegment } from "@/components/status-bar/segments/status-segment"
 import { NotificationSegment } from "@/components/status-bar/segments/notification-segment"
+import { TerminalCountSegment } from "@/components/status-bar/segments/terminal-count-segment"
 
 const OPEN_APPS = [
   "vscode",
@@ -286,6 +288,8 @@ export function SessionHeader() {
                   <span class="text-12-regular hidden sm:inline">Preview</span>
                 </Button>
               </TooltipKeybind>
+              <AgentSegment variant="titlebar" />
+              <TerminalCountSegment variant="titlebar" />
               <StatusSegment />
               <NotificationSegment />
               <Show when={projectDirectory()}>

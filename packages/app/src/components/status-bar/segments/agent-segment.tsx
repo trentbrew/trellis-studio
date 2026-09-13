@@ -4,7 +4,10 @@ import { Tooltip } from "@opencode-ai/ui/tooltip"
 import { useLocalOptional } from "@/context/local"
 import { useLayout } from "@/context/layout"
 
-export function AgentSegment(props: { variant?: "default" | "rail"; tooltipPlacement?: "right" | "top" }) {
+export function AgentSegment(props: {
+  variant?: "default" | "rail" | "titlebar"
+  tooltipPlacement?: "bottom" | "right" | "top"
+}) {
   const local = useLocalOptional()
   const layout = useLayout()
   const name = () => local?.agent.current()?.name
@@ -12,22 +15,28 @@ export function AgentSegment(props: { variant?: "default" | "rail"; tooltipPlace
   const opened = () => layout.session.opened()
   const toggle = () => layout.session.toggle()
 
-  if (props.variant === "rail") {
+  if (props.variant === "rail" || props.variant === "titlebar") {
+    const compact = props.variant === "titlebar"
     return (
-      <Tooltip placement={props.tooltipPlacement ?? "right"} value={label()}>
+      <Tooltip placement={props.tooltipPlacement ?? "bottom"} value={label()}>
         <button
           type="button"
-          class="flex h-9 w-12 items-center justify-center rounded-md transition-colors md:size-9 md:w-9 md:min-w-0 md:px-0 [&_svg]:size-4 md:[&_svg]:size-[18px]"
+          data-action="agent-toggle"
+          class="flex items-center justify-center rounded-md transition-colors"
           classList={{
+            "h-6 w-7 rounded-full border border-border-base/40 bg-surface-base/60": compact,
+            "h-9 w-12 md:size-9 md:w-9 md:min-w-0 md:px-0 [&_svg]:size-4 md:[&_svg]:size-[18px]": !compact,
             "bg-surface-raised-stronger-non-alpha text-text-strong shadow-sm ring-1 ring-inset ring-border-strong-base/70":
-              opened(),
-            "text-text-weak hover:text-text-base hover:bg-surface-raised-base/50": !opened(),
+              opened() && !compact,
+            "bg-surface-raised-base text-text-base shadow-[0_0_0_1px_var(--border-base)]": opened() && compact,
+            "text-text-weak hover:text-text-base hover:bg-surface-raised-base/50": !opened() && !compact,
+            "text-icon-weak hover:text-icon-base": !opened() && compact,
           }}
           onClick={toggle}
           aria-label={label()}
           aria-pressed={opened()}
         >
-          <Icon name="bot" size="small" class="md:!size-[18px]" />
+          <Icon name="bot" size="small" class={compact ? "shrink-0" : "md:!size-[18px]"} />
         </button>
       </Tooltip>
     )

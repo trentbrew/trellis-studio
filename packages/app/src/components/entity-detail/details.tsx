@@ -7,6 +7,7 @@ import { useEntityNavigate } from "./nav"
 import { FileFrontmatterSection } from "./file-frontmatter-section"
 import { OMIT_FACT_KEYS, short, show, leaf, ext, isMd } from "./helpers"
 import { ENTITY_COLORS } from "@/lib/entity-theme"
+import { projectGraphStats } from "@/lib/project-graph-stats"
 
 type Chip = { label: string; value: string | undefined }
 
@@ -111,15 +112,37 @@ export function EntityDetails(props: {
     if (props.priority) out.push({ label: "priority", value: props.priority })
     return out
   })
+
+  const [graph] = createResource(
+    () => (props.type === "project" ? props.id : null),
+    async () => {
+      try {
+        return await trellis.fetchGraph()
+      } catch {
+        return undefined
+      }
+    },
+    { initialValue: undefined },
+  )
+
+  const projectStats = createMemo(() => {
+    if (props.type !== "project") return []
+    const current = graph.latest
+    if (!current) return []
+    return projectGraphStats(current.nodes, current.hiddenNodes)
+  })
+
   const empty = createMemo(
     () =>
       !ent.loading &&
       !refs.loading &&
+      !graph.loading &&
       facts().length === 0 &&
       links().length === 0 &&
       (rels()?.outgoing?.length ?? 0) === 0 &&
       (rels()?.incoming?.length ?? 0) === 0 &&
       chips().length === 0 &&
+      projectStats().length === 0 &&
       !isFile(),
   )
 
@@ -132,6 +155,21 @@ export function EntityDetails(props: {
 
       <Show when={props.type === "file" && isMd(path())}>
         <FileFrontmatterSection path={path()} />
+      </Show>
+
+      <Show when={props.type === "project" && projectStats().length > 0}>
+        <Section icon="bar-chart-3" title="Graph">
+          <div class="grid grid-cols-2 gap-1.5">
+            <For each={projectStats()}>
+              {(stat) => (
+                <div class="flex flex-col rounded-md border border-border-base/60 bg-background-base px-2.5 py-2">
+                  <span class="text-14-semibold text-text-strong tabular-nums leading-none">{stat.value}</span>
+                  <span class="mt-1 text-10-medium uppercase tracking-wide text-text-weaker">{stat.label}</span>
+                </div>
+              )}
+            </For>
+          </div>
+        </Section>
       </Show>
 
       <Show when={chips().length > 0}>

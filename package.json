@@ -13,6 +13,7 @@
     "dev:console": "ulimit -n 10240 2>/dev/null; bun run --cwd packages/console/app dev",
     "dev:storybook": "bun --cwd packages/storybook storybook",
     "typecheck": "bun turbo typecheck",
+    "check": "bun test --cwd packages/app --preload ./happydom.ts src/pages/graph-enter.test.ts",
     "prepare": "husky",
     "random": "echo 'Random script'",
     "hello": "echo 'Hello World!'",
@@ -97,7 +98,7 @@
     "@opencode-ai/script": "workspace:*",
     "@opencode-ai/sdk": "workspace:*",
     "@tailwindcss/forms": "0.5.11",
-    "@tiptap/extension-image": "3.21.0",
+    "@tiptap/extension-image": "3.30.2",
     "lucide-solid": "1.7.0",
     "typescript": "catalog:",
     "zod": "4.4.3"
@@ -121,7 +122,8 @@
   ],
   "overrides": {
     "@types/bun": "catalog:",
-    "@types/node": "catalog:"
+    "@types/node": "catalog:",
+    "@effect/platform-node-shared": "4.0.0-beta.42"
   },
   "patchedDependencies": {
     "@standard-community/standard-openapi@0.2.9": "patches/@standard-community%2Fstandard-openapi@0.2.9.patch",

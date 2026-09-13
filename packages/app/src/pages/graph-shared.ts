@@ -62,6 +62,8 @@ export type LayoutPersistence = {
   flush: () => void
 }
 
+export type GraphPatchLink = { source: string; target: string; type: TrellisGraphEdge["type"] }
+
 export type RenderHandle = {
   stop: () => void
   focus: (id: string | null) => void
@@ -71,6 +73,85 @@ export type RenderHandle = {
   goToNodesIfOffscreen: () => boolean
   setHoveredId: (id: string | null) => void
   setPhysics: (p: Physics) => void
+  /** Diff nodes/links into the live sim. Preserve zoom. Do not remount. */
+  patch: (nodes: SimNode[], links: GraphPatchLink[]) => void
+}
+
+export const GRAPH_SPAWN_MS = 300
+export const GRAPH_EXIT_MS = 180
+export const GRAPH_FRESH_MS = 6000
+export const GRAPH_SPAWN_FROM = 0.18
+export const GRAPH_FRESH_COLOR = "#10b981"
+export const GRAPH_SPAWN_CSS =
+  `@keyframes graphEnter{from{opacity:0;transform:scale(${GRAPH_SPAWN_FROM})}to{opacity:1;transform:scale(1)}}` +
+  `.graph-node-enter{animation:graphEnter ${GRAPH_SPAWN_MS}ms cubic-bezier(0.22, 1, 0.36, 1) both;transform-box:fill-box;transform-origin:center}` +
+  `@keyframes graphEnterRm{from{opacity:0}to{opacity:1}}` +
+  `@keyframes graphFresh{0%{opacity:0.55;transform:scale(2.2)}100%{opacity:0;transform:scale(1)}}` +
+  `.graph-node-fresh{animation:graphFresh ${GRAPH_FRESH_MS}ms ease-out forwards;transform-box:fill-box;transform-origin:center;pointer-events:none}` +
+  `@keyframes edgeFlow{to{stroke-dashoffset:-16}}.edge-flow{animation:edgeFlow 0.5s linear infinite}` +
+  `@media (prefers-reduced-motion:reduce){` +
+  `.graph-node-enter{animation:graphEnterRm 80ms ease-out both}` +
+  `.graph-node-fresh{animation:none;opacity:0.1;transform:none}` +
+  `.edge-flow{animation:none}` +
+  `}`
+
+export function reducedMotion() {
+  return typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches
+}
+
+export function graphDiff(prev: Iterable<string>, next: Iterable<string>) {
+  const p = new Set(prev)
+  const n = new Set(next)
+  const enter: string[] = []
+  const update: string[] = []
+  const exit: string[] = []
+  for (const id of n) {
+    if (p.has(id)) update.push(id)
+    else enter.push(id)
+  }
+  for (const id of p) {
+    if (!n.has(id)) exit.push(id)
+  }
+  return { enter, update, exit }
+}
+
+export function mergeSimNodes(prev: readonly SimNode[], next: SimNode[]) {
+  const old = new Map(prev.map((n) => [n.id, n]))
+  const nodes = next.map((n) => {
+    const hit = old.get(n.id)
+    if (!hit) return n
+    n.x = hit.x
+    n.y = hit.y
+    n.vx = hit.vx
+    n.vy = hit.vy
+    n.index = hit.index
+    n.fx = hit.fx
+    n.fy = hit.fy
+    return n
+  })
+  const diff = graphDiff(
+    prev.map((n) => n.id),
+    next.map((n) => n.id),
+  )
+  return { nodes, ...diff }
+}
+
+export function spawnScale(elapsed: number, reduce: boolean) {
+  if (reduce) return 1
+  const t = Math.min(1, elapsed / GRAPH_SPAWN_MS)
+  const e = 1 - (1 - t) ** 3
+  return GRAPH_SPAWN_FROM + (1 - GRAPH_SPAWN_FROM) * e
+}
+
+export function spawnAlpha(elapsed: number, reduce: boolean) {
+  if (reduce) return elapsed > 80 ? 1 : 1
+  return Math.min(1, elapsed / GRAPH_SPAWN_MS)
+}
+
+export function freshHalo(elapsed: number, reduce: boolean) {
+  if (reduce) return { alpha: 0.1, scale: 1, done: false }
+  const t = Math.min(1, elapsed / GRAPH_FRESH_MS)
+  return { alpha: 0.55 * (1 - t), scale: 2.2 - 1.2 * t, done: t >= 1 }
 }
 
 // User-controllable physics multipliers. Applied on top of size-based heuristics

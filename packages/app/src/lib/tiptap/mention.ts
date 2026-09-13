@@ -1,6 +1,7 @@
 import { Node, mergeAttributes } from "@tiptap/core"
 import type { MarkdownToken, MarkdownParseHelpers } from "@tiptap/core"
 import { entityColor, entityIcon, entityTypeFromId } from "@/lib/entity-theme"
+import { parseWikiLink } from "@/lib/wiki-link"
 
 export interface MentionOptions {
   onNavigate?: (attrs: { type: string; id: string }) => void
@@ -61,26 +62,31 @@ export const Mention = Node.create<MentionOptions>({
       const match = src.match(/^\[\[([^\]]+)\]\]/)
       if (!match) return undefined
       const raw = match[0]
-      const target = match[1]
-      const hash = target.startsWith("#")
-      const id = hash ? target.slice(1) : target
-      const type = hash ? "entity" : "file"
-      return { type: "mention", raw, id, mentionType: type }
+      const parsed = parseWikiLink(match[1])
+      if (!parsed) return undefined
+      return { type: "mention", raw, id: parsed.id, mentionType: parsed.kind, label: parsed.label }
     },
   } as any,
 
   parseMarkdown(token: MarkdownToken, helpers: MarkdownParseHelpers) {
-    const t = token as MarkdownToken & { id: string; mentionType: string }
+    const t = token as MarkdownToken & { id: string; mentionType: string; label?: string }
     const id = t.id || ""
     const type = t.mentionType || "file"
-    const label = type === "file" ? id.split("/").pop() || id : id
+    const label = t.label || (type === "file" ? id.split("/").pop() || id : id)
     return helpers.createNode("mention", { type, id, label })
   },
 
   renderMarkdown(node: any) {
     const type = node.attrs?.type || "file"
     const id = node.attrs?.id || ""
-    if (type === "entity" || type === "symbol") return `[[#${id}]]`
+    const label = node.attrs?.label
+    if (type === "entity" || type === "symbol") {
+      if (id.includes(":")) {
+        const alias = label && label !== id && !label.includes(":") ? `|${label}` : ""
+        return `[[${id}${alias}]]`
+      }
+      return `[[#${id}]]`
+    }
     return `[[${id}]]`
   },
 
@@ -139,12 +145,12 @@ export const Mention = Node.create<MentionOptions>({
     return {
       insertMention:
         (attrs: { type: string; id: string; label: string }) =>
-        ({ commands }: { commands: any }) => {
-          return commands.insertContent({
-            type: "mention",
-            attrs,
-          })
-        },
+          ({ commands }: { commands: any }) => {
+            return commands.insertContent({
+              type: "mention",
+              attrs,
+            })
+          },
     } as any
   },
 })

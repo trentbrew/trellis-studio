@@ -391,6 +391,16 @@ type Store = {
 
 const POLL_MS = 5_000
 const PAGE = 1000
+const REQUEST_TIMEOUT_MS = 30_000
+
+function fetchSignal(ms = REQUEST_TIMEOUT_MS) {
+  if (typeof AbortSignal !== "undefined" && "timeout" in AbortSignal) {
+    return AbortSignal.timeout(ms)
+  }
+  const ctrl = new AbortController()
+  setTimeout(() => ctrl.abort(), ms)
+  return ctrl.signal
+}
 
 export function trellisUrl(url: string, directory: string, path: string) {
   const req = new URL(`/trellis${path}`, url)
@@ -428,7 +438,7 @@ async function trellisGet<T>(
   const [fn, base, dir, next] = pick(run, url, directory, path)
   let res: Response
   try {
-    res = await fn(trellisUrl(base, dir, next))
+    res = await fn(trellisUrl(base, dir, next), { signal: fetchSignal() })
   } catch {
     return undefined
   }
@@ -457,6 +467,7 @@ async function trellisPost<T>(
       method: "POST",
       headers: data ? { "Content-Type": "application/json" } : undefined,
       body: data ? JSON.stringify(data) : undefined,
+      signal: fetchSignal(),
     })
   } catch {
     return undefined
@@ -479,6 +490,7 @@ async function trellisPut<T>(
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
+      signal: fetchSignal(),
     })
   } catch {
     return undefined
@@ -496,7 +508,7 @@ async function trellisDelete<T>(
   const [fn, base, dir, next] = pick(run, url, directory, path)
   let res: Response
   try {
-    res = await fn(trellisUrl(base, dir, next), { method: "DELETE" })
+    res = await fn(trellisUrl(base, dir, next), { method: "DELETE", signal: fetchSignal() })
   } catch {
     return undefined
   }

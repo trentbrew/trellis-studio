@@ -47,8 +47,17 @@ import {
   type Physics,
   type RenderHandle,
   type SimNode,
+  type GraphPatchLink,
   type ViewBounds,
   DEFAULT_PHYSICS,
+  GRAPH_SPAWN_CSS,
+  GRAPH_FRESH_COLOR,
+  GRAPH_FRESH_MS,
+  GRAPH_SPAWN_MS,
+  mergeSimNodes,
+  reducedMotion,
+  spawnScale,
+  freshHalo,
 } from "./graph-shared"
 import { createLayoutSaver, hydrate as hydrateLayout, loadLayout, snapshot } from "./graph-layout"
 
@@ -122,8 +131,7 @@ export function renderCanvas(
 
   // Keyframe for edge flow animation (overlay only) — matches SVG path.
   const styleEl = document.createElementNS("http://www.w3.org/2000/svg", "style")
-  styleEl.textContent =
-    "@keyframes edgeFlow{to{stroke-dashoffset:-16}}.edge-flow{animation:edgeFlow 0.5s linear infinite}"
+  styleEl.textContent = GRAPH_SPAWN_CSS
   svgEl.prepend(styleEl)
 
   // All overlay content sits in this single group so it participates in the
@@ -168,7 +176,10 @@ export function renderCanvas(
   // ---------------------------------------------------------------------------
   // State
   // ---------------------------------------------------------------------------
-  const { byId, adjacency, getClosure } = buildAdjacency(nodes, links)
+  let adj = buildAdjacency(nodes, links)
+  let byId = adj.byId
+  let adjacency = adj.adjacency
+  let getClosure = adj.getClosure
   const iconCache = new IconCache(dpr)
 
   // Cell sizing: at least 2× the largest file node (~18px radius). A cell
@@ -186,8 +197,16 @@ export function renderCanvas(
   let spacePressed = false
   let rafDraw = 0
   let simulation: d3Force.Simulation<SimNode, SimLink> | undefined
-  const birthIds = new Set(nodes.filter((n) => n.fresh).map((n) => n.id))
-  const birthStart = Date.now()
+  const reduce = reducedMotion()
+  const enterAt = new Map<string, number>()
+  const freshAt = new Map<string, number>()
+  const now0 = Date.now()
+  if (!warmStart) {
+    for (const n of nodes) enterAt.set(n.id, now0)
+  }
+  for (const n of nodes) {
+    if (n.fresh) freshAt.set(n.id, now0)
+  }
   let birthRaf = 0
 
   // Hoisted up here (rather than near the draw/minimap definitions) so any
@@ -218,7 +237,7 @@ export function renderCanvas(
   // ---------------------------------------------------------------------------
   // Force simulation
   // ---------------------------------------------------------------------------
-  const simLinks: SimLink[] = links.map((l) => ({ source: l.source, target: l.target, type: l.type }))
+  let simLinks: SimLink[] = links.map((l) => ({ source: l.source, target: l.target, type: l.type }))
 
   // Force parameters scale with node count — same heuristic as the SVG path.
   const size = nodes.length
@@ -459,8 +478,10 @@ export function renderCanvas(
   }
 
   function nodeScale(d: SimNode): number {
-    if (hoverAnimId === d.id) return hoverAnim
-    return 1
+    const hover = hoverAnimId === d.id ? hoverAnim : 1
+    const t0 = enterAt.get(d.id)
+    const spawn = t0 == null ? 1 : spawnScale(Date.now() - t0, reduce)
+    return hover * spawn
   }
 
   const tooltip = createTooltip(container)
@@ -785,7 +806,14 @@ export function renderCanvas(
 
   function tickBirth() {
     birthRaf = 0
-    if (Date.now() - birthStart >= 5_600) return
+    const now = Date.now()
+    for (const [id, t0] of enterAt) {
+      if (now - t0 >= GRAPH_SPAWN_MS) enterAt.delete(id)
+    }
+    for (const [id, t0] of freshAt) {
+      if (now - t0 >= GRAPH_FRESH_MS) freshAt.delete(id)
+    }
+    if (enterAt.size === 0 && freshAt.size === 0) return
     markDirty()
     birthRaf = requestAnimationFrame(tickBirth)
   }
@@ -987,27 +1015,22 @@ export function renderCanvas(
         ctx.stroke()
       }
     }
-    if (birthIds.size > 0) {
-      const t = Math.min(1, (Date.now() - birthStart) / 5_500)
-      const a = (1 - t) * (1 - t)
-      if (a > 0) {
-        ctx.save()
-        ctx.fillStyle = "rgba(34,197,94,0.18)"
-        ctx.strokeStyle = "#22c55e"
-        ctx.lineWidth = 3 / zoom.k
-        ctx.shadowColor = "#22c55e"
-        ctx.shadowBlur = 18 / zoom.k
-        ctx.globalAlpha = a
-        for (const n of nodes) {
-          if (!birthIds.has(n.id) || !visible(n, box)) continue
-          const r = (nodeRadius(n) + 6) * (1 + 2.4 * a)
-          ctx.beginPath()
-          ctx.arc(n.x ?? 0, n.y ?? 0, r, 0, Math.PI * 2)
-          ctx.fill()
-          ctx.stroke()
-        }
-        ctx.restore()
+    if (freshAt.size > 0) {
+      ctx.save()
+      ctx.strokeStyle = GRAPH_FRESH_COLOR
+      ctx.fillStyle = "none"
+      for (const n of nodes) {
+        const t0 = freshAt.get(n.id)
+        if (t0 == null || !visible(n, box)) continue
+        const halo = freshHalo(Date.now() - t0, reduce)
+        if (halo.done && !reduce) continue
+        ctx.globalAlpha = halo.alpha
+        ctx.lineWidth = 2 / zoom.k
+        ctx.beginPath()
+        ctx.arc(n.x ?? 0, n.y ?? 0, (nodeRadius(n) + 6) * halo.scale, 0, Math.PI * 2)
+        ctx.stroke()
       }
+      ctx.restore()
     }
     ctx.globalAlpha = 1
 
@@ -1350,7 +1373,7 @@ export function renderCanvas(
 
   // Kick off first paint after the overlay is initialized.
   scheduleDraw()
-  if (birthIds.size > 0) birthRaf = requestAnimationFrame(tickBirth)
+  if (enterAt.size > 0 || freshAt.size > 0) birthRaf = requestAnimationFrame(tickBirth)
   scheduleMinimap()
 
   // ---------------------------------------------------------------------------
@@ -1405,6 +1428,48 @@ export function renderCanvas(
       simulation.alphaDecay(physDecay())
       simulation.alphaMin(GRAPH_SIM_ALPHA_MIN)
       if (!freezePhysics) simulation.alpha(0.3).restart()
+    },
+    patch: (nextNodes: SimNode[], nextLinks: GraphPatchLink[]) => {
+      const merged = mergeSimNodes(nodes, nextNodes)
+      const t = Date.now()
+      nodes.length = 0
+      for (const n of merged.nodes) {
+        if (n.x == null || n.y == null) {
+          n.x = width() / 2 + (Math.random() - 0.5) * 80
+          n.y = height() / 2 + (Math.random() - 0.5) * 80
+        }
+        nodes.push(n)
+      }
+      for (const id of merged.enter) enterAt.set(id, t)
+      for (const id of merged.exit) {
+        enterAt.delete(id)
+        freshAt.delete(id)
+      }
+      const keep = new Set(nodes.filter((n) => n.fresh).map((n) => n.id))
+      for (const id of [...freshAt.keys()]) {
+        if (!keep.has(id)) freshAt.delete(id)
+      }
+      for (const id of keep) {
+        if (!freshAt.has(id)) freshAt.set(id, t)
+      }
+      simLinks = nextLinks.map((l) => ({ source: l.source, target: l.target, type: l.type }))
+      adj = buildAdjacency(
+        nodes,
+        simLinks as { source: string | SimNode; target: string | SimNode }[],
+      )
+      byId = adj.byId
+      adjacency = adj.adjacency
+      getClosure = adj.getClosure
+      if (simulation) {
+        simulation.nodes(nodes)
+        const lf = simulation.force("link") as d3Force.ForceLink<SimNode, SimLink> | null
+        lf?.links(simLinks)
+        if (!freezePhysics) simulation.alpha(0.25).restart()
+      }
+      grid.rebuild(nodes)
+      cachedNodeGroups = null
+      if (!birthRaf && (enterAt.size > 0 || freshAt.size > 0)) birthRaf = requestAnimationFrame(tickBirth)
+      markDirty()
     },
   }
 }

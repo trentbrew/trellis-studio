@@ -91,6 +91,7 @@ import type { Todo } from "@opencode-ai/sdk/v2/client"
 import { formatServerError } from "@/utils/server-errors"
 import { createLayoutSaver, hydrate as hydrateLayout, loadLayout, snapshot, type Layout } from "./graph-layout"
 import { renderCanvas } from "./graph-canvas"
+import { renderWebgl } from "./graph-webgl-bridge"
 import { graphPreload, invalidatePreload } from "@/lib/graph-preloader"
 export { HomeDashboard } from "./trellis/home-dashboard"
 import {
@@ -114,6 +115,12 @@ import {
   nodeIcon,
   nodeRadius,
   DEFAULT_PHYSICS,
+  GRAPH_SPAWN_CSS,
+  GRAPH_FRESH_COLOR,
+  GRAPH_EXIT_MS,
+  mergeSimNodes,
+  reducedMotion,
+  type GraphPatchLink,
 } from "./graph-shared"
 
 const cols = [
@@ -1680,6 +1687,23 @@ const GRAPH = {
 } as const
 
 const PHYSICS_KEY = "trellis:graph-physics"
+const VIEW_MODE_KEY = "trellis:graph-view-mode"
+type GraphViewMode = "2d" | "3d"
+
+function loadViewMode(): GraphViewMode {
+  try {
+    const raw = localStorage.getItem(VIEW_MODE_KEY)
+    if (raw === "3d" || raw === "2d") return raw
+  } catch {}
+  return "2d"
+}
+
+function saveViewMode(mode: GraphViewMode) {
+  try {
+    localStorage.setItem(VIEW_MODE_KEY, mode)
+  } catch {}
+}
+
 function loadPhysics(): Physics {
   try {
     const raw = localStorage.getItem(PHYSICS_KEY)
@@ -1698,7 +1722,7 @@ function loadPhysics(): Physics {
 function savePhysics(p: Physics) {
   try {
     localStorage.setItem(PHYSICS_KEY, JSON.stringify(p))
-  } catch {}
+  } catch { }
 }
 function clampMul(n: number): number {
   if (!Number.isFinite(n)) return 1
@@ -1786,7 +1810,7 @@ export function GraphView(
     }
   }
   const [leftWidth, setLeftWidth] = createSignal(savedWidths()?.left ?? 224)
-  const [rightWidth, setRightWidth] = createSignal(savedWidths()?.right ?? 360)
+  const [rightWidth, setRightWidth] = createSignal(savedWidths()?.right ?? 640)
   createEffect(() => {
     localStorage.setItem(storageKey, JSON.stringify({ left: leftWidth(), right: rightWidth() }))
   })
@@ -1835,6 +1859,7 @@ export function GraphView(
     if (key === "includeOps") setInternalOps(value)
   }
   const [physics, setPhysics] = createSignal<Physics>(loadPhysics())
+  const [viewMode, setViewMode] = createSignal<GraphViewMode>(loadViewMode())
   const [beaconChromeDim, setBeaconChromeDim] = createSignal(false)
   const [autoRecenterPending, setAutoRecenterPending] = createSignal(true)
   onMount(() => setAutoRecenterPending(true))
@@ -1919,22 +1944,22 @@ export function GraphView(
   const initialFilters = props.scopedTypes
     ? new Set(props.scopedTypes)
     : new Set([
-        "issue",
-        "agent",
-        "project",
-        "memory",
-        "mcp",
-        "sprite",
-        "workunit",
-        "cycle",
-        "epic",
-        "roadmap",
-        "suggestion",
-        "whiteboard",
-        "file",
-        "directory",
-        "op",
-      ])
+      "issue",
+      "agent",
+      "project",
+      "memory",
+      "mcp",
+      "sprite",
+      "workunit",
+      "cycle",
+      "epic",
+      "roadmap",
+      "suggestion",
+      "whiteboard",
+      "file",
+      "directory",
+      "op",
+    ])
   const [activeFilters, setActiveFilters] = createSignal<Set<string>>(initialFilters)
   const seenTypes = new Set<string>(props.scopedTypes ?? FILTER_TYPES)
   const highlightSet = createMemo(() => new Set(props.highlightIds ?? []))
@@ -2035,22 +2060,34 @@ export function GraphView(
     setActiveFilters((prev) => new Set([...prev, ...fresh]))
   })
 
-  // Process graph data asynchronously for large graphs to keep UI responsive
+  // Remount only when 2D/3D changes. Data/filter patches use handle.patch.
   let graphRaf: number | null = null
   createEffect(() => {
-    const data = graph()
-    if (!data || !svgRef) return
+    viewMode()
+    onCleanup(() => {
+      if (graphRaf) {
+        cancelAnimationFrame(graphRaf)
+        graphRaf = null
+      }
+      graphApi?.stop()
+      graphApi = undefined
+      setBeaconChromeDim(false)
+    })
+  })
 
-    // Cancel any pending graph render
+  createEffect(() => {
+    const data = graph()
+    const mode = viewMode()
+    if (!svgRef) return
     if (graphRaf) cancelAnimationFrame(graphRaf)
 
     const themes = props.themes
     const fresh = highlightSet()
     const active = activeFilters()
 
-    // For large graphs, defer processing to next frame so loading spinner can paint
     const processGraph = () => {
       graphRaf = null
+      if (!data) return
 
       const filteredNodes: SimNode[] = data.nodes
         .filter((n: any) => active.has(n.type))
@@ -2065,37 +2102,32 @@ export function GraphView(
         .filter((e: any) => nodeIds.has(e.source as string) && nodeIds.has(e.target as string))
         .map((e: any) => ({ ...e }))
 
-      // Persist layout per workspace directory. Scoping by directory means each
-      // project keeps its own arrangement and switching projects doesn't trash it.
       const saver = createLayoutSaver(sdk.directory)
-      graphApi = renderForceGraph(
-        svgRef,
-        filteredNodes,
-        filteredLinks,
-        {
-          onSelect: (node) => {
-            // Route graph-node clicks through history so backtracking works even
-            // when you jump between nodes by clicking on the canvas.
-            navigateTo(node.id)
-          },
-          onDeselect: () => {
-            batch(() => {
-              setSelected(null)
-              setHistory({ back: [], forward: [] })
-            })
-          },
-          getSelectedId: () => selected()?.id ?? null,
-          inset: () => (selected() ? rightWidth() + 32 : 0),
-          layout: {
-            load: () => loadLayout(sdk.directory),
-            save: saver.save,
-            flush: saver.flush,
-          },
-          onBeaconChromeDim: setBeaconChromeDim,
+      const cb = {
+        onSelect: (node: SimNode) => {
+          navigateTo(node.id)
         },
-        untrack(physics),
-      )
-      if (props.scopedTypes) requestAnimationFrame(() => graphApi?.fit())
+        onDeselect: () => {
+          batch(() => {
+            setSelected(null)
+            setHistory({ back: [], forward: [] })
+          })
+        },
+        getSelectedId: () => selected()?.id ?? null,
+        inset: () => (selected() ? rightWidth() + 32 : 0),
+        layout: {
+          load: () => loadLayout(sdk.directory),
+          save: saver.save,
+          flush: saver.flush,
+        },
+        onBeaconChromeDim: setBeaconChromeDim,
+      }
+      if (!graphApi) {
+        graphApi = renderForceGraph(svgRef, filteredNodes, filteredLinks, cb, untrack(physics), mode)
+        if (props.scopedTypes) requestAnimationFrame(() => graphApi?.fit())
+        return
+      }
+      graphApi.patch(filteredNodes, filteredLinks)
     }
 
     graphRaf = requestAnimationFrame(processGraph)
@@ -2105,9 +2137,6 @@ export function GraphView(
         cancelAnimationFrame(graphRaf)
         graphRaf = null
       }
-      graphApi?.stop()
-      graphApi = undefined
-      setBeaconChromeDim(false)
     })
   })
 
@@ -2116,6 +2145,10 @@ export function GraphView(
     const p = physics()
     savePhysics(p)
     graphApi?.setPhysics(p)
+  })
+
+  createEffect(() => {
+    saveViewMode(viewMode())
   })
 
   // Keep the renderer's selection highlight in sync with external changes.
@@ -2233,12 +2266,14 @@ export function GraphView(
       </Show>
 
       {/* Graph surface */}
-      <div class="relative flex-1 h-full overflow-hidden">
-        <Show when={!isLoading() && graph()}>
+      <div class="relative flex-1 h-full overflow-hidden" data-component="graph-surface" aria-busy={isLoading()}>
+        <Show when={graph()}>
           <FloatingPhysicsPanel
             physics={physics()}
             onPhysicsChange={setPhysics}
             onPhysicsReset={() => setPhysics(DEFAULT_PHYSICS)}
+            viewMode={viewMode()}
+            onViewModeChange={setViewMode}
             hideEmpty={hideEmpty()}
             onHideEmptyChange={() => setHideEmpty(!hideEmpty())}
             includeHidden={includeHidden()}
@@ -2255,11 +2290,9 @@ export function GraphView(
 
         <svg ref={svgRef!} class="w-full h-full" style="touch-action: none;" />
 
-        {/* Loading state */}
         <Show when={isLoading()}>
-          <div class="absolute inset-0 flex flex-col items-center justify-center gap-2 pointer-events-none">
-            <Spinner />
-            <span class="text-12-regular text-text-weak">Loading graph</span>
+          <div class="absolute bottom-3 left-0 right-0 flex justify-center pointer-events-none">
+            <span class="text-11-regular text-text-weak">Loading graph</span>
           </div>
         </Show>
 
@@ -2323,6 +2356,8 @@ function FloatingPhysicsPanel(props: {
   physics: Physics
   onPhysicsChange: (p: Physics) => void
   onPhysicsReset: () => void
+  viewMode: GraphViewMode
+  onViewModeChange: (mode: GraphViewMode) => void
   hideEmpty: boolean
   onHideEmptyChange: () => void
   includeHidden: boolean
@@ -2375,6 +2410,31 @@ function FloatingPhysicsPanel(props: {
       </div>
       <Show when={open()}>
         <div class="py-1">
+          <div class="flex gap-1 px-2 pb-1.5">
+            <button
+              class="flex-1 px-2 py-1 rounded text-10-medium uppercase tracking-wide transition-colors"
+              classList={{
+                "bg-surface-raised-base text-text-strong": props.viewMode === "2d",
+                "text-text-weaker hover:text-text-base": props.viewMode !== "2d",
+              }}
+              onClick={() => props.onViewModeChange("2d")}
+              aria-pressed={props.viewMode === "2d"}
+            >
+              2D
+            </button>
+            <button
+              class="flex-1 px-2 py-1 rounded text-10-medium uppercase tracking-wide transition-colors"
+              classList={{
+                "bg-surface-raised-base text-text-strong": props.viewMode === "3d",
+                "text-text-weaker hover:text-text-base": props.viewMode !== "3d",
+              }}
+              onClick={() => props.onViewModeChange("3d")}
+              aria-pressed={props.viewMode === "3d"}
+            >
+              3D
+            </button>
+          </div>
+          <div class="mx-2.5 mb-1 border-t border-border-weaker-base" />
           <GraphToggleRow
             icon={<Icon name="eye-off" size="small" class="text-icon-weak" />}
             label="Hide empty"
@@ -2411,26 +2471,40 @@ function FloatingPhysicsPanel(props: {
             title="Include recent causal-stream ops"
           />
           <div class="mx-2.5 my-1 border-t border-border-weaker-base" />
-          <PhysicsSlider
-            label="Distance"
-            value={props.physics.dist}
-            onInput={(v) => props.onPhysicsChange({ ...props.physics, dist: v })}
-          />
-          <PhysicsSlider
-            label="Repulsion"
-            value={props.physics.charge}
-            onInput={(v) => props.onPhysicsChange({ ...props.physics, charge: v })}
-          />
-          <PhysicsSlider
-            label="Collision"
-            value={props.physics.collide}
-            onInput={(v) => props.onPhysicsChange({ ...props.physics, collide: v })}
-          />
-          <PhysicsSlider
-            label="Decay"
-            value={props.physics.decay}
-            onInput={(v) => props.onPhysicsChange({ ...props.physics, decay: v })}
-          />
+          <Show when={props.viewMode === "2d"}>
+            <PhysicsSlider
+              label="Distance"
+              value={props.physics.dist}
+              onInput={(v) => props.onPhysicsChange({ ...props.physics, dist: v })}
+            />
+            <PhysicsSlider
+              label="Repulsion"
+              value={props.physics.charge}
+              onInput={(v) => props.onPhysicsChange({ ...props.physics, charge: v })}
+            />
+            <PhysicsSlider
+              label="Collision"
+              value={props.physics.collide}
+              onInput={(v) => props.onPhysicsChange({ ...props.physics, collide: v })}
+            />
+            <PhysicsSlider
+              label="Decay"
+              value={props.physics.decay}
+              onInput={(v) => props.onPhysicsChange({ ...props.physics, decay: v })}
+            />
+          </Show>
+          <Show when={props.viewMode === "3d"}>
+            <PhysicsSlider
+              label="Distance"
+              value={props.physics.dist}
+              onInput={(v) => props.onPhysicsChange({ ...props.physics, dist: v })}
+            />
+            <PhysicsSlider
+              label="Repulsion"
+              value={props.physics.charge}
+              onInput={(v) => props.onPhysicsChange({ ...props.physics, charge: v })}
+            />
+          </Show>
         </div>
       </Show>
     </div>
@@ -2568,7 +2642,7 @@ function loadSidebarSections(): Record<SidebarSection, boolean> {
 function saveSidebarSections(s: Record<SidebarSection, boolean>) {
   try {
     localStorage.setItem(SIDEBAR_SECTIONS_KEY, JSON.stringify(s))
-  } catch {}
+  } catch { }
 }
 
 function SidebarSectionHeader(props: {
@@ -2746,6 +2820,7 @@ function GraphDetailDrawer(props: {
                   meta={n().id}
                   status={n().status}
                   priority={n().priority}
+                  layout="panel"
                   navV2={isNavV2Enabled()}
                   onBack={props.onBack}
                   onForward={props.onForward}
@@ -2762,21 +2837,21 @@ function GraphDetailDrawer(props: {
   )
 }
 
-// Dispatcher — SVG below TIER.light, Canvas2D above. Both engines return
-// the same `{ stop, focus, setHoveredId }` handle so the caller doesn't care
-// which path was taken.
+// Dispatcher — SVG below TIER.light, Canvas2D above, or WebGL when 3D mode is on.
+// Both 2D engines return the same `{ stop, focus, setHoveredId }` handle so the
+// caller doesn't care which path was taken.
 //
-// `?renderer=canvas` or `?renderer=svg` overrides the auto-selection — useful
-// for parity testing and when you want to force a specific path on a small
-// graph during development.
+// `?renderer=canvas`, `?renderer=svg`, or `?renderer=webgl` overrides auto-selection.
 function renderForceGraph(
   svgEl: SVGSVGElement,
   nodes: SimNode[],
   links: (Omit<TrellisGraphEdge, "source" | "target"> & { source: string; target: string })[],
   cb: GraphCallbacks,
   physics: Physics = DEFAULT_PHYSICS,
+  mode: GraphViewMode = "2d",
 ): RenderHandle {
   const force = typeof location !== "undefined" ? new URLSearchParams(location.search).get("renderer") : null
+  if (force === "webgl" || force === "3d" || mode === "3d") return renderWebgl(svgEl, nodes, links, cb, physics)
   if (force === "canvas") return renderCanvas(svgEl, nodes, links, cb, physics)
   if (force === "svg") return renderSvg(svgEl, nodes, links, cb, physics)
   if (nodes.length <= TIER.light) return renderSvg(svgEl, nodes, links, cb, physics)
@@ -2808,8 +2883,7 @@ function renderSvg(
 
   // Keyframe for edge flow animation (hover + zoomed in)
   const styleEl = document.createElementNS("http://www.w3.org/2000/svg", "style")
-  styleEl.textContent =
-    "@keyframes edgeFlow{to{stroke-dashoffset:-16}}.edge-flow{animation:edgeFlow 0.5s linear infinite}@keyframes nodeBirth{0%{opacity:1;transform:scale(3.4);filter:drop-shadow(0 0 18px #22c55e)}100%{opacity:0;transform:scale(1);filter:drop-shadow(0 0 0 transparent)}}.node-birth{animation:nodeBirth 5.5s ease-out forwards;transform-box:fill-box;transform-origin:center;pointer-events:none}"
+  styleEl.textContent = GRAPH_SPAWN_CSS
   svgEl.prepend(styleEl)
 
   const EDGE_ANIM_ZOOM = 1.0
@@ -2825,22 +2899,6 @@ function renderSvg(
   let tickCounter = 0
   let drawTimer: ReturnType<typeof setTimeout> | undefined
   let lastDrawAt = 0
-
-  // Cinematic opening: fade the whole scene in on first paint. Skipped on warm
-  // start because the layout is already there and any flicker feels like jank.
-  // CSS transitions are compositor-driven so the cost is ~zero on the main thread.
-  const introMs = 550
-  if (!warmStart) {
-    g.style("opacity", "0").style("transition", `opacity ${introMs}ms ease-out`)
-    // Schedule after the current frame so the browser registers the starting
-    // opacity before we flip it.
-    requestAnimationFrame(() => {
-      g.style("opacity", "1")
-      // Clear the transition after it plays so it doesn't interfere with d3's
-      // own transitions later (hover, selection focus, etc).
-      setTimeout(() => g.style("transition", null), introMs + 50)
-    })
-  }
 
   // Persistence helper: snapshot zoom + positions into the debounced saver.
   // Defined early so the zoom restore below and the drag handlers can use it.
@@ -3108,27 +3166,26 @@ function renderSvg(
 
   // Figma gestures: two-finger scroll → pan, ctrl/cmd+scroll or pinch → zoom.
   // translateBy multiplies by k — wheelPanBy divides by k for constant screen speed.
-  svgEl.addEventListener(
-    "wheel",
-    (e: WheelEvent) => {
-      if (e.ctrlKey || e.metaKey) return
-      e.preventDefault()
-      const [dx, dy] = wheelPanBy(zoom.k, e, height)
-      svg.call(zoomBehavior.translateBy, dx, dy)
-    },
-    { passive: false },
-  )
+  const onWheel = (e: WheelEvent) => {
+    if (e.ctrlKey || e.metaKey) return
+    e.preventDefault()
+    const [dx, dy] = wheelPanBy(zoom.k, e, height)
+    svg.call(zoomBehavior.translateBy, dx, dy)
+  }
+  svgEl.addEventListener("wheel", onWheel, { passive: false })
 
   // Middle mouse button cursor feedback
-  svgEl.addEventListener("mousedown", (e: MouseEvent) => {
+  const onMiddleDown = (e: MouseEvent) => {
     if (e.button === 1) {
       e.preventDefault()
       svgEl.style.cursor = "grabbing"
     }
-  })
-  svgEl.addEventListener("mouseup", (e: MouseEvent) => {
+  }
+  const onMiddleUp = (e: MouseEvent) => {
     if (e.button === 1 && !spacePressed) svgEl.style.cursor = "default"
-  })
+  }
+  svgEl.addEventListener("mousedown", onMiddleDown)
+  svgEl.addEventListener("mouseup", onMiddleUp)
 
   // Space+drag to pan. Skip when the user is typing in an editable element so
   // Space keystrokes still reach prompt inputs, textareas, and contenteditable
@@ -3174,7 +3231,7 @@ function renderSvg(
     if (event.target === svgEl) cb.onDeselect()
   })
 
-  const simLinks = links.map((l) => ({ ...l })) as d3Force.SimulationLinkDatum<SimNode>[]
+  let simLinks = links.map((l) => ({ ...l })) as d3Force.SimulationLinkDatum<SimNode>[]
 
   let activePhysics: Physics = { ...physics }
   const physDist = () => opt.dist * activePhysics.dist
@@ -3220,7 +3277,7 @@ function renderSvg(
   // Default opacity is intentionally dim so file icons and active focus states
   // pop against the mesh. Hover/selection lifts them back up.
   const edgeOpacityDefault = 0.18
-  const link = g
+  let link = g
     .append("g")
     .attr("class", "links")
     .selectAll<SVGLineElement, d3Force.SimulationLinkDatum<SimNode>>("line")
@@ -3272,12 +3329,13 @@ function renderSvg(
   // IMPORTANT: no CSS `transition` on `transform` here — the simulation writes
   // transforms every tick and the browser would interpolate each one, torching
   // main-thread time. We animate opacity only, and only on small graphs.
-  const nodeG = g
+  let nodeG = g
     .append("g")
     .attr("class", "nodes")
     .selectAll<SVGGElement, SimNode>("g")
     .data(nodes)
     .join("g")
+    .attr("class", "graph-node")
     .style("contain", "strict")
     .style("cursor", "pointer")
     .on("click", (event: MouseEvent, d: SimNode) => {
@@ -3301,7 +3359,8 @@ function renderSvg(
       startHoverAnim(null)
     })
 
-  const hit = nodeG
+  const spawnInner = nodeG.append("g").attr("class", warmStart ? "" : "graph-node-enter")
+  const hit = spawnInner
     .append("circle")
     .attr("class", "node-hit")
     .attr("r", hitRadius)
@@ -3311,7 +3370,7 @@ function renderSvg(
   // Node ring. Default stroke opacity is dim so the file-icon glyphs inside
   // carry the visual weight; hover/selection lifts the ring to full color.
   const ringOpacityDefault = 0.35
-  nodeG
+  spawnInner
     .append("circle")
     .attr("class", "node-ring")
     .attr("r", ringRadius)
@@ -3326,14 +3385,14 @@ function renderSvg(
   nodeG
     .filter((d) => !!d.fresh)
     .append("circle")
-    .attr("class", "node-birth")
+    .attr("class", "graph-node-fresh")
     .attr("r", (d) => nodeRadius(d) + 6)
-    .attr("fill", "rgba(34,197,94,0.18)")
-    .attr("stroke", "#22c55e")
-    .attr("stroke-width", 3)
+    .attr("fill", "none")
+    .attr("stroke", GRAPH_FRESH_COLOR)
+    .attr("stroke-width", 2)
 
   if (opt.icon) {
-    nodeG.each(function (d) {
+    spawnInner.each(function (d) {
       const r = nodeRadius(d)
       const sel = d3Select.select(this)
 
@@ -3380,7 +3439,7 @@ function renderSvg(
   }
 
   // Labels
-  const label = g
+  let label = g
     .append("g")
     .attr("class", "labels")
     .selectAll<SVGTextElement, SimNode>("text")
@@ -3476,20 +3535,20 @@ function renderSvg(
     const cardSel = cardinalityG
 
     if (primary === null) {
-      ;(nodeSel as any).style("opacity", null)
+      ; (nodeSel as any).style("opacity", null)
       // Reset node rings to dim default stroke-opacity.
       nodeG.select(".node-ring").attr("stroke-opacity", ringOpacityDefault).attr("fill-opacity", 0.2)
-      ;(linkSel as any)
-        .classed("edge-flow", false)
-        .attr("stroke", "var(--text-weak)")
-        .attr("stroke-width", 1)
-        .attr("stroke-opacity", edgeOpacityDefault)
-        .attr("stroke-dasharray", (d: any) =>
-          (d as any).type === "imports" ? "3,3" : (d as any).type === "links" ? "1,4" : "none",
-        )
-      ;(edgeSel as any).style("opacity", 0.35)
-      ;(labelSel as any).style("opacity", null)
-      ;(cardSel as any).style("opacity", null)
+        ; (linkSel as any)
+          .classed("edge-flow", false)
+          .attr("stroke", "var(--text-weak)")
+          .attr("stroke-width", 1)
+          .attr("stroke-opacity", edgeOpacityDefault)
+          .attr("stroke-dasharray", (d: any) =>
+            (d as any).type === "imports" ? "3,3" : (d as any).type === "links" ? "1,4" : "none",
+          )
+        ; (edgeSel as any).style("opacity", 0.35)
+        ; (labelSel as any).style("opacity", null)
+        ; (cardSel as any).style("opacity", null)
       return
     }
 
@@ -3502,14 +3561,14 @@ function renderSvg(
     const secondaryNode = secondary ? byId.get(secondary) : null
     const secondaryColor = secondaryNode ? nodeColor(secondaryNode) : null
 
-    // Only dim viewport-visible nodes — skipping off-screen ones saves thousands
-    // of DOM writes on large graphs and avoids jarring opacity resets on scroll.
-    ;(nodeSel as any).style("opacity", (d: SimNode) => {
-      if (!visible(d, box)) return null
-      if (primaryConn.has(d.id)) return 1
-      if (secondaryConn && secondaryConn.has(d.id)) return 0.55
-      return 0.35
-    })
+      // Only dim viewport-visible nodes — skipping off-screen ones saves thousands
+      // of DOM writes on large graphs and avoids jarring opacity resets on scroll.
+      ; (nodeSel as any).style("opacity", (d: SimNode) => {
+        if (!visible(d, box)) return null
+        if (primaryConn.has(d.id)) return 1
+        if (secondaryConn && secondaryConn.has(d.id)) return 0.55
+        return 0.35
+      })
 
     // Light up the rings of connected nodes; everyone else stays at the dim
     // default so focused subgraphs pop visually.
@@ -3536,43 +3595,43 @@ function renderSvg(
     }
 
     const flowEdges = animate && zoom.k >= EDGE_ANIM_ZOOM
-    ;(linkSel as any)
-      .classed("edge-flow", (d: any) => flowEdges && classify(d) === 1)
-      .attr("stroke", (d: any) => {
+      ; (linkSel as any)
+        .classed("edge-flow", (d: any) => flowEdges && classify(d) === 1)
+        .attr("stroke", (d: any) => {
+          const c = classify(d)
+          if (c === 1) return primaryColor
+          if (c === 2 && secondaryColor) return secondaryColor
+          return "var(--border-base)"
+        })
+        .attr("stroke-width", (d: any) => {
+          const c = classify(d)
+          if (c === 1) return 2
+          if (c === 2) return 1.5
+          return 0.5
+        })
+        .attr("stroke-opacity", (d: any) => {
+          const c = classify(d)
+          if (c === 1) return 0.9
+          if (c === 2) return 0.45
+          return 0.25
+        })
+        .attr("stroke-dasharray", (d: any) => {
+          const c = classify(d)
+          if (flowEdges && c === 1) return "4 4"
+          return (d as any).type === "imports" ? "3,3" : (d as any).type === "links" ? "1,4" : "none"
+        })
+      ; (edgeSel as any).style("opacity", (d: any) => {
         const c = classify(d)
-        if (c === 1) return primaryColor
-        if (c === 2 && secondaryColor) return secondaryColor
-        return "var(--border-base)"
-      })
-      .attr("stroke-width", (d: any) => {
-        const c = classify(d)
-        if (c === 1) return 2
-        if (c === 2) return 1.5
-        return 0.5
-      })
-      .attr("stroke-opacity", (d: any) => {
-        const c = classify(d)
-        if (c === 1) return 0.9
-        if (c === 2) return 0.45
+        if (c === 1) return 1
+        if (c === 2) return 0.5
         return 0.25
       })
-      .attr("stroke-dasharray", (d: any) => {
-        const c = classify(d)
-        if (flowEdges && c === 1) return "4 4"
-        return (d as any).type === "imports" ? "3,3" : (d as any).type === "links" ? "1,4" : "none"
+      ; (labelSel as any).style("opacity", (d: SimNode) => {
+        if (primaryConn.has(d.id)) return 1
+        if (secondaryConn && secondaryConn.has(d.id)) return 0.5
+        return 0.25
       })
-    ;(edgeSel as any).style("opacity", (d: any) => {
-      const c = classify(d)
-      if (c === 1) return 1
-      if (c === 2) return 0.5
-      return 0.25
-    })
-    ;(labelSel as any).style("opacity", (d: SimNode) => {
-      if (primaryConn.has(d.id)) return 1
-      if (secondaryConn && secondaryConn.has(d.id)) return 0.5
-      return 0.25
-    })
-    ;(cardSel as any).style("opacity", 0.25)
+      ; (cardSel as any).style("opacity", 0.25)
   }
 
   function tooltipInfo(d: SimNode) {
@@ -3888,6 +3947,11 @@ function renderSvg(
       // Write a final snapshot synchronously so navigating away preserves layout.
       persist()
       cb.layout?.flush()
+      svgEl.removeEventListener("wheel", onWheel)
+      svgEl.removeEventListener("mousedown", onMiddleDown)
+      svgEl.removeEventListener("mouseup", onMiddleUp)
+      svg.on(".zoom", null)
+      svg.on("click", null)
       tooltip.remove()
       minimap.removeEventListener("mousedown", onMinimapDown)
       window.removeEventListener("mousemove", onMinimapMove)
@@ -3928,6 +3992,156 @@ function renderSvg(
       if (collideForce) collideForce.radius(physCollide())
       simulation.alphaDecay(physDecay())
       simulation.alpha(0.3).restart()
+    },
+    patch: (nextNodes: SimNode[], nextLinks: GraphPatchLink[]) => {
+      const merged = mergeSimNodes(nodes, nextNodes)
+      const reduce = reducedMotion()
+      nodes.length = 0
+      for (const n of merged.nodes) {
+        if (n.x == null || n.y == null) {
+          n.x = width / 2 + (Math.random() - 0.5) * 80
+          n.y = height / 2 + (Math.random() - 0.5) * 80
+        }
+        nodes.push(n)
+      }
+      simLinks = nextLinks.map((l) => ({ ...l })) as typeof simLinks
+      byId.clear()
+      for (const n of nodes) byId.set(n.id, n)
+      adjacency.clear()
+      for (const n of nodes) adjacency.set(n.id, new Set())
+      for (const l of nextLinks) {
+        adjacency.get(l.source)?.add(l.target)
+        adjacency.get(l.target)?.add(l.source)
+      }
+      closure.clear()
+      for (const [id, neigh] of adjacency) closure.set(id, new Set([id, ...neigh]))
+
+      link = g
+        .select("g.links")
+        .selectAll<SVGLineElement, d3Force.SimulationLinkDatum<SimNode>>("line")
+        .data(simLinks)
+        .join("line")
+        .attr("stroke", "var(--text-weak)")
+        .attr("stroke-width", 1)
+        .attr("stroke-opacity", edgeOpacityDefault)
+        .attr("stroke-linecap", "round")
+        .attr("stroke-dasharray", (d) =>
+          (d as any).type === "imports" ? "3,3" : (d as any).type === "links" ? "1,4" : "none",
+        )
+        .style("transition", hoverTransition) as typeof link
+
+      const join = g
+        .select("g.nodes")
+        .selectAll<SVGGElement, SimNode>("g.graph-node")
+        .data(nodes, (d) => d.id)
+      if (reduce) join.exit().remove()
+      else join.exit().transition().duration(GRAPH_EXIT_MS).style("opacity", "0").remove()
+
+      const entered = join
+        .enter()
+        .append("g")
+        .attr("class", "graph-node")
+        .style("contain", "strict")
+        .style("cursor", "pointer")
+        .on("click", (event: MouseEvent, d: SimNode) => {
+          event.stopPropagation()
+          cb.onSelect(d)
+        })
+        .on("mouseenter", (_event: MouseEvent, d: SimNode) => {
+          if (zoom.k < HOVER_MIN_ZOOM) return
+          hoveredId = d.id
+          applyHover()
+          showTooltip(d)
+          startHoverAnim(d.id)
+        })
+        .on("mouseleave", () => {
+          if (hoveredId === null) return
+          hoveredId = null
+          applyHover()
+          hideTooltip()
+          startHoverAnim(null)
+        })
+      const inner = entered.append("g").attr("class", reduce ? null : "graph-node-enter")
+      inner.append("circle").attr("class", "node-hit").attr("r", hitRadius).attr("fill", "transparent").attr("pointer-events", "all")
+      inner
+        .append("circle")
+        .attr("class", "node-ring")
+        .attr("r", ringRadius)
+        .attr("pointer-events", "none")
+        .attr("fill", (d) => nodeColor(d))
+        .attr("fill-opacity", 0.2)
+        .attr("stroke", (d) => nodeColor(d))
+        .attr("stroke-width", 1.5)
+        .attr("stroke-opacity", ringOpacityDefault)
+        .style("transition", hoverTransition)
+      if (opt.icon) {
+        inner.each(function (d) {
+          const r = nodeRadius(d)
+          const sel = d3Select.select(this)
+          if (d.type === "file" || d.type === "directory") {
+            const rawPath = d.id.startsWith("file:") ? d.id.slice(5) : d.id.startsWith("dir:") ? d.id.slice(4) : d.id
+            const iconName = chooseIconName(rawPath, d.type as "file" | "directory", false)
+            const iconSize = Math.max(r * 1.8, 14)
+            sel
+              .append("svg")
+              .attr("viewBox", "0 0 32 32")
+              .attr("width", iconSize)
+              .attr("height", iconSize)
+              .attr("x", -iconSize / 2)
+              .attr("y", -iconSize / 2)
+              .attr("pointer-events", "none")
+              .append("use")
+              .attr("href", `${fileIconSpriteUrl}#${iconName}`)
+            return
+          }
+          const path = nodeIcon(d)
+          if (!path) return
+          const iconSize = Math.max(r * 1.05, 9)
+          sel
+            .append("svg")
+            .attr("viewBox", ENTITY_ICON_VIEWBOX)
+            .attr("width", iconSize)
+            .attr("height", iconSize)
+            .attr("x", -iconSize / 2)
+            .attr("y", -iconSize / 2)
+            .attr("fill", "none")
+            .attr("stroke", nodeColor(d))
+            .attr("stroke-width", NODE_ICON_STROKE)
+            .attr("stroke-linecap", "round")
+            .attr("stroke-linejoin", "round")
+            .attr("pointer-events", "none")
+            .html(path)
+        })
+      }
+      nodeG = entered.merge(join) as typeof nodeG
+      nodeG.select(".node-ring").attr("fill", (d) => nodeColor(d)).attr("stroke", (d) => nodeColor(d))
+      nodeG.selectAll(".graph-node-fresh").remove()
+      nodeG
+        .filter((d) => !!d.fresh)
+        .append("circle")
+        .attr("class", "graph-node-fresh")
+        .attr("r", (d) => nodeRadius(d) + 6)
+        .attr("fill", "none")
+        .attr("stroke", GRAPH_FRESH_COLOR)
+        .attr("stroke-width", 2)
+      nodeG.call(dragBehavior)
+
+      label = g
+        .select("g.labels")
+        .selectAll<SVGTextElement, SimNode>("text")
+        .data(opt.label ? nodes : [], (d) => d.id)
+        .join("text")
+        .text((d) => d.label)
+        .attr("font-size", "10px")
+        .attr("fill", "var(--text-weak)")
+        .attr("text-anchor", "middle")
+        .attr("pointer-events", "none")
+        .attr("dy", "2.2em") as typeof label
+
+      simulation.nodes(nodes)
+      const lf = simulation.force("link") as d3Force.ForceLink<SimNode, d3Force.SimulationLinkDatum<SimNode>> | null
+      lf?.links(simLinks)
+      simulation.alpha(0.25).restart()
     },
   }
 }
@@ -4437,10 +4651,9 @@ function DiffPanel(props: { hash: string; onClose: () => void }) {
 // ---------------------------------------------------------------------------
 
 const tabBtn = (active: boolean) =>
-  `flex items-center gap-1.5 px-2.5 py-1 rounded-md text-12-medium transition-colors ${
-    active
-      ? "bg-surface-raised-base text-text-strong"
-      : "text-text-weak hover:text-text-base hover:bg-surface-raised-base/50"
+  `flex items-center gap-1.5 px-2.5 py-1 rounded-md text-12-medium transition-colors ${active
+    ? "bg-surface-raised-base text-text-strong"
+    : "text-text-weak hover:text-text-base hover:bg-surface-raised-base/50"
   }`
 
 // ---------------------------------------------------------------------------

@@ -3,7 +3,7 @@ import type { useDialog } from "@opencode-ai/ui/context/dialog"
 import { batch, createEffect, For, type Accessor, type JSX, type ParentProps } from "solid-js"
 import { createStore } from "solid-js/store"
 
-const base = { w: 760, h: 620 }
+const base = { w: 880, h: 720 }
 
 export type EntityDialogMode = "view" | "edit" | "create"
 
@@ -96,8 +96,8 @@ export function createEntityDialogStack(input?: { base?: EntityDialogSize }) {
     reset,
     setSize(w, h) {
       setState("size", {
-        w: clamp(w, 560, Math.min(920, window.innerWidth - 96)),
-        h: clamp(h, 420, Math.min(760, window.innerHeight - 120)),
+        w: clamp(w, 600, Math.min(1040, window.innerWidth - 64)),
+        h: clamp(h, 460, Math.min(880, window.innerHeight - 80)),
       })
     },
     getTransform(index) {
@@ -133,18 +133,27 @@ export function createEntityDialogStack(input?: { base?: EntityDialogSize }) {
 
 export function EntityDialogStackHost(props: {
   stack: () => EntityDialogEntry[]
+  size: () => EntityDialogSize
   render: (entry: EntityDialogEntry, index: Accessor<number>) => JSX.Element
 }) {
   return (
-    <Dialog size="x-large" transition class="!h-full !bg-transparent !shadow-none !overflow-visible">
-      <div
-        data-ui-region="overlay"
-        data-ui-component="app.entity-dialog.stack"
-        class="relative h-full w-full overflow-visible"
-      >
-        <For each={props.stack()}>{(entry, index) => props.render(entry, index)}</For>
-      </div>
-    </Dialog>
+    <div
+      class="entity-dialog-stack-root h-full w-full"
+      style={{
+        "--entity-dialog-w": `${props.size().w}px`,
+        "--entity-dialog-h": `${props.size().h}px`,
+      }}
+    >
+      <Dialog size="x-large" transition class="entity-dialog-stack !h-full !bg-transparent !shadow-none !overflow-visible">
+        <div
+          data-ui-region="overlay"
+          data-ui-component="app.entity-dialog.stack"
+          class="relative h-full min-h-0 w-full overflow-hidden"
+        >
+          <For each={props.stack()}>{(entry, index) => props.render(entry, index)}</For>
+        </div>
+      </Dialog>
+    </div>
   )
 }
 

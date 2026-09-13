@@ -14,6 +14,7 @@ import { UIEvent } from "./ui"
 import { Filesystem } from "@/util/filesystem"
 import { Instance } from "@/project/instance"
 import * as SemanticLinks from "../trellis/semantic-links"
+import * as EntityMaterialize from "../trellis/entity-materialize"
 
 type Json = string | number | boolean
 
@@ -1108,6 +1109,14 @@ export const CmsTool = Tool.define<typeof args, Record<string, any>>("cms", {
         reason: "cms entry created",
         relatedEntities: [id],
       })
+      await EntityMaterialize.materialize(id, Instance.directory, {
+        actor: "cms",
+        actorKind: "agent",
+        source: "cms",
+        sessionID: ctx.sessionID,
+        reason: "cms entry markdown scaffold",
+        relatedEntities: [id],
+      })
       await Bus.publish(UIEvent.Navigate, {
         sessionID: ctx.sessionID,
         tab: "cms",
@@ -1160,6 +1169,14 @@ export const CmsTool = Tool.define<typeof args, Record<string, any>>("cms", {
         reason: "cms entry updated",
         relatedEntities: [input.id],
       })
+      await EntityMaterialize.materialize(input.id, Instance.directory, {
+        actor: "cms",
+        actorKind: "agent",
+        source: "cms",
+        sessionID: ctx.sessionID,
+        reason: "cms entry markdown sync",
+        relatedEntities: [input.id],
+      })
       const collection = input.id.includes(":") ? input.id.split(":")[0] : undefined
       await Bus.publish(UIEvent.Navigate, {
         sessionID: ctx.sessionID,
@@ -1177,6 +1194,7 @@ export const CmsTool = Tool.define<typeof args, Record<string, any>>("cms", {
       if (!input.id) return cmsFail({ title: "Error", output: "id is required." })
       const facts = factsByEntity(input.id)
       if (facts.length === 0) return cmsFail({ title: "Not found", output: `Entry "${input.id}" not found.` })
+      await EntityMaterialize.remove(input.id, Instance.directory, facts)
       const result = Trellis.storeRetract(facts)
       if (!result) return cmsFail({ title: "Error", output: "Failed to delete entry." })
       return cmsOk({
@@ -1197,6 +1215,14 @@ export const CmsTool = Tool.define<typeof args, Record<string, any>>("cms", {
       }
       const r = Trellis.storeAssert([{ e: input.id, a: "cms_status", v: next }])
       if (!r) return cmsFail({ title: "Error", output: "Failed to assert status." })
+      await EntityMaterialize.materialize(input.id, Instance.directory, {
+        actor: "cms",
+        actorKind: "agent",
+        source: "cms",
+        sessionID: ctx.sessionID,
+        reason: "cms entry publish state sync",
+        relatedEntities: [input.id],
+      })
       const collection = input.id.includes(":") ? input.id.split(":")[0] : undefined
       await Bus.publish(UIEvent.Navigate, {
         sessionID: ctx.sessionID,

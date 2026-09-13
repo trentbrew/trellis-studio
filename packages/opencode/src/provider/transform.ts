@@ -958,56 +958,69 @@ export namespace ProviderTransform {
   }
 
   /** DeepSeek / Codex / OpenAI-compatible providers require root `type: "object"` and reject `type: null`. */
+  function isNullSchema(node: unknown) {
+    if (node === null || typeof node !== "object") return false
+    const t = (node as Record<string, unknown>).type
+    return t === null || t === "null"
+  }
+
   function sanitizeStrictToolSchema(node: unknown): JSONSchema7 {
     if (node === null || typeof node !== "object") return node as JSONSchema7
     if (Array.isArray(node)) return node.map((item) => sanitizeStrictToolSchema(item)) as unknown as JSONSchema7
 
     const obj = node as Record<string, unknown>
-    if (obj.type === null) {
+    if (isNullSchema(obj)) {
       const { type: _removed, ...rest } = obj
       return sanitizeStrictToolSchema(rest)
     }
 
-    if (Array.isArray(obj.oneOf) && obj.oneOf.length > 0 && obj.type !== "object") {
-      const branches = obj.oneOf.map((branch) => sanitizeStrictToolSchema(branch)) as JSONSchema7[]
-      const merged: JSONSchema7 = {
-        type: "object",
-        properties: {},
-        required: [],
-      }
-      const actions = new Set<string>()
-      for (const branch of branches) {
-        if (branch.type !== "object" || !branch.properties) continue
-        const action = branch.properties.action as JSONSchema7 | undefined
-        const actionEnum = action?.enum
-        if (Array.isArray(actionEnum)) {
-          for (const value of actionEnum) {
-            if (typeof value === "string") actions.add(value)
-          }
+    // Zod discriminated unions emit `anyOf`/`oneOf` of object branches. Merge them
+    // into a single flat object schema so the root is always `type: "object"`.
+    const branches = [obj.anyOf, obj.oneOf].find((u) => Array.isArray(u) && u.length > 0) as unknown[] | undefined
+    if (branches && obj.type !== "object") {
+      const objects = branches.map((b) => sanitizeStrictToolSchema(b)).filter((b) => b && !isNullSchema(b)) as JSONSchema7[]
+      if (objects.length > 0 && objects.every((b) => b.type === "object")) {
+        const merged: JSONSchema7 = {
+          type: "object",
+          properties: {},
+          required: [],
         }
-        for (const [key, value] of Object.entries(branch.properties)) {
-          if (key === "action") {
-            merged.properties!.action = {
-              type: "string",
-              enum: [...actions],
-              description: action?.description,
+        const actions = new Set<string>()
+        for (const branch of objects) {
+          const props = branch.properties ?? {}
+          const action = props.action as JSONSchema7 | undefined
+          const value = action?.const ?? (Array.isArray(action?.enum) ? action.enum[0] : undefined)
+          if (typeof value === "string") actions.add(value)
+          for (const [key, prop] of Object.entries(props)) {
+            if (key === "action") {
+              merged.properties!.action = { type: "string", enum: [...actions], description: action?.description }
+              continue
             }
-            continue
+            const existing = merged.properties![key]
+            merged.properties![key] = existing
+              ? { anyOf: [existing, sanitizeStrictToolSchema(prop)] }
+              : sanitizeStrictToolSchema(prop)
           }
-          const existing = merged.properties![key]
-          if (!existing) {
-            merged.properties![key] = sanitizeStrictToolSchema(value)
-            continue
-          }
-          merged.properties![key] = {
-            anyOf: [existing, sanitizeStrictToolSchema(value)],
-          }
+          const req = branch.required?.filter((field) => field !== "action") ?? []
+          merged.required = [...new Set([...(merged.required ?? []), ...req])]
         }
-        const req = branch.required?.filter((field) => field !== "action") ?? []
-        merged.required = [...new Set([...(merged.required ?? []), ...req])]
+        if (actions.size > 0) merged.required = ["action", ...(merged.required ?? [])]
+        return merged
       }
-      if (actions.size > 0) merged.required = ["action", ...(merged.required ?? [])]
-      return merged
+    }
+
+    // Collapse nullable unions ([schema, null]) down to the non-null schema.
+    for (const key of ["anyOf", "oneOf"] as const) {
+      const list = obj[key]
+      if (Array.isArray(list)) {
+        const nonNull = list.filter((b) => !isNullSchema(b))
+        if (nonNull.length < list.length) {
+          const { [key]: _removed, ...rest } = obj
+          if (nonNull.length === 0) return sanitizeStrictToolSchema(rest)
+          if (nonNull.length === 1) return sanitizeStrictToolSchema({ ...rest, ...sanitizeStrictToolSchema(nonNull[0]) })
+          return sanitizeStrictToolSchema({ ...rest, [key]: nonNull })
+        }
+      }
     }
 
     const result: Record<string, unknown> = {}

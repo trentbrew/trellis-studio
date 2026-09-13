@@ -296,6 +296,21 @@ export const {
         )
     }
 
+    const resolve = async (input: string): Promise<string> => {
+      const file = path.normalize(input)
+      if (!file || /\.[a-z0-9]+$/i.test(file)) return file
+      const exists = async (target: string) => {
+        try {
+          return Boolean((await sdk.client.file.read({ path: target }))?.data)
+        } catch {
+          return false
+        }
+      }
+      if (await exists(file)) return file
+      const md = `${file}.md`
+      return (await exists(md)) ? md : file
+    }
+
     const stop = sdk.event.listen((e) => {
       if (shouldBumpWorkspaceFileCatalog(e.details)) {
         bumpCatalog()
@@ -632,6 +647,7 @@ export const {
       selectedLines,
       setSelectedLines,
       searchFiles: (query: string) => search(query, "false"),
+      resolve,
       searchFilesAndDirectories: (query: string) => search(query, "true"),
     }
   },

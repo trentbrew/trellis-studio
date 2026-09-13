@@ -144,6 +144,7 @@ export const MentionPreview = Extension.create<MentionPreviewOptions>({
               const id = target.getAttribute("data-mention-id") || ""
               const type = target.getAttribute("data-mention-type") || "file"
               if (!id) return false
+              if (type !== "file") return false
 
               const cached = cache.get(`${type}:${id}`)
               if (cached) {

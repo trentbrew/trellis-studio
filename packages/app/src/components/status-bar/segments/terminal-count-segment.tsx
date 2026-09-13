@@ -8,7 +8,10 @@ import { useTerminalOptional } from "@/context/terminal"
 import { useLayout } from "@/context/layout"
 import { focusTerminalById } from "@/pages/session/helpers"
 
-export function TerminalCountSegment(props: { variant?: "default" | "rail"; tooltipPlacement?: "right" | "top" }) {
+export function TerminalCountSegment(props: {
+  variant?: "default" | "rail" | "titlebar"
+  tooltipPlacement?: "bottom" | "right" | "top"
+}) {
   const terminal = useTerminalOptional()
   const layout = useLayout()
   const command = useCommand()
@@ -30,28 +33,41 @@ export function TerminalCountSegment(props: { variant?: "default" | "rail"; tool
     }
   }
 
-  if (props.variant === "rail") {
+  if (props.variant === "rail" || props.variant === "titlebar") {
+    const compact = props.variant === "titlebar"
     return (
       <div class="relative shrink-0">
-        <Tooltip placement={props.tooltipPlacement ?? "right"} value={tooltip()}>
+        <Tooltip placement={props.tooltipPlacement ?? (compact ? "bottom" : "right")} value={tooltip()}>
           <button
             type="button"
-            data-action="rail-terminal-toggle"
-            class="flex h-9 w-12 items-center justify-center rounded-md transition-colors md:size-9 md:w-9 md:min-w-0 md:px-0 [&_svg]:size-4 md:[&_svg]:size-[18px]"
+            data-action="terminal-toggle"
+            class="flex items-center justify-center rounded-md transition-colors"
             classList={{
+              "h-6 w-7 rounded-full border border-border-base/40 bg-surface-base/60": compact,
+              "h-9 w-12 md:size-9 md:w-9 md:min-w-0 md:px-0 [&_svg]:size-4 md:[&_svg]:size-[18px]": !compact,
               "bg-surface-raised-stronger-non-alpha text-text-strong shadow-sm ring-1 ring-inset ring-border-strong-base/70":
-                opened(),
-              "text-text-weak hover:text-text-base hover:bg-surface-raised-base/50": !opened(),
+                opened() && !compact,
+              "bg-surface-raised-base text-text-base shadow-[0_0_0_1px_var(--border-base)]": opened() && compact,
+              "text-text-weak hover:text-text-base hover:bg-surface-raised-base/50": !opened() && !compact,
+              "text-icon-weak hover:text-icon-base": !opened() && compact,
             }}
             onClick={toggle}
             aria-label={tooltip()}
             aria-pressed={opened()}
           >
-            <Icon name="terminal" size="small" class="md:!size-[18px]" />
+            <Icon name="terminal" size="small" class={compact ? "shrink-0" : "md:!size-[18px]"} />
           </button>
         </Tooltip>
         <Show when={count() > 0}>
-          <span class="absolute -top-1 -right-1 min-w-[15px] h-[15px] flex items-center justify-center text-[9px] font-bold rounded-full px-1 tabular-nums ring-2 ring-surface-raised-base bg-surface-raised-base text-text-strong border border-border-base/40 pointer-events-none">
+          <span
+            class="absolute flex items-center justify-center rounded-full px-1 tabular-nums pointer-events-none"
+            classList={{
+              "-top-0.5 -right-0.5 min-w-4 h-4 text-[9px] font-medium leading-none text-text-strong bg-surface-raised-base border border-border-base/40":
+                compact,
+              "-top-1 -right-1 min-w-[15px] h-[15px] text-[9px] font-bold ring-2 ring-surface-raised-base bg-surface-raised-base text-text-strong border border-border-base/40":
+                !compact,
+            }}
+          >
             {count() > 9 ? "9+" : count()}
           </span>
         </Show>
@@ -64,11 +80,13 @@ export function TerminalCountSegment(props: { variant?: "default" | "rail"; tool
       <IconButton
         icon="terminal"
         size="small"
-        variant="ghost"
+        variant={opened() ? "primary" : "ghost"}
         class="w-6 h-6 shrink-0"
+        data-action="terminal-toggle"
         title={tooltip()}
         onClick={toggle}
         aria-label={tooltip()}
+        aria-pressed={opened()}
       />
       <Show when={count() > 0}>
         <span class="absolute -top-0.5 -right-0.5 min-w-4 h-4 px-1 inline-flex items-center justify-center rounded-full text-[9px] font-medium leading-none text-text-strong bg-surface-raised-base border border-border-base/40 tabular-nums">

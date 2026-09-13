@@ -12,8 +12,10 @@ import {
   createEffect,
   createComputed,
   createSignal,
+  lazy,
   on,
   onMount,
+  Suspense,
   untrack,
 } from "solid-js"
 import { createMediaQuery } from "@solid-primitives/media"
@@ -69,7 +71,6 @@ import { syncSessionModel } from "@/pages/session/session-model-helpers"
 import { TerminalPanel } from "@/pages/session/terminal-panel"
 import { useSessionCommands } from "@/pages/session/use-session-commands"
 import { useSessionHashScroll } from "@/pages/session/use-session-hash-scroll"
-import { LogsPanel, PlanPanel } from "@/pages/trellis"
 import { RAIL_ITEMS, type RailItem, SessionSidePanel, useCustomRailItems } from "@/pages/session/session-side-panel"
 import { projectionWorkspaceTypeFromConfig } from "@/lib/projections"
 import { isNavV2Enabled } from "@/lib/nav-flag"
@@ -78,6 +79,13 @@ import { graphNav } from "@/lib/graph-nav"
 import { pushCmsNav } from "@/lib/cms-navigate"
 import { EVENT, type PreviewDetail } from "@/lib/preview-url"
 import { autofollow } from "@/lib/agent-nav"
+
+const PlanPanel = lazy(() => import("@/pages/trellis").then((module) => ({ default: module.PlanPanel })))
+const LogsPanel = lazy(() => import("@/pages/trellis").then((module) => ({ default: module.LogsPanel })))
+
+function PanelLoading(props: { label: string }) {
+  return <div class="flex h-full items-center justify-center text-12-regular text-text-weaker">{props.label}</div>
+}
 import { isStoreMutationToolCompleted, notifyTrellisStoreChanged } from "@/lib/trellis-store-sync"
 import { isSessionWorking } from "@/lib/session-working"
 import { Identifier } from "@/utils/id"
@@ -500,14 +508,14 @@ export default function Page() {
     const live = new Map(list.map((item) => [item.id, item]))
     const ordered = ids?.length
       ? [
-          ...ids.flatMap((id) => {
-            const item = live.get(id)
-            if (!item) return []
-            live.delete(id)
-            return [item]
-          }),
-          ...live.values(),
-        ]
+        ...ids.flatMap((id) => {
+          const item = live.get(id)
+          if (!item) return []
+          live.delete(id)
+          return [item]
+        }),
+        ...live.values(),
+      ]
       : list
     const opened = new Set(open[orderKey()] ?? [])
     if (params.id) opened.add(params.id)
@@ -1123,10 +1131,10 @@ export default function Page() {
       const stale = !cached
         ? false
         : (() => {
-            const info = getSessionPrefetch(sdk.directory, id)
-            if (!info) return true
-            return Date.now() - info.at > SESSION_PREFETCH_TTL
-          })()
+          const info = getSessionPrefetch(sdk.directory, id)
+          if (!info) return true
+          return Date.now() - info.at > SESSION_PREFETCH_TTL
+        })()
       untrack(() => {
         void sync.session.sync(id)
       })
@@ -1474,8 +1482,16 @@ export default function Page() {
     if (plan() && params.id) void sync.session.todo(params.id)
   })
 
-  const planPanel = () => <PlanPanel todos={todos()} />
-  const logsPanel = () => <LogsPanel />
+  const planPanel = () => (
+    <Suspense fallback={<PanelLoading label="Loading plan..." />}>
+      <PlanPanel todos={todos()} />
+    </Suspense>
+  )
+  const logsPanel = () => (
+    <Suspense fallback={<PanelLoading label="Loading logs..." />}>
+      <LogsPanel />
+    </Suspense>
+  )
   const shipPanel = () => (
     <div class="flex-1 h-full flex items-center justify-center text-text-weaker text-12-regular">
       Deployment info coming soon
@@ -1724,7 +1740,7 @@ export default function Page() {
     ),
   )
 
-  let fill = () => {}
+  let fill = () => { }
 
   const setScrollRef = (el: HTMLDivElement | undefined) => {
     scroller = el
@@ -2043,7 +2059,7 @@ export default function Page() {
   }
 
   const halt = (sessionID: string) =>
-    busy(sessionID) ? sdk.client.session.abort({ sessionID }).catch(() => {}) : Promise.resolve()
+    busy(sessionID) ? sdk.client.session.abort({ sessionID }).catch(() => { }) : Promise.resolve()
 
   const revertMutation = useMutation(() => ({
     mutationFn: async (input: { sessionID: string; messageID: string }) => {
@@ -2090,11 +2106,11 @@ export default function Page() {
       const task = !next
         ? halt(sessionID).then(() => sdk.client.session.unrevert({ sessionID }))
         : halt(sessionID).then(() =>
-            sdk.client.session.revert({
-              sessionID,
-              messageID: next.id,
-            }),
-          )
+          sdk.client.session.revert({
+            sessionID,
+            messageID: next.id,
+          }),
+        )
 
       await task
         .then((result) => {
@@ -2338,7 +2354,6 @@ export default function Page() {
             classList={{
               "shrink-0 overflow-hidden": isDesktop() && !full(),
               "rounded-xl": true,
-              "border-l border-border-weaker-base": isDesktop() && !full() && sessionOpened(),
               "ml-3": isDesktop() && !full() && sessionOpened(),
               "flex-1 min-w-0 min-h-0": !isDesktop() || full(),
               relative: isDesktop() && full(),
@@ -2379,7 +2394,7 @@ export default function Page() {
               data-ui-pattern={isDesktop() && full() ? "layout.split" : undefined}
               data-ui-slot={isDesktop() && full() ? "pane" : undefined}
               classList={{
-                "@container relative shrink-0 flex flex-col h-full min-h-0 bg-panel rounded-xl border border-border-weaker-base gap-2": true,
+                "@container relative shrink-0 flex flex-col h-full min-h-0 bg-panel rounded-xl gap-2": true,
                 "flex-1 min-w-0": isDesktop() && full(),
                 "pointer-events-none": isDesktop() && !full() && !sessionOpened(),
               }}
@@ -2575,43 +2590,43 @@ export default function Page() {
                 followup={
                   params.id
                     ? {
-                        queue: queueEnabled,
-                        items: followupDock(),
-                        sending: sendingFollowup(),
-                        edit: editingFollowup(),
-                        onQueue: queueFollowup,
-                        onAbort: () => {
-                          const id = params.id
-                          if (!id) return
-                          setFollowup("paused", id, true)
-                        },
-                        onSend: (id) => {
-                          void sendFollowup(params.id!, id, { manual: true })
-                        },
-                        onEdit: editFollowup,
-                        onEditLoaded: clearFollowupEdit,
-                      }
+                      queue: queueEnabled,
+                      items: followupDock(),
+                      sending: sendingFollowup(),
+                      edit: editingFollowup(),
+                      onQueue: queueFollowup,
+                      onAbort: () => {
+                        const id = params.id
+                        if (!id) return
+                        setFollowup("paused", id, true)
+                      },
+                      onSend: (id) => {
+                        void sendFollowup(params.id!, id, { manual: true })
+                      },
+                      onEdit: editFollowup,
+                      onEditLoaded: clearFollowupEdit,
+                    }
                     : undefined
                 }
                 revert={
                   rolled().length > 0
                     ? {
-                        items: rolled(),
-                        restoring: restoring(),
-                        disabled: reverting(),
-                        onRestore: restore,
-                      }
+                      items: rolled(),
+                      restoring: restoring(),
+                      disabled: reverting(),
+                      onRestore: restore,
+                    }
                     : undefined
                 }
                 changes={
                   changeDockVisible()
                     ? {
-                        files: changeDockFiles(),
-                        rejecting: reverting(),
-                        onAccept: acceptChanges,
-                        onReject: rejectChanges,
-                        onReview: openReviewView,
-                      }
+                      files: changeDockFiles(),
+                      rejecting: reverting(),
+                      onAccept: acceptChanges,
+                      onReject: rejectChanges,
+                      onReview: openReviewView,
+                    }
                     : undefined
                 }
                 setPromptDockRef={(el) => {

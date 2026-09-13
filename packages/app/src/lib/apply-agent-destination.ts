@@ -10,6 +10,7 @@ export async function applyAgentTurnDestination(dest: AgentTurnDestination, nav:
 
   switch (dest.kind) {
     case "file": {
+      if (!nav.file) return
       nav.file.load(dest.path)
       const tab = nav.file.tab(dest.path)
       const tabs = nav.layout.tabs(nav.sessionKey)

@@ -1,32 +1,19 @@
-import { createEffect, createMemo, createResource, createSignal, For, Match, on, Show, Switch } from "solid-js"
-import { DataProvider } from "@opencode-ai/ui/context"
+import { createEffect, createMemo, createResource, createSignal, For, Match, on, onCleanup, onMount, Show, Switch } from "solid-js"
 import { FileIcon } from "@opencode-ai/ui/file-icon"
 import { Icon } from "@opencode-ai/ui/icon"
-import { Markdown } from "@opencode-ai/ui/markdown"
 import { Spinner } from "@opencode-ai/ui/spinner"
 import { showToast } from "@opencode-ai/ui/toast"
-import { sampledChecksum } from "@opencode-ai/util/encode"
 import { ENTITY_COLORS } from "@/lib/entity-theme"
-import { useFile } from "@/context/file"
+import { useFileOptional, type FileState } from "@/context/file"
 import { useSDK } from "@/context/sdk"
-import { useSync } from "@/context/sync"
-import { useTrellis, useTrellisOptional } from "@/context/trellis"
-import { useTrellisStoreOptional } from "@/context/trellis-store"
-import { searchMentions } from "@/lib/mention-search"
-import { mentionTrellisCtx } from "@/lib/mention-trellis"
+import { useTrellis } from "@/context/trellis"
+import { useMentionCallbacksOptional } from "@/lib/use-mention-callbacks"
+import { entityMarkdownPath, inlineBody, snippet } from "@/lib/entity-body-path"
 import { FileEditor } from "@/pages/session/file-editor"
 import { FilePreview } from "./file-preview"
 import { FileThumbnail } from "./thumbnail"
 import { useEntityHover, useEntityNavigate } from "./nav"
 import { ext, leaf, OMIT_FACT_KEYS, pathFromId, show } from "./helpers"
-
-const STUB = {
-  session: [],
-  session_status: {},
-  session_diff: {},
-  message: {},
-  part: {},
-}
 
 type Fact = {
   a: string
@@ -51,30 +38,28 @@ export function EntityPreview(props: { id: string; type: string | undefined }) {
   )
 }
 
-// FileEntityPreview is shared by the graph drawer (Image 2 in the spec) and
-// the entity dialog. It now reuses the same FileEditor surface as the code
-// view (Image 3) so markdown rendering and editing affordances — slash
-// commands, mentions, embeds, undo/redo, mode toggle — stay identical across
-// the two contexts. Non-text/binary fallbacks remain delegated to
-// `FilePreview` (raster preview, video, csv-only viewer, etc.).
-function FileEntityPreview(props: { path: string }) {
-  const file = useFile()
+// FileEntityPreview is shared by the graph drawer and entity dialog. It reuses
+// the same FileEditor surface as the code view. Outside the session file
+// provider, edits load and save through the SDK directly.
+function FileEntityPreview(props: { path: string; frontmatterPanel?: boolean }) {
+  const file = useFileOptional()
+  if (!file) return <StandaloneFileEditor path={props.path} frontmatterPanel={props.frontmatterPanel} />
+  return <SessionFileEditor path={props.path} frontmatterPanel={props.frontmatterPanel} />
+}
+
+function SessionFileEditor(props: { path: string; frontmatterPanel?: boolean }) {
+  const file = useFileOptional()
   const sdk = useSDK()
-  const sync = useSync()
-  const trellis = useTrellisOptional()
-  const trellisStore = useTrellisStoreOptional()
+  const mention = useMentionCallbacksOptional()
   const navigate = useEntityNavigate()
 
   const [error, setError] = createSignal(false)
 
-  // Re-load whenever the underlying entity changes; useFile dedupes hits and
-  // keeps a hot cache so the auto-open effect's pre-fetch usually means this
-  // resolves on the first frame.
   createEffect(
     on(
       () => props.path,
       (path) => {
-        if (!path) return
+        if (!path || !file) return
         setError(false)
         file
           .load(path)
@@ -86,8 +71,8 @@ function FileEntityPreview(props: { path: string }) {
     ),
   )
 
-  const state = createMemo(() => file.get(props.path))
-  const text = createMemo(() => file.text(props.path) ?? "")
+  const state = createMemo(() => file?.get(props.path))
+  const text = createMemo(() => file?.text(props.path) ?? "")
   const editable = createMemo(() => {
     const content = state()?.content
     return content?.type === "text" && content.encoding !== "base64"
@@ -96,7 +81,7 @@ function FileEntityPreview(props: { path: string }) {
 
   const save = () => {
     const path = props.path
-    if (!path) return
+    if (!path || !file) return
     void file.save(path)
   }
 
@@ -104,8 +89,8 @@ function FileEntityPreview(props: { path: string }) {
     try {
       await sdk.client.file.write({ fileWriteInput: { path: rel, content: "", format: false } })
       const parent = rel.includes("/") ? rel.slice(0, rel.lastIndexOf("/")) : ""
-      await file.tree.refresh(parent)
-      if (parent) file.tree.expand(parent)
+      await file?.tree.refresh(parent)
+      if (parent) file?.tree.expand(parent)
       showToast({ variant: "success", title: `Created ${rel}` })
       return rel
     } catch (e) {
@@ -116,7 +101,7 @@ function FileEntityPreview(props: { path: string }) {
   }
 
   return (
-    <div class="h-full min-h-0">
+    <div class="flex h-full min-h-0 flex-1 flex-col overflow-hidden">
       <Show
         when={ready()}
         fallback={
@@ -129,8 +114,6 @@ function FileEntityPreview(props: { path: string }) {
         <Show
           when={!error() && state() && editable()}
           fallback={
-            // Binary or unloadable content — fall back to the read-only
-            // FilePreview which knows how to handle media URLs.
             <FilePreview path={props.path} file={state()?.content} onLinkClick={(p) => navigate(`file:${p}`, "file")} />
           }
         >
@@ -139,30 +122,110 @@ function FileEntityPreview(props: { path: string }) {
             state={state()!}
             value={text()}
             active={true}
-            frontmatterPanel={false}
-            onChange={(value) => file.setDraft(props.path, value)}
+            frontmatterPanel={props.frontmatterPanel}
+            onChange={(value) => file?.setDraft(props.path, value)}
             onSave={save}
-            onMode={(value) => file.setMode(props.path, value)}
-            mention={{
-              search: (query) =>
-                searchMentions({ query, file, sync, trellis: mentionTrellisCtx(trellis, trellisStore?.facts) }),
-              fetch: async (id, type) => {
-                if (type !== "file") return undefined
-                await file.load(id)
-                return file.text(id)
-              },
-              navigate: (attrs) => {
-                // Routing mentions/wikilinks through useEntityNavigate keeps
-                // them consistent with how the rest of the entity preview
-                // handles links: in the graph drawer it walks the graph, and
-                // in the entity dialog it pushes a new dialog frame.
-                if (attrs.type === "file") navigate(`file:${attrs.id}`, "file")
-                else navigate(attrs.id, attrs.type)
-              },
-              onCreate,
-            }}
+            onMode={(value) => file?.setMode(props.path, value)}
+            mention={{ ...mention, onCreate }}
           />
         </Show>
+      </Show>
+    </div>
+  )
+}
+
+function StandaloneFileEditor(props: { path: string; frontmatterPanel?: boolean }) {
+  const sdk = useSDK()
+  const mention = useMentionCallbacksOptional()
+  const [error, setError] = createSignal(false)
+  const [loaded, setLoaded] = createSignal(false)
+  const [mode, setMode] = createSignal<"rich" | "raw">("rich")
+  const [draft, setDraft] = createSignal("")
+  const [saved, setSaved] = createSignal("")
+  const [saving, setSaving] = createSignal(false)
+  const [saveError, setSaveError] = createSignal<string>()
+
+  createEffect(
+    on(
+      () => props.path,
+      async (path) => {
+        if (!path) return
+        setError(false)
+        setLoaded(false)
+        const result = await sdk.client.file.read({ path }).catch(() => undefined)
+        const file = result?.data
+        if (!file || file.type !== "text" || file.encoding === "base64") {
+          setError(true)
+          return
+        }
+        setDraft(file.content)
+        setSaved(file.content)
+        setMode("rich")
+        setLoaded(true)
+      },
+    ),
+  )
+
+  const state = createMemo(
+    (): FileState => ({
+      path: props.path,
+      name: props.path.split("/").pop() ?? props.path,
+      loaded: loaded(),
+      mode: mode(),
+      content: { type: "text", content: saved() },
+      draft: draft() !== saved() ? draft() : undefined,
+      saving: saving(),
+      saveError: saveError(),
+    }),
+  )
+
+  const save = async () => {
+    if (saving()) return
+    setSaving(true)
+    setSaveError(undefined)
+    try {
+      await sdk.client.file.write({ fileWriteInput: { path: props.path, content: draft(), format: false } })
+      setSaved(draft())
+    } catch (e) {
+      setSaveError(e instanceof Error ? e.message : String(e))
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  onMount(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (!(event.metaKey || event.ctrlKey) || event.altKey || event.shiftKey) return
+      if (event.key.toLowerCase() !== "s") return
+      event.preventDefault()
+      void save()
+    }
+    window.addEventListener("keydown", onKeyDown, { capture: true })
+    onCleanup(() => window.removeEventListener("keydown", onKeyDown, { capture: true }))
+  })
+
+  return (
+    <div class="flex h-full min-h-0 flex-1 flex-col overflow-hidden">
+      <Show
+        when={loaded() && !error()}
+        fallback={
+          <div class="m-3 flex items-center gap-2 rounded-md border border-border-base bg-background-base px-3 py-2 text-text-weak">
+            <Spinner />
+            <span class="text-12-regular">Loading file...</span>
+          </div>
+        }
+      >
+        <FileEditor
+          path={props.path}
+          state={state()}
+          value={draft()}
+          active={true}
+          frontmatterPanel={props.frontmatterPanel}
+          onChange={setDraft}
+          onSave={() => void save()}
+          onMode={setMode}
+          mention={mention}
+        />
       </Show>
     </div>
   )
@@ -265,19 +328,6 @@ function ChildCard(props: { id: string; path: string; type: "file" | "directory"
 
 function ProjectEntityPreview(props: { id: string }) {
   const sdk = useSDK()
-  const trellis = useTrellis()
-
-  const [graph] = createResource(
-    () => props.id,
-    async () => {
-      try {
-        return await trellis.fetchGraph()
-      } catch {
-        return undefined
-      }
-    },
-    { initialValue: undefined },
-  )
 
   const [readme] = createResource(
     async () => {
@@ -285,80 +335,26 @@ function ProjectEntityPreview(props: { id: string }) {
       for (const name of names) {
         try {
           const data = (await sdk.client.file.read({ path: name })).data
-          if (data && data.type === "text" && data.encoding !== "base64") {
-            return { path: name, data }
-          }
-        } catch {}
+          if (data && data.type === "text" && data.encoding !== "base64") return name
+        } catch { }
       }
       return undefined
     },
     { initialValue: undefined },
   )
 
-  const data = () => graph.latest
-  const doc = () => readme.latest
-  const stats = createMemo(() => {
-    const current = data()
-    if (!current) return []
-    const counts: Record<string, number> = {}
-    for (const node of current.nodes) {
-      counts[node.type] = (counts[node.type] ?? 0) + 1
-    }
-    const order = [
-      "file",
-      "directory",
-      "issue",
-      "agent",
-      "workunit",
-      "cycle",
-      "epic",
-      "roadmap",
-      "memory",
-      "sprite",
-      "suggestion",
-      "mcp",
-    ]
-    return order
-      .filter((k) => (counts[k] ?? 0) > 0)
-      .map((k) => ({ label: k === "directory" ? "dirs" : k === "workunit" ? "tasks" : `${k}s`, value: counts[k] }))
-      .concat(current.hiddenNodes > 0 ? [{ label: "hidden", value: current.hiddenNodes }] : [])
-  })
-
   return (
-    <div class="h-full overflow-y-auto p-3 flex flex-col gap-3">
-      <Show when={!graph.loading} fallback={<InlineSpinner label="Loading stats..." />}>
-        <Show when={stats().length > 0}>
-          <div class="grid grid-cols-4 gap-1.5">
-            <For each={stats()}>
-              {(stat) => (
-                <div class="flex flex-col rounded-md border border-border-base/60 bg-background-base px-2.5 py-2">
-                  <span class="text-14-semibold text-text-strong tabular-nums leading-none">{stat.value}</span>
-                  <span class="mt-1 text-10-medium uppercase tracking-wide text-text-weaker">{stat.label}</span>
-                </div>
-              )}
-            </For>
-          </div>
-        </Show>
-      </Show>
-
+    <div class="flex h-full min-h-0 flex-1 flex-col overflow-hidden">
       <Show when={!readme.loading} fallback={<InlineSpinner label="Loading README..." />}>
         <Show
-          when={doc()}
+          when={readme.latest}
           fallback={
-            <div class="rounded-md border border-border-base bg-background-base px-3 py-3 text-12-regular text-text-weak text-center">
+            <div class="m-3 rounded-md border border-border-base bg-background-base px-3 py-3 text-12-regular text-text-weak text-center">
               No README.md at project root
             </div>
           }
         >
-          {(found) => (
-            <div class="rounded-md border border-border-base/60 bg-background-base overflow-hidden">
-              <div class="flex items-center gap-1.5 border-b border-border-weaker-base px-2.5 py-1.5">
-                <Icon name="file-text" size="small" class="text-icon-weak" />
-                <span class="font-mono text-10-medium text-text-weak">{found().path}</span>
-              </div>
-              <FilePreview path={found().path} file={found().data} />
-            </div>
-          )}
+          {(path) => <FileEntityPreview path={path()} frontmatterPanel={false} />}
         </Show>
       </Show>
     </div>
@@ -375,7 +371,6 @@ function InlineSpinner(props: { label: string }) {
 }
 
 function EntityDescriptionPreview(props: { id: string }) {
-  const sdk = useSDK()
   const trellis = useTrellis()
   const [ent] = createResource(
     () => props.id,
@@ -388,65 +383,74 @@ function EntityDescriptionPreview(props: { id: string }) {
     },
     { initialValue: undefined },
   )
-  const description = createMemo(() => {
-    const e = ent.latest
-    if (!e) return undefined
-    const keys = ["body", "description", "purpose", "summary", "message", "title", "name"]
-    for (const k of keys) {
-      const fact = e.facts.find((f) => f.a === k)
-      if (fact) return show(fact.v)
-    }
-    return undefined
-  })
-  const sum = createMemo(() => sampledChecksum(description() ?? ""))
-  const otherFacts = createMemo(() => (ent.latest?.facts ?? []).filter((f) => !OMIT_FACT_KEYS.has(f.a)))
+  const facts = createMemo(() => ent.latest?.facts ?? [])
+  const inline = createMemo(() => inlineBody(facts()))
+  const path = createMemo(() => entityMarkdownPath(facts()))
+  const otherFacts = createMemo(() =>
+    (ent.latest?.facts ?? []).filter((f) => !OMIT_FACT_KEYS.has(f.a) && f.a !== "path"),
+  )
+
   return (
-    <div class="h-full overflow-y-auto p-3">
+    <div class="flex h-full min-h-0 flex-1 flex-col overflow-hidden">
       <Show when={ent.loading}>
-        <div class="flex items-center gap-2 text-text-weak">
+        <div class="flex items-center gap-2 p-3 text-text-weak">
           <Spinner />
           <span class="text-12-regular">Loading...</span>
         </div>
       </Show>
       <Show when={!ent.loading}>
-        <Show
-          when={description()}
-          fallback={
-            <Show
-              when={otherFacts().length > 0}
-              fallback={
-                <div class="rounded-md border border-border-base bg-background-base px-3 py-4 text-12-regular text-text-weak text-center">
-                  No preview available
-                </div>
-              }
-            >
+        <Switch>
+          <Match when={path()}>
+            {(mdPath) => <FileEntityPreview path={mdPath()} frontmatterPanel={false} />}
+          </Match>
+          <Match when={inline()}>
+            {(body) => <EntityInlineMarkdownPreview id={props.id} value={body()} />}
+          </Match>
+          <Match when={otherFacts().length > 0}>
+            <div class="overflow-y-auto p-3">
               <FactPreview facts={otherFacts()} />
-            </Show>
-          }
-        >
-          {(text) => (
-            <div class="flex flex-col gap-3">
-              <Show when={otherFacts().length > 0}>
-                <div class="grid grid-cols-2 gap-2">
-                  <For each={otherFacts().slice(0, 24)}>
-                    {(fact) => (
-                      <div class="rounded-md border border-border-base/60 bg-background-base px-2.5 py-1.5">
-                        <div class="text-10-medium uppercase tracking-wide text-text-weaker">{fact.a}</div>
-                        <div class="mt-0.5 text-11-regular text-text-strong truncate" title={show(fact.v)}>
-                          {show(fact.v)}
-                        </div>
-                      </div>
-                    )}
-                  </For>
-                </div>
-              </Show>
-              <DataProvider data={STUB} directory={sdk.directory} mediaUrl={sdk.url}>
-                <Markdown text={text()} cacheKey={sum()} />
-              </DataProvider>
             </div>
-          )}
-        </Show>
+          </Match>
+          <Match when={true}>
+            <div class="flex flex-1 items-center justify-center p-3 text-12-regular text-text-weak">
+              No preview available
+            </div>
+          </Match>
+        </Switch>
       </Show>
+    </div>
+  )
+}
+
+function EntityInlineMarkdownPreview(props: { id: string; value: string }) {
+  const mention = useMentionCallbacksOptional()
+  const [mode, setMode] = createSignal<"rich" | "raw">("rich")
+  const [draft, setDraft] = createSignal(props.value)
+  const virtual = () => `@entities/${props.id.replace(":", "/")}.md`
+  const state = createMemo(
+    (): FileState => ({
+      path: virtual(),
+      name: `${props.id}.md`,
+      loaded: true,
+      mode: mode(),
+      content: { type: "text", content: props.value },
+      draft: draft() !== props.value ? draft() : undefined,
+    }),
+  )
+
+  return (
+    <div class="h-full min-h-0 overflow-hidden">
+      <FileEditor
+        path={virtual()}
+        state={state()}
+        value={draft()}
+        active={true}
+        frontmatterPanel={false}
+        onChange={setDraft}
+        onSave={() => undefined}
+        onMode={setMode}
+        mention={mention}
+      />
     </div>
   )
 }
