@@ -48,7 +48,7 @@ async function waitFor(url: string, timeoutMs = 15_000) {
   while (Date.now() < deadline) {
     try {
       const res = await fetch(url, { method: "HEAD" })
-      if (res.ok) return true
+      if (res.status > 0) return true
     } catch {}
     await new Promise((r) => setTimeout(r, 250))
   }

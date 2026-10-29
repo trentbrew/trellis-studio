@@ -46,6 +46,12 @@ function resolvePlatformBinary() {
   const candidates = isMusl
     ? [`${base}-musl`, `${base}-baseline-musl`, base, `${base}-baseline`]
     : [base, `${base}-baseline`]
+  // Prefer the in-repo `platforms/` directory when present (for local dev / smoke tests)
+  const localPlatforms = join(__dir, "..", "platforms")
+  for (const name of candidates) {
+    const bin = join(localPlatforms, name, "bin", `turtlecode-backend${ext}`)
+    if (existsSync(bin)) return bin
+  }
   for (const name of candidates) {
     try {
       const pkgJson = require.resolve(`${name}/package.json`)
@@ -54,12 +60,6 @@ function resolvePlatformBinary() {
     } catch {
       // optional dep not installed; try next
     }
-  }
-  // Also try the in-repo `platforms/` directory (for local dev without publish)
-  const localPlatforms = join(__dir, "..", "platforms")
-  for (const name of candidates) {
-    const bin = join(localPlatforms, name, "bin", `turtlecode-backend${ext}`)
-    if (existsSync(bin)) return bin
   }
   return null
 }

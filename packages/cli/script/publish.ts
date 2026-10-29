@@ -228,6 +228,19 @@ async function alreadyPublished(name: string, ver: string): Promise<boolean> {
   return res.ok
 }
 
+// npm accepts the upload but the version document can lag by a couple of
+// minutes ("Your package is being processed..."). Poll instead of failing.
+async function waitForPublished(name: string, ver: string, timeoutMs = 300_000): Promise<boolean> {
+  const deadline = Date.now() + timeoutMs
+  let wait = 2_000
+  while (Date.now() < deadline) {
+    if (await alreadyPublished(name, ver)) return true
+    await new Promise((r) => setTimeout(r, wait))
+    wait = Math.min(wait * 2, 20_000)
+  }
+  return false
+}
+
 async function npmAuthInfo() {
   const registry = await $`npm config get registry`.env(env).quiet().nothrow()
   const whoami = await $`npm whoami`.env(env).quiet().nothrow()
@@ -256,7 +269,7 @@ async function publish(dir: string, label: string, seen = false) {
     console.log(`\nSkipping ${label} (already published at ${version})`)
     return
   }
-  const args = ["publish", "--access", "public", "--tag", tag]
+  const args = ["publish", "--access", "public", "--tag", tag, "--workspaces=false"]
   if (cfg) args.push("--userconfig", cfg)
   if (dryRun) args.push("--dry-run")
   if (otp) args.push("--otp", otp)
@@ -288,7 +301,7 @@ async function publish(dir: string, label: string, seen = false) {
   }
   // Post-verify: confirm the package actually landed on the registry. Uses a
   // direct HTTPS fetch (not `npm view`) to bypass npm's metadata cache.
-  if (!dryRun && !(await alreadyPublished(label, version))) {
+  if (!dryRun && !(await waitForPublished(label, version))) {
     throw new Error(
       `publish reported success but ${label}@${version} is not on the registry. ` +
         `Check network and re-run; the script is idempotent.`,
