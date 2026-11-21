@@ -376,20 +376,86 @@ test("handles file inclusion with replacement tokens", async () => {
   })
 })
 
-test("validates config schema and throws on invalid fields", async () => {
+test("validates config schema and throws on invalid field types", async () => {
   await using tmp = await tmpdir({
     init: async (dir) => {
       await writeConfig(dir, {
         $schema: "https://opencode.ai/config.json",
-        invalid_field: "should cause error",
+        autoupdate: "not-a-valid-option",
       })
     },
   })
   await Instance.provide({
     directory: tmp.path,
     fn: async () => {
-      // Strict schema should throw an error for invalid fields
       await expect(Config.get()).rejects.toThrow()
+    },
+  })
+})
+
+test("ignores unrecognized upstream opencode config keys and maps snapshots alias", async () => {
+  await using tmp = await tmpdir({
+    init: async (dir) => {
+      await writeConfig(dir, {
+        $schema: "https://opencode.ai/config.json",
+        autoupdate: false,
+        compaction: {
+          auto: true,
+          background: false,
+          keep: { tokens: 8000 },
+          buffer: "25%",
+        },
+        experimental: {
+          location_idle_timeout: "15 minutes",
+          subagent_depth: 1,
+        },
+        snapshots: false,
+        tool_output: {
+          max_lines: 1000,
+          max_bytes: 25600,
+        },
+        media: {
+          image: {
+            auto_resize: true,
+            max_width: 1200,
+            max_height: 1200,
+            max_base64_bytes: 1048576,
+          },
+        },
+        warming: false,
+      })
+    },
+  })
+  await Instance.provide({
+    directory: tmp.path,
+    fn: async () => {
+      const config = await Config.get()
+      expect(config.autoupdate).toBe(false)
+      expect(config.compaction?.auto).toBe(true)
+      expect(config.snapshot).toBe(false)
+      expect((config as Record<string, unknown>).snapshots).toBeUndefined()
+      expect((config as Record<string, unknown>).tool_output).toBeUndefined()
+      expect((config as Record<string, unknown>).media).toBeUndefined()
+      expect((config as Record<string, unknown>).warming).toBeUndefined()
+    },
+  })
+})
+
+test("preserves explicit snapshot over snapshots alias", async () => {
+  await using tmp = await tmpdir({
+    init: async (dir) => {
+      await writeConfig(dir, {
+        $schema: "https://opencode.ai/config.json",
+        snapshot: true,
+        snapshots: false,
+      })
+    },
+  })
+  await Instance.provide({
+    directory: tmp.path,
+    fn: async () => {
+      const config = await Config.get()
+      expect(config.snapshot).toBe(true)
     },
   })
 })

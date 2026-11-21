@@ -1248,6 +1248,41 @@ export namespace Config {
     }, input)
   }
 
+  const knownTopLevelKeys = new Set(Object.keys(Info.shape))
+
+  function normalizeConfigData(data: unknown, source: string): unknown {
+    if (!data || typeof data !== "object" || Array.isArray(data)) return data
+    const copy = { ...(data as Record<string, unknown>) }
+
+    const hadLegacy = "theme" in copy || "keybinds" in copy || "tui" in copy
+    if (hadLegacy) {
+      delete copy.theme
+      delete copy.keybinds
+      delete copy.tui
+      log.warn("tui keys in opencode config are deprecated; move them to tui.json", { path: source })
+    }
+
+    // Upstream OpenCode 1.18+ aliases `snapshots` -> `snapshot`.
+    if ("snapshots" in copy) {
+      if (copy.snapshot === undefined && typeof copy.snapshots === "boolean") {
+        copy.snapshot = copy.snapshots
+      }
+      delete copy.snapshots
+    }
+
+    // Upstream OpenCode evolves independently and adds top-level keys (e.g.
+    // "tool_output", "media", "warming", "attachment", "subagent_depth").
+    // Ignore unrecognized top-level keys with a warning rather than failing
+    // startup when sharing ~/.config/opencode/opencode.json.
+    const unknownKeys = Object.keys(copy).filter((k) => !knownTopLevelKeys.has(k))
+    if (unknownKeys.length > 0) {
+      for (const k of unknownKeys) delete copy[k]
+      log.warn("ignoring unrecognized keys in opencode config", { path: source, keys: unknownKeys })
+    }
+
+    return copy
+  }
+
   function parseConfig(text: string, filepath: string): Info {
     const errors: JsoncParseError[] = []
     const data = parseJsonc(text, errors, { allowTrailingComma: true })
@@ -1273,7 +1308,7 @@ export namespace Config {
       })
     }
 
-    const parsed = Info.safeParse(data)
+    const parsed = Info.safeParse(normalizeConfigData(data, filepath))
     if (parsed.success) return parsed.data
 
     throw new InvalidError({
@@ -1325,17 +1360,7 @@ export namespace Config {
             ),
           )
 
-          const normalized = (() => {
-            if (!data || typeof data !== "object" || Array.isArray(data)) return data
-            const copy = { ...(data as Record<string, unknown>) }
-            const hadLegacy = "theme" in copy || "keybinds" in copy || "tui" in copy
-            if (!hadLegacy) return copy
-            delete copy.theme
-            delete copy.keybinds
-            delete copy.tui
-            log.warn("tui keys in opencode config are deprecated; move them to tui.json", { path: source })
-            return copy
-          })()
+          const normalized = normalizeConfigData(data, source)
 
           const parsed = Info.safeParse(normalized)
           if (parsed.success) {
@@ -1396,10 +1421,12 @@ export namespace Config {
 
         const [cachedGlobal, invalidateGlobal] = yield* Effect.cachedInvalidateWithTTL(
           loadGlobal().pipe(
-            Effect.tapError((error) =>
-              Effect.sync(() => log.error("failed to load global config, using defaults", { error: String(error) })),
+            Effect.catchCause((cause) =>
+              Effect.sync(() => {
+                log.error("failed to load global config, using defaults", { error: String(cause) })
+                return {} as Info
+              }),
             ),
-            Effect.orElseSucceed((): Info => ({})),
           ),
           Duration.infinity,
         )
@@ -1636,17 +1663,11 @@ export namespace Config {
           const file = globalConfigFile()
           const before = (yield* readConfigFile(file)) ?? "{}"
 
-          let next: Info
-          if (!file.endsWith(".jsonc")) {
-            const existing = parseConfig(before, file)
-            const merged = mergeDeep(existing, config)
-            yield* fs.writeFileString(file, JSON.stringify(merged, null, 2)).pipe(Effect.orDie)
-            next = merged
-          } else {
-            const updated = patchJsonc(before, config)
-            next = parseConfig(updated, file)
-            yield* fs.writeFileString(file, updated).pipe(Effect.orDie)
-          }
+          // Patch in place for both .json and .jsonc so untouched upstream
+          // OpenCode keys in ~/.config/opencode/opencode.json are preserved.
+          const updated = patchJsonc(before, config)
+          const next = parseConfig(updated, file)
+          yield* fs.writeFileString(file, updated).pipe(Effect.orDie)
 
           yield* invalidate()
           return next

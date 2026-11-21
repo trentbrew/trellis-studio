@@ -1,6 +1,6 @@
 {
   "name": "turtlecode",
-  "version": "0.3.73",
+  "version": "0.3.79",
   "description": "AI-powered creative workspace — launch with npx turtlecode",
   "type": "module",
   "bin": {
@@ -33,18 +33,18 @@
     "node": ">=18"
   },
   "optionalDependencies": {
-    "turtlecode-backend-darwin-arm64": "0.3.73",
-    "turtlecode-backend-darwin-x64": "0.3.73",
-    "turtlecode-backend-darwin-x64-baseline": "0.3.73",
-    "turtlecode-backend-linux-arm64": "0.3.73",
-    "turtlecode-backend-linux-arm64-musl": "0.3.73",
-    "turtlecode-backend-linux-x64": "0.3.73",
-    "turtlecode-backend-linux-x64-baseline": "0.3.73",
-    "turtlecode-backend-linux-x64-baseline-musl": "0.3.73",
-    "turtlecode-backend-linux-x64-musl": "0.3.73",
-    "turtlecode-backend-windows-arm64": "0.3.73",
-    "turtlecode-backend-windows-x64": "0.3.73",
-    "turtlecode-backend-windows-x64-baseline": "0.3.73"
+    "turtlecode-backend-darwin-arm64": "0.3.79",
+    "turtlecode-backend-darwin-x64": "0.3.79",
+    "turtlecode-backend-darwin-x64-baseline": "0.3.79",
+    "turtlecode-backend-linux-arm64": "0.3.79",
+    "turtlecode-backend-linux-arm64-musl": "0.3.79",
+    "turtlecode-backend-linux-x64": "0.3.79",
+    "turtlecode-backend-linux-x64-baseline": "0.3.79",
+    "turtlecode-backend-linux-x64-baseline-musl": "0.3.79",
+    "turtlecode-backend-linux-x64-musl": "0.3.79",
+    "turtlecode-backend-windows-arm64": "0.3.79",
+    "turtlecode-backend-windows-x64": "0.3.79",
+    "turtlecode-backend-windows-x64-baseline": "0.3.79"
   },
   "devDependencies": {
     "bun-types": "latest"
