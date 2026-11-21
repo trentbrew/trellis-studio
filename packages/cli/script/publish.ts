@@ -262,7 +262,7 @@ async function run(dir: string, args: string[]) {
   })
 }
 
-async function publish(dir: string, label: string, seen = false) {
+async function publish(dir: string, label: string, seen = false, verify = true) {
   // Idempotency: skip anything already at the target version. Makes the script
   // safe to re-run after partial failures (and avoids E403 on re-publish).
   if (!dryRun && !seen && (await alreadyPublished(label, version))) {
@@ -301,7 +301,7 @@ async function publish(dir: string, label: string, seen = false) {
   }
   // Post-verify: confirm the package actually landed on the registry. Uses a
   // direct HTTPS fetch (not `npm view`) to bypass npm's metadata cache.
-  if (!dryRun && !(await waitForPublished(label, version))) {
+  if (verify && !dryRun && !(await waitForPublished(label, version))) {
     throw new Error(
       `publish reported success but ${label}@${version} is not on the registry. ` +
         `Check network and re-run; the script is idempotent.`,
@@ -310,8 +310,8 @@ async function publish(dir: string, label: string, seen = false) {
 }
 
 const targets = [
-  ...(!onlyMain ? builtPlatforms.map((name) => ({ dir: join(platforms, name), label: name })) : []),
-  ...(!onlyBackends ? [{ dir: root, label: "turtlecode" }] : []),
+  ...(!onlyMain ? builtPlatforms.map((name) => ({ dir: join(platforms, name), label: name, isMain: false })) : []),
+  ...(!onlyBackends ? [{ dir: root, label: "turtlecode", isMain: true }] : []),
 ]
 const todo: typeof targets = []
 
@@ -339,6 +339,32 @@ console.log(
   `\n${dryRun ? "Dry-run publishing" : "Publishing"} ${todo.length}/${targets.length} package${targets.length === 1 ? "" : "s"}.`,
 )
 
-for (const item of todo) await publish(item.dir, item.label, true)
+const todoBackends = todo.filter((item) => !item.isMain)
+const todoMain = todo.filter((item) => item.isMain)
+
+// Upload all backend packages first without blocking on async registry
+// processing between each tarball, then verify the whole batch in parallel
+// before publishing the main `turtlecode` package.
+for (const item of todoBackends) await publish(item.dir, item.label, true, false)
+
+if (!dryRun && todoBackends.length > 0) {
+  console.log(`\nWaiting for ${todoBackends.length} backend package(s) to finish processing on npm...`)
+  const results = await Promise.all(
+    todoBackends.map(async (item) => {
+      const ok = await waitForPublished(item.label, version, 600_000)
+      if (ok) console.log(`  ✓ ${item.label}@${version} is live`)
+      return { label: item.label, ok }
+    }),
+  )
+  const failed = results.filter((r) => !r.ok).map((r) => r.label)
+  if (failed.length > 0) {
+    throw new Error(
+      `publish reported success but these packages are not yet on the registry: ${failed.join(", ")}. ` +
+        `Check network and re-run; the script is idempotent.`,
+    )
+  }
+}
+
+for (const item of todoMain) await publish(item.dir, item.label, true, true)
 
 console.log(`\n${dryRun ? "Dry run " : ""}Done.`)
